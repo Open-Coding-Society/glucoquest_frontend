@@ -45,55 +45,54 @@ show_reading_time: false
 
 </style>
 
-<div class="login-container">
-    <!-- Python Login Form -->
-    <div class="login-card">
-        <h1 id="pythonTitle">User Login (Python/Flask)</h1>
-        <form id="pythonForm" onsubmit="pythonLogin(); return false;">
-            <p>
-                <label>
-                    GitHub ID:
-                    <input type="text" name="uid" id="uid" required>
-                </label>
-            </p>
-            <p>
-                <label>
-                    Password:
-                    <input type="password" name="password" id="password" required>
-                </label>
-            </p>
-            <p>
-                <button type="submit">Login</button>
-            </p>
-            <p id="message" style="color: red;"></p>
-        </form>
-    </div>
-    <div class="signup-card">
-        <h1 id="signupTitle">Sign Up</h1>
-        <form id="signupForm" onsubmit="signup(); return false;">
-            <p>
-                <label>
-                    Name:
-                    <input type="text" name="name" id="name" required>
-                </label>
-            </p>
-            <p>
-                <label>
-                    GitHub ID:
-                    <input type="text" name="signupUid" id="signupUid" required>
-                </label>
-            </p>
-            <p>
-                <label>
-                    Password:
-                    <input type="password" name="signupPassword" id="signupPassword" required>
-                </label>
-            </p>
-            <p>
-                <button type="submit">Sign Up</button>
-            </p>
-            <p id="signupMessage" style="color: green;"></p>
-        </form>
+<!-- Import Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="flex min-h-screen items-center justify-center bg-gray-100">
+    <div class="w-full max-w-2xl bg-white p-8 shadow-lg rounded-xl">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Login</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Login Card -->
+            <div class="p-6 bg-gray-50 shadow-md rounded-lg">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">User Login</h2>
+                <form onsubmit="pythonLogin(); return false;">
+                    <div class="mb-4">
+                        <label class="block text-gray-600">GitHub ID</label>
+                        <input type="text" id="uid" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-600">Password</label>
+                        <input type="password" id="password" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                        Login
+                    </button>
+                    <p id="message" class="text-red-500 text-sm mt-2"></p>
+                </form>
+            </div>
+            <!-- Signup Card -->
+            <div class="p-6 bg-gray-50 shadow-md rounded-lg">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Sign Up</h2>
+                <form id="signupForm" onsubmit="signup(); return false;">
+                    <div class="mb-4">
+                        <label class="block text-gray-600">Name</label>
+                        <input type="text" id="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-600">GitHub ID</label>
+                        <input type="text" id="signupUid" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-600">Password</label>
+                        <input type="password" id="signupPassword" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                        Sign Up
+                    </button>
+                    <p id="signupMessage" class="text-green-500 text-sm mt-2"></p>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -151,7 +150,7 @@ show_reading_time: false
     .then(data => {
         document.getElementById("signupMessage").textContent = "Signup successful!";
         // Optionally redirect to login page or handle as needed
-        // window.location.href = '{{site.baseurl}}/profile_page';
+        // window.location.href = '{{site.baseurl}}/profile';
     })
     .catch(error => {
         console.error("Signup Error:", error);
@@ -175,7 +174,7 @@ show_reading_time: false
                 return response.json();
             })
             .then(data => {
-                window.location.href = '{{site.baseurl}}/profile/';
+                window.location.href = '{{site.baseurl}}/profile';
             })
             .catch(error => {
                 console.error("Python Database Error:", error);
