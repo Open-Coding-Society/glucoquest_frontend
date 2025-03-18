@@ -1,9 +1,9 @@
 title: Holiday Giftinator
 description: "Holiday"
-owner_name: Vibha, Soni, Nora, Spencer, Kushi
+owner_name: Vibha, Maryam, Aditi, Collin, Anyi, Shriya
 github_username: nighthawkcoders
-github_repo: "holiday_frontend" 
-baseurl: "/holiday_frontend"
+github_repo: "dexcom_frontend" 
+baseurl: "/dexcom_frontend"
 future: true
 remote_theme: jekyll/minima
 minima:
