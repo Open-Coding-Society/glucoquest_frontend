@@ -1,9 +1,8 @@
 ---
 layout: post
-title: Pin the Needle
 permalink: /needle/
 menu: nav/home.html
-author: anyi
+show_reading_time: false
 ---
 <style>
   /* 游戏主体样式 */
