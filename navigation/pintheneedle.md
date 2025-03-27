@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Pin the Needle
-permalink: /needle
+permalink: /needle/
 menu: nav/home.html
 author: anyi
 ---
