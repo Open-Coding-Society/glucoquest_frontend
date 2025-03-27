@@ -5,7 +5,7 @@ menu: nav/home.html
 show_reading_time: false
 ---
 <style>
-  /* 游戏主体样式 */
+  /* style game itself */
   .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -79,7 +79,7 @@ show_reading_time: false
   .status-high { color: #f59e0b; }
   .status-low { color: #ef4444; }
   
-  /* 手动记录表单样式 */
+  /* style of the form */
   .record-form {
     background: white;
     border-radius: 10px;
@@ -139,7 +139,7 @@ show_reading_time: false
     color: #64748b;
   }
   
-  /* 记录表格样式 */
+  /* style of recording form */
   .records-table {
     width: 100%;
     border-collapse: collapse;
@@ -187,7 +187,7 @@ show_reading_time: false
     color: #b91c1c;
   }
   
-  /* 响应式设计 */
+  /* responsive design */
   @media (max-width: 768px) {
     .game-section {
       flex-direction: column;
@@ -269,14 +269,14 @@ show_reading_time: false
 </div>
 
 <script>
-  // ==================== 游戏逻辑部分 ====================
+  // ==================== game logic ====================
   const needle = document.querySelector('.needle');
   const vein = document.querySelector('.vein-target');
   const feedback = document.getElementById('feedback');
   const glucoseValue = document.getElementById('glucose-value');
   const glucoseStatus = document.getElementById('glucose-status');
   
-  // 初始化拖拽功能
+  // Initialize drag-and-drop functionality
   needle.addEventListener('dragstart', (e) => {
     e.dataTransfer.setData('text/plain', 'needle');
     needle.style.opacity = '0.7';
@@ -290,7 +290,7 @@ show_reading_time: false
     e.preventDefault();
     needle.style.opacity = '1';
     
-    // 定位针头位置
+    // Locating the needle position
     const armRect = document.querySelector('.arm-simulator').getBoundingClientRect();
     const dropX = e.clientX - armRect.left - needle.offsetWidth/2;
     const dropY = e.clientY - armRect.top - needle.offsetHeight/2;
@@ -298,7 +298,7 @@ show_reading_time: false
     needle.style.left = `${dropX}px`;
     needle.style.top = `${dropY}px`;
     
-    // 检查是否扎中静脉
+    // Check to see if the vein is pierced
     const veinRect = vein.getBoundingClientRect();
     if (isColliding(needle.getBoundingClientRect(), veinRect)) {
       handleSuccess();
@@ -320,7 +320,7 @@ show_reading_time: false
     const glucose = generateGlucoseReading();
     const status = getGlucoseStatus(glucose);
     
-    // 更新显示
+    // Update Display
     glucoseValue.textContent = `${glucose} mmol/L`;
     glucoseStatus.textContent = status;
     glucoseStatus.className = `status-${status.toLowerCase()}`;
@@ -332,7 +332,7 @@ show_reading_time: false
     feedback.style.borderLeft = '3px solid #10b981';
     feedback.style.display = 'block';
     
-    // 3秒后隐藏反馈
+    // Hide feedback after 3 secondsHide feedback after 3 seconds
     setTimeout(() => {
       feedback.style.display = 'none';
     }, 3000);
@@ -352,14 +352,14 @@ show_reading_time: false
   }
   
   function generateGlucoseReading() {
-    // 70% 正常值, 30% 异常值
+    // 70% Normal, 30% Abnormal
     if (Math.random() < 0.7) {
-      return (4 + Math.random() * 3.8).toFixed(1); // 正常范围
+      return (4 + Math.random() * 3.8).toFixed(1); // normal range
     } else {
-      // 随机选择低或高
+      // random generator
       return Math.random() < 0.5 
-        ? (2 + Math.random() * 2).toFixed(1) // 低
-        : (7.8 + Math.random() * 5).toFixed(1); // 高
+        ? (2 + Math.random() * 2).toFixed(1) // low
+        : (7.8 + Math.random() * 5).toFixed(1); // high
     }
   }
   
@@ -370,11 +370,11 @@ show_reading_time: false
     return 'Normal';
   }
   
-  // ==================== 手动记录CRUD部分 ====================
+  // ==================== CRUD ====================
   let records = [];
   let currentEditId = null;
   
-  // 表单元素
+  // table element
   const form = document.getElementById('glucose-form');
   const recordIdInput = document.getElementById('record-id');
   const glucoseInput = document.getElementById('manual-glucose');
@@ -384,7 +384,7 @@ show_reading_time: false
   const clearBtn = document.getElementById('clear-btn');
   const recordsTable = document.getElementById('records-table').querySelector('tbody');
   
-  // 表单提交
+  // table submit
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     
@@ -397,13 +397,13 @@ show_reading_time: false
     };
     
     if (currentEditId) {
-      // 更新现有记录
+      // refresh record
       const index = records.findIndex(r => r.id === currentEditId);
       if (index !== -1) {
         records[index] = record;
       }
     } else {
-      // 添加新记录
+      // add new record
       records.push(record);
     }
     
@@ -411,14 +411,14 @@ show_reading_time: false
     resetForm();
   });
   
-  // 清除表单
+  // clear the form
   clearBtn.addEventListener('click', resetForm);
   
-  // 更新记录表格
+  // refresh form
   function updateTable() {
     recordsTable.innerHTML = '';
     
-    // 按时间降序排序
+    // put in time order
     const sortedRecords = [...records].sort((a, b) => new Date(b.time) - new Date(a.time));
     
     sortedRecords.forEach(record => {
@@ -437,7 +437,7 @@ show_reading_time: false
       `;
     });
     
-    // 为操作按钮添加事件监听器
+    // button
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', () => editRecord(btn.dataset.id));
     });
@@ -447,7 +447,7 @@ show_reading_time: false
     });
   }
   
-  // 编辑记录
+  // edit record
   function editRecord(id) {
     const record = records.find(r => r.id === id);
     if (record) {
@@ -460,7 +460,7 @@ show_reading_time: false
     }
   }
   
-  // 删除记录
+  // delete record
   function deleteRecord(id) {
     if (confirm('Are you sure you want to delete this record?')) {
       records = records.filter(r => r.id !== id);
@@ -468,7 +468,7 @@ show_reading_time: false
     }
   }
   
-  // 重置表单
+  // reset record
   function resetForm() {
     currentEditId = null;
     form.reset();
@@ -476,13 +476,13 @@ show_reading_time: false
     timeInput.value = new Date().toISOString().slice(0, 16);
   }
   
-  // 格式化日期时间显示
+  // timezone
   function formatDateTime(datetimeStr) {
     if (!datetimeStr) return '-';
     const dt = new Date(datetimeStr);
     return dt.toLocaleString();
   }
   
-  // 初始化时间字段为当前时间
+  // initialize time
   timeInput.value = new Date().toISOString().slice(0, 16);
 </script>
