@@ -1,6 +1,6 @@
 ---
 layout: post
-permalink: /foodchoice
+permalink: /foodchoice/
 show_reading_time: false
 comments: true
 ---
