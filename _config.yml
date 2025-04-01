@@ -17,7 +17,5 @@ plugins:
   - jekyll-remote-theme
 header_pages:
   - navigation/titanic.md
-  - navigation/pintheneedle.md
-  - navigation/foodchoice.md
 
  
