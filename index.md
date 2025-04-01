@@ -7,7 +7,7 @@ menu: nav/home.html
 show_reading_time: false
 ---
 
-# 🎮 Welcome to Dexcom Glucose Education Game
+# Welcome to Dexcom Glucose Education Game
 {: class="text-5xl font-extrabold text-center text-blue-600 mt-16 drop-shadow-lg"}
 
 <p class="text-xl text-center text-gray-700 max-w-3xl mx-auto mt-4 leading-relaxed">
@@ -23,8 +23,8 @@ show_reading_time: false
 
 <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-3xl shadow-xl p-10 mx-auto max-w-4xl mt-6">
     <p class="text-lg text-gray-800 text-center leading-relaxed">
-        The **Dexcom Interactive Glucose Education Game** is designed to teach users about glucose monitoring 
-        in a **fun, engaging, and interactive way**.
+        Th Dexcom Interactive Glucose Education Game is designed to teach users about glucose monitoring 
+        in a fun, engaging, and interactive way.
     </p>
 </div>
 
