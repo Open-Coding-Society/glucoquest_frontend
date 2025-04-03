@@ -1,8 +1,8 @@
 ---
 layout: post
+title: Pin the Needle
 permalink: /needle/
-menu: nav/home.html
-show_reading_time: false
+comment: true
 ---
 <style>
   /* style game itself */
@@ -34,6 +34,7 @@ show_reading_time: false
     border-radius: 10px;
     margin-bottom: 20px;
     overflow: hidden;
+    touch-action: none; /* 改进移动设备支持 */
   }
   
   .vein-target {
@@ -61,6 +62,7 @@ show_reading_time: false
     z-index: 10;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     transition: transform 0.1s;
+    touch-action: none; /* 改进移动设备支持 */
   }
   
   .game-result {
@@ -187,6 +189,19 @@ show_reading_time: false
     color: #b91c1c;
   }
   
+  /* feedback messages */
+  .feedback-success {
+    background-color: #ecfdf5 !important;
+    color: #10b981 !important;
+    border-left: 3px solid #10b981 !important;
+  }
+  
+  .feedback-error {
+    background-color: #fef2f2 !important;
+    color: #ef4444 !important;
+    border-left: 3px solid #ef4444 !important;
+  }
+  
   /* responsive design */
   @media (max-width: 768px) {
     .game-section {
@@ -195,6 +210,10 @@ show_reading_time: false
     
     .form-grid {
       grid-template-columns: 1fr;
+    }
+    
+    .arm-simulator {
+      height: 250px;
     }
   }
 </style>
@@ -205,12 +224,12 @@ show_reading_time: false
       <h2>Glucose Monitoring Game</h2>
       <p>Practice proper needle insertion technique</p>
       
-  <div class="arm-simulator">
+      <div class="arm-simulator" id="arm-simulator">
         <div class="vein-target"></div>
-        <div class="needle" draggable="true"></div>
+        <div class="needle" id="needle"></div>
       </div>
       
-  <div class="game-result">
+      <div class="game-result">
         <h3>CURRENT READING</h3>
         <div class="glucose-value" id="glucose-value">--</div>
         <div id="glucose-status">Insert needle to measure</div>
@@ -218,37 +237,37 @@ show_reading_time: false
       </div>
     </div>
     
-  <div class="game-panel">
+    <div class="game-panel">
       <h2>Manual Record</h2>
       <p>Enter your glucose measurements manually</p>
       
-  <form id="glucose-form" class="record-form">
+      <form id="glucose-form" class="record-form">
         <input type="hidden" id="record-id" value="">
         
-  <div class="form-grid">
+        <div class="form-grid">
           <div class="form-group">
             <label for="manual-glucose">Glucose Value (mmol/L)</label>
-            <input type="number" step="0.1" class="form-control" id="manual-glucose" required>
+            <input type="number" step="0.1" class="form-control" id="manual-glucose" required min="1" max="30">
           </div>
           
-  <div class="form-group">
+          <div class="form-group">
             <label for="manual-time">Measurement Time</label>
             <input type="datetime-local" class="form-control" id="manual-time" required>
           </div>
         </div>
         
-  <div class="form-group">
+        <div class="form-group">
           <label for="manual-notes">Notes</label>
           <textarea class="form-control" id="manual-notes" rows="2"></textarea>
         </div>
         
-  <div class="form-actions">
+        <div class="form-actions">
           <button type="submit" class="btn btn-primary" id="save-btn">Save Record</button>
           <button type="button" class="btn btn-outline" id="clear-btn">Clear Form</button>
         </div>
       </form>
       
-  <h3>Your Records</h3>
+      <h3>Your Records</h3>
       <table class="records-table" id="records-table">
         <thead>
           <tr>
@@ -270,49 +289,100 @@ show_reading_time: false
 
 <script>
   // ==================== game logic ====================
-  const needle = document.querySelector('.needle');
+  const needle = document.getElementById('needle');
   const vein = document.querySelector('.vein-target');
+  const armSimulator = document.getElementById('arm-simulator');
   const feedback = document.getElementById('feedback');
   const glucoseValue = document.getElementById('glucose-value');
   const glucoseStatus = document.getElementById('glucose-status');
   
-  // Initialize drag-and-drop functionality
-  needle.addEventListener('dragstart', (e) => {
-    e.dataTransfer.setData('text/plain', 'needle');
-    needle.style.opacity = '0.7';
-  });
+  let isDragging = false;
+  let offsetX, offsetY;
   
-  document.addEventListener('dragover', (e) => {
-    e.preventDefault();
-  });
+  // 改进的拖拽功能 - 支持鼠标和触摸设备
+  needle.addEventListener('mousedown', startDrag);
+  needle.addEventListener('touchstart', startDrag);
   
-  document.addEventListener('drop', (e) => {
+  document.addEventListener('mousemove', drag);
+  document.addEventListener('touchmove', drag);
+  
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+  
+  function startDrag(e) {
+    isDragging = true;
+    const rect = needle.getBoundingClientRect();
+    
+    if (e.type === 'mousedown') {
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+    } else if (e.type === 'touchstart') {
+      e.preventDefault();
+      offsetX = e.touches[0].clientX - rect.left;
+      offsetY = e.touches[0].clientY - rect.top;
+    }
+    
+    needle.style.cursor = 'grabbing';
+    needle.style.opacity = '0.8';
+  }
+  
+  function drag(e) {
+    if (!isDragging) return;
+    
     e.preventDefault();
+    const armRect = armSimulator.getBoundingClientRect();
+    let clientX, clientY;
+    
+    if (e.type === 'mousemove') {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    } else if (e.type === 'touchmove') {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    }
+    
+    // 计算针的新位置，确保不超出边界
+    let newLeft = clientX - armRect.left - offsetX;
+    let newTop = clientY - armRect.top - offsetY;
+    
+    // 边界检查
+    newLeft = Math.max(0, Math.min(newLeft, armRect.width - needle.offsetWidth));
+    newTop = Math.max(0, Math.min(newTop, armRect.height - needle.offsetHeight));
+    
+    needle.style.left = `${newLeft}px`;
+    needle.style.top = `${newTop}px`;
+  }
+  
+  function endDrag(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    needle.style.cursor = 'grab';
     needle.style.opacity = '1';
     
-    // Locating the needle position
-    const armRect = document.querySelector('.arm-simulator').getBoundingClientRect();
-    const dropX = e.clientX - armRect.left - needle.offsetWidth/2;
-    const dropY = e.clientY - armRect.top - needle.offsetHeight/2;
-    
-    needle.style.left = `${dropX}px`;
-    needle.style.top = `${dropY}px`;
-    
-    // Check to see if the vein is pierced
-    const veinRect = vein.getBoundingClientRect();
-    if (isColliding(needle.getBoundingClientRect(), veinRect)) {
+    // 检查是否命中静脉
+    if (isColliding(needle.getBoundingClientRect(), vein.getBoundingClientRect())) {
       handleSuccess();
     } else {
       handleError();
     }
-  });
+  }
   
+  // 改进的碰撞检测
   function isColliding(rect1, rect2) {
-    return !(
-      rect1.right < rect2.left || 
-      rect1.left > rect2.right || 
-      rect1.bottom < rect2.top || 
-      rect1.top > rect2.bottom
+    const center1 = {
+      x: rect1.left + rect1.width / 2,
+      y: rect1.top + rect1.height / 2
+    };
+    
+    const center2 = {
+      x: rect2.left + rect2.width / 2,
+      y: rect2.top + rect2.height / 2
+    };
+    
+    // 检查针的中心点是否在静脉区域内
+    return (
+      Math.abs(center1.x - center2.x) < rect2.width / 2 &&
+      Math.abs(center1.y - center2.y) < rect2.height / 2
     );
   }
   
@@ -327,12 +397,9 @@ show_reading_time: false
     
     feedback.textContent = 'Measurement successful!';
     feedback.className = 'feedback-success';
-    feedback.style.backgroundColor = '#ecfdf5';
-    feedback.style.color = '#10b981';
-    feedback.style.borderLeft = '3px solid #10b981';
     feedback.style.display = 'block';
     
-    // Hide feedback after 3 secondsHide feedback after 3 seconds
+    // Hide feedback after 3 seconds
     setTimeout(() => {
       feedback.style.display = 'none';
     }, 3000);
@@ -341,9 +408,6 @@ show_reading_time: false
   function handleError() {
     feedback.textContent = 'Please aim for the blue vein area';
     feedback.className = 'feedback-error';
-    feedback.style.backgroundColor = '#fef2f2';
-    feedback.style.color = '#ef4444';
-    feedback.style.borderLeft = '3px solid #ef4444';
     feedback.style.display = 'block';
     
     setTimeout(() => {
@@ -371,10 +435,10 @@ show_reading_time: false
   }
   
   // ==================== CRUD ====================
-  let records = [];
+  let records = JSON.parse(localStorage.getItem('glucoseRecords')) || [];
   let currentEditId = null;
   
-  // table element
+  // DOM elements
   const form = document.getElementById('glucose-form');
   const recordIdInput = document.getElementById('record-id');
   const glucoseInput = document.getElementById('manual-glucose');
@@ -384,7 +448,10 @@ show_reading_time: false
   const clearBtn = document.getElementById('clear-btn');
   const recordsTable = document.getElementById('records-table').querySelector('tbody');
   
-  // table submit
+  // Initialize the table
+  updateTable();
+  
+  // Form submission
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     
@@ -397,28 +464,31 @@ show_reading_time: false
     };
     
     if (currentEditId) {
-      // refresh record
+      // Update existing record
       const index = records.findIndex(r => r.id === currentEditId);
       if (index !== -1) {
         records[index] = record;
       }
     } else {
-      // add new record
+      // Add new record
       records.push(record);
     }
+    
+    // Save to localStorage
+    localStorage.setItem('glucoseRecords', JSON.stringify(records));
     
     updateTable();
     resetForm();
   });
   
-  // clear the form
+  // Clear form
   clearBtn.addEventListener('click', resetForm);
   
-  // refresh form
+  // Update the records table
   function updateTable() {
     recordsTable.innerHTML = '';
     
-    // put in time order
+    // Sort records by time (newest first)
     const sortedRecords = [...records].sort((a, b) => new Date(b.time) - new Date(a.time));
     
     sortedRecords.forEach(record => {
@@ -437,7 +507,7 @@ show_reading_time: false
       `;
     });
     
-    // button
+    // Add event listeners to action buttons
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', () => editRecord(btn.dataset.id));
     });
@@ -447,7 +517,7 @@ show_reading_time: false
     });
   }
   
-  // edit record
+  // Edit a record
   function editRecord(id) {
     const record = records.find(r => r.id === id);
     if (record) {
@@ -457,18 +527,22 @@ show_reading_time: false
       timeInput.value = record.time;
       notesInput.value = record.notes || '';
       saveBtn.textContent = 'Update Record';
+      
+      // Scroll to form
+      form.scrollIntoView({ behavior: 'smooth' });
     }
   }
   
-  // delete record
+  // Delete a record
   function deleteRecord(id) {
     if (confirm('Are you sure you want to delete this record?')) {
       records = records.filter(r => r.id !== id);
+      localStorage.setItem('glucoseRecords', JSON.stringify(records));
       updateTable();
     }
   }
   
-  // reset record
+  // Reset the form
   function resetForm() {
     currentEditId = null;
     form.reset();
@@ -476,13 +550,13 @@ show_reading_time: false
     timeInput.value = new Date().toISOString().slice(0, 16);
   }
   
-  // timezone
+  // Format date/time for display
   function formatDateTime(datetimeStr) {
     if (!datetimeStr) return '-';
     const dt = new Date(datetimeStr);
     return dt.toLocaleString();
   }
   
-  // initialize time
+  // Initialize time input with current time
   timeInput.value = new Date().toISOString().slice(0, 16);
 </script>
