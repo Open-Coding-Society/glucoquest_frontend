@@ -5,36 +5,43 @@ permalink: /needle/
 comment: true
 ---
 <style>
-  /* style game itself */
+  /* 调整容器背景和文字颜色 */
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    background-color: #1e1e1e; /* 深色背景 */
+    color: #ffffff; /* 白色文字 */
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   }
   
-  .game-section {
+    .game-section {
     display: flex;
-    gap: 30px;
+    gap: 20px;
     margin-bottom: 40px;
+    flex-wrap: wrap; /* 让内容在小屏幕上自动换行 */
   }
   
-  .game-panel {
+    .game-panel {
     flex: 1;
-    background: white;
+    background: #2c2c2c; /* 深灰色背景 */
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    color: #ffffff; /* 白色文字 */
   }
   
-  .arm-simulator {
+    .arm-simulator {
     position: relative;
     width: 100%;
     height: 300px;
-    background-color: #ffdbac;
+    background-color: #3a3a3a; /* 更深的灰色背景 */
     border-radius: 10px;
     margin-bottom: 20px;
     overflow: hidden;
     touch-action: none; /* 改进移动设备支持 */
+    border: 2px solid #ffffff; /* 白色边框 */
   }
   
   .vein-target {
@@ -68,6 +75,7 @@ comment: true
   .game-result {
     text-align: center;
     margin: 20px 0;
+    color: #ffffff; /* 白色文字 */
   }
   
   .glucose-value {
@@ -83,11 +91,12 @@ comment: true
   
   /* style of the form */
   .record-form {
-    background: white;
+    background: #2c2c2c; /* 深灰色背景 */
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     margin-bottom: 30px;
+    color: #ffffff; /* 白色文字 */
   }
   
   .form-grid {
@@ -113,6 +122,8 @@ comment: true
     border: 1px solid #e2e8f0;
     border-radius: 6px;
     font-size: 14px;
+    background-color: #3a3a3a; /* 深灰色背景 */
+    color: #ffffff; /* 白色文字 */
   }
   
   .form-actions {
@@ -136,9 +147,9 @@ comment: true
   }
   
   .btn-outline {
-    background: white;
+    background: #2c2c2c;
     border: 1px solid #e2e8f0;
-    color: #64748b;
+    color: #ffffff;
   }
   
   /* style of recording form */
@@ -147,14 +158,15 @@ comment: true
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 14px;
-    background: white;
+    background: #2c2c2c; /* 深灰色背景 */
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    color: #ffffff; /* 白色文字 */
   }
   
   .records-table th {
-    background: #f8fafc;
+    background: #3a3a3a; /* 更深的灰色背景 */
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #e2e8f0;
