@@ -12,10 +12,8 @@ show_reading_time: false
 <p class="text-lg text-center text-gray-700 max-w-2xl mx-auto mt-4 leading-relaxed">
    Access your account to track progress, get personalized feedback, and continue your journey.
 </p>
-
-<div class="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-    <div class="w-full max-w-5xl bg-white p-12 shadow-lg rounded-xl">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Login</h1>
+<div class="flex min-h-screen items-center justify-center px-4">
+    <div class="w-full max-w-5xl p-12 shadow-lg rounded-xl bg-transparent">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Login Card -->
             <div class="p-8 bg-gray-50 shadow-md rounded-lg">
