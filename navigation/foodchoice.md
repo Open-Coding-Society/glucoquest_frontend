@@ -1,6 +1,7 @@
 ---
 layout: post
 permalink: /foodchoice/
+title: Food Choice
 show_reading_time: false
 comments: true
 ---
@@ -59,7 +60,7 @@ h3 {
 </style>
 
 
-<title style="text-align: center;">Food Choice!</title>
+<h1 style="text-align: center;">Food Choice!</h1>
 <h3 style="text-align: center;">Make the best choices for your body to keep your glucose levels low</h3>
 
 <div class="card-container" id="card-container"></div>
