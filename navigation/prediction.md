@@ -10,7 +10,6 @@ comments: true
         <h1 class="text-3xl font-bold text-gray-800">Diabetes Risk Prediction</h1>
         <p class="text-gray-600">Assess your risk of diabetes based on health factors</p>
     </header>
-    
     <div class="flex flex-col md:flex-row gap-6">
         <!-- Input Form -->
         <div class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-6">
@@ -20,43 +19,36 @@ comments: true
                     <input type="checkbox" id="highbp" name="highbp" class="w-4 h-4 text-blue-600 rounded">
                     <label for="highbp" class="ml-2 text-gray-700">High Blood Pressure</label>
                 </div>
-                
                 <div class="flex items-center">
                     <input type="checkbox" id="highchol" name="highchol" class="w-4 h-4 text-blue-600 rounded">
                     <label for="highchol" class="ml-2 text-gray-700">High Cholesterol</label>
                 </div>
-                
                 <div class="flex items-center">
                     <input type="checkbox" id="cholcheck" name="cholcheck" checked class="w-4 h-4 text-blue-600 rounded">
                     <label for="cholcheck" class="ml-2 text-gray-700">Cholesterol Check in Past 5 Years</label>
                 </div>
-                
                 <div>
                     <label for="bmi" class="block text-gray-700 mb-1">BMI</label>
                     <input type="number" id="bmi" name="bmi" required min="10" max="60" step="0.1"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                
                 <div class="flex items-center">
                     <input type="checkbox" id="smoker" name="smoker" class="w-4 h-4 text-blue-600 rounded">
                     <label for="smoker" class="ml-2 text-gray-700">Smoker (at least 100 cigarettes in life)</label>
                 </div>
-                
                 <div class="flex items-center">
                     <input type="checkbox" id="stroke" name="stroke" class="w-4 h-4 text-blue-600 rounded">
                     <label for="stroke" class="ml-2 text-gray-700">History of Stroke</label>
                 </div>
-                
                 <div class="flex items-center">
                     <input type="checkbox" id="heartdiseaseorattack" name="heartdiseaseorattack" class="w-4 h-4 text-blue-600 rounded">
                     <label for="heartdiseaseorattack" class="ml-2 text-gray-700">History of Heart Disease or Attack</label>
                 </div>
-                
                 <div class="flex items-center">
                     <input type="checkbox" id="physactivity" name="physactivity" checked class="w-4 h-4 text-blue-600 rounded">
                     <label for="physactivity" class="ml-2 text-gray-700">Physical Activity in Past 30 Days</label>
                 </div>
-                
+
                 <div class="flex space-x-3 pt-4">
                     <button type="submit" id="predictBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center justify-center min-w-32">
                         <span id="btnText">Predict Diabetes Risk</span>
@@ -252,29 +244,42 @@ comments: true
         };
     }
 
-    // Validate data
+   // In your script.js or within the <script> tags
     async function validateData(data) {
         try {
+            // Convert checkbox values to integers (0 or 1)
+            const payload = {
+                highbp: data.highbp ? 1 : 0,
+                highchol: data.highchol ? 1 : 0,
+                cholcheck: data.cholcheck ? 1 : 0,
+                bmi: data.bmi,
+                smoker: data.smoker ? 1 : 0,
+                stroke: data.stroke ? 1 : 0,
+                heartdiseaseorattack: data.heartdiseaseorattack ? 1 : 0,
+                physactivity: data.physactivity ? 1 : 0
+            };
+
             const response = await fetch(`${pythonURI}/api/diabetes/validate`, {
-                ...fetchOptions,
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(payload)
             });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Validation failed');
+            }
 
             const result = await response.json();
             
-            validationResult.className = response.ok 
-                ? 'bg-green-100 text-green-800 p-3 rounded mt-4' 
-                : 'bg-red-100 text-red-800 p-3 rounded mt-4';
-                
-            validationResult.textContent = response.ok
-                ? 'Data is valid and ready for prediction'
-                : result.message || 'Validation failed';
-                
+            validationResult.className = 'bg-green-100 text-green-800 p-3 rounded mt-4';
+            validationResult.textContent = result.message || 'Data is valid';
             validationResult.classList.remove('hidden');
+            
         } catch (error) {
-            showError("Validation failed: " + error.message);
+            validationResult.className = 'bg-red-100 text-red-800 p-3 rounded mt-4';
+            validationResult.textContent = error.message;
+            validationResult.classList.remove('hidden');
         }
     }
 
