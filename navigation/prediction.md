@@ -63,7 +63,6 @@ comments: true
                 </div>
             </form>
         </div>
-
         <!-- Results Section -->
         <div class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-6 relative min-h-[500px]">
             <!-- Loading Overlay -->
@@ -87,6 +86,10 @@ comments: true
             <div id="resultContainer" class="flex flex-col items-center justify-center h-64">
                 <p class="text-gray-500">Submit your health information to get a prediction</p>
             </div>
+            <button id="savePredictionBtn" class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition hidden">
+                Save Prediction
+            </button>
+
             <div id="validationResult" class="hidden mt-4 p-3 rounded"></div>
             
             <!-- Feature Importance -->
