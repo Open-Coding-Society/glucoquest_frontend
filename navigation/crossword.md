@@ -729,30 +729,69 @@
             }
         });
         // Handle form submission
-        commentForm.addEventListener('submit', (e) => {
+        commentForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const accuracy = document.getElementById('accuracy').value;
-            const comment = document.getElementById('comment').value;
-            if (comment.trim() === '') {
-                alert('Please enter a comment before submitting.');
+            const comment = document.getElementById('comment').value.trim(); // Trim whitespace here
+            if (!comment) { // Check if the trimmed comment is empty
+                alert('Please enter a valid comment before submitting.');
                 return;
             }
-            // Create a new list item for the feedback
-            const feedbackItem = document.createElement('li');
-            feedbackItem.style.padding = '10px';
-            feedbackItem.style.borderBottom = '1px solid #ccc';
-            feedbackItem.style.marginBottom = '10px';
-            // Add the feedback text with accuracy
-            feedbackItem.textContent = `${comment} (Accuracy: ${accuracy}%)`;
-            // Append the feedback to the list
-            feedbackList.appendChild(feedbackItem);
-            // Reset form and close modal
-            commentForm.reset();
-            commentModal.style.display = 'none';
+            try {
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accuracy, comment })
+                });
+                if (!response.ok) throw new Error('Submission failed');
+                const data = await response.json();
+                // Update UI with new feedback
+                const feedbackItem = document.createElement('li');
+                feedbackItem.style.padding = '10px';
+                feedbackItem.style.borderBottom = '1px solid #ccc';
+                feedbackItem.style.marginBottom = '10px';
+                feedbackItem.innerHTML = `
+                    <strong>${new Date(data.timestamp).toLocaleString()}</strong><br>
+                    Accuracy: ${data.accuracy}%<br>
+                    ${data.comment}
+                `;
+                feedbackList.prepend(feedbackItem);
+                commentModal.style.display = 'none';
+                commentForm.reset();
+                // Show success message
+                messageDiv.textContent = 'Thank you for your feedback!';
+                messageDiv.style.color = 'var(--dexcom-green)';
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.textContent = 'Failed to submit feedback';
+                messageDiv.style.color = 'var(--dexcom-red)';
+            }
         });
-        // Initialize the game
+        // Load existing feedback on page load
+        async function loadFeedback() {
+            try {
+                const response = await fetch('/api/feedback');
+                const feedbacks = await response.json();
+                feedbacks.forEach(f => {
+                    const item = document.createElement('li');
+                    item.style.padding = '10px';
+                    item.style.borderBottom = '1px solid #ccc';
+                    item.style.marginBottom = '10px';
+                    item.innerHTML = `
+                        <strong>${new Date(f.timestamp).toLocaleString()}</strong><br>
+                        Accuracy: ${f.accuracy}%<br>
+                        ${f.comment}
+                    `;
+                    feedbackList.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading feedback:', error);
+            }
+        }
+        // Initialize the game and load feedback
         initializeCrossword();
-        // Event listeners
+        loadFeedback();
+        // [KEEP ALL YOUR EXISTING EVENT LISTENERS AND GAME FUNCTIONS]
         checkBtn.addEventListener('click', checkAnswers);
         resetBtn.addEventListener('click', resetPuzzle);
     </script>
