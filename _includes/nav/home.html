@@ -1,15 +1,74 @@
-<table>
-    <tr>
-        <td>
-            <a href="{{ site.baseurl }}/">
-                <img src="{{ site.baseurl }}/images/logo.png" height="60" x alt="">
-            </a>
-        </td>
-        <td><a href="{{site.baseurl}}/Dexcom-lifestyle-minigame/">Lifestyle Mini Game</a></td>
-        <td><a href="{{site.baseurl}}/foodchoice/">Food Choice Mini game</a></td>
-        <td><a href="{{site.baseurl}}/pintheneedle/">Pin the Needle</a></td>
-        <td><a href="{{site.baseurl}}/titanic/">Titanic</a></td>
-        <td><a href="{{site.baseurl}}/prediction">Prediction</a></td>       
-        <td><a href="{{site.baseurl}}/logout">Logout</a></td>
-    </tr>
-</table>
+<style>
+    .navbar {
+        background-color: #00B140; /* Dexcom green */
+        color: white;
+        padding: 10px 20px;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .navbar table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .navbar td {
+        padding: 10px 15px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+    
+    .navbar a:hover {
+        background-color: rgba(255,255,255,0.2);
+    }
+    
+    .logo-cell {
+        padding-right: 30px;
+    }
+    
+    .logo {
+        height: 60px;
+        transition: transform 0.3s;
+    }
+    
+    .logo:hover {
+        transform: scale(1.05);
+    }
+    
+    .logout-btn {
+        background-color: #e74c3c;
+        padding: 8px 15px;
+    }
+    
+    .logout-btn:hover {
+        background-color: #c0392b;
+    }
+</style>
+
+<div class="navbar">
+    <table>
+        <tr>
+            <td class="logo-cell">
+                <a href="{{ site.baseurl }}/">
+                    <img src="{{ site.baseurl }}/images/dexcom_favicon.ico" class="logo" alt="Dexcom Logo">
+                </a>
+            </td>
+            <td><a href="{{site.baseurl}}/Dexcom-lifestyle-minigame/">Lifestyle Mini Game</a></td>
+            <td><a href="{{site.baseurl}}/foodchoice/">Food Choice Mini Game</a></td>
+            <td><a href="{{site.baseurl}}/pintheneedle/">Pin the Needle</a></td>
+            <td><a href="{{site.baseurl}}/titanic/">Titanic</a></td>
+            <td><a href="{{site.baseurl}}/prediction">Prediction</a></td>       
+            <td><a href="{{site.baseurl}}/logout" class="logout-btn">Logout</a></td>
+        </tr>
+    </table>
+</div>
