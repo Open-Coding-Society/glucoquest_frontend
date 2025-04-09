@@ -13,17 +13,19 @@ permalink: /Dexcom-lifestyle-minigame/
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f9fafb;
+      background:rgb(255, 255, 255);
+      color: #000000;
       margin: 0;
       padding: 2rem;
     }
     .container {
       max-width: 700px;
       margin: 0 auto;
-      background: #fff;
+      background:rgb(255, 255, 255);
+      color: #000000;
       padding: 2rem;
       border-radius: 1rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
     }
     .title {
       font-size: 2rem;
@@ -38,23 +40,30 @@ permalink: /Dexcom-lifestyle-minigame/
       border-radius: 10px;
       overflow: hidden;
       margin-top: 1rem;
+      color: #000000;
     }
     .glucose-fill {
       height: 100%;
       transition: width 0.3s ease;
+      color: #000000;
     }
     .card {
       background: #f3f4f6;
       padding: 1rem;
       border-radius: 0.75rem;
       margin-bottom: 1rem;
+      color: #000000;
     }
+    .card p {
+  color: #000000 !important;
+  opacity: 1 !important;
+}
     .btn {
       display: block;
       width: 100%;
       padding: 0.5rem;
       background: #3b82f6;
-      color: white;
+      color: #000000;
       border: none;
       border-radius: 0.5rem;
       cursor: pointer;
@@ -63,12 +72,13 @@ permalink: /Dexcom-lifestyle-minigame/
     }
     .btn:hover {
       background: #2563eb;
+      color: #000000;
     }
     .status {
       display: inline-block;
       padding: 0.25rem 0.5rem;
       border-radius: 0.5rem;
-      color: white;
+      color: #000000;
     }
     .status-high { background: #ef4444; }
     .status-low { background: #facc15; }
@@ -158,3 +168,6 @@ permalink: /Dexcom-lifestyle-minigame/
   </script>
 </body>
 </html>
+
+
+
