@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Pin the Needle
+title: Diabetes Simulator
 permalink: /needle/
 comment: true
 ---
 <style>
-  /* 保持原有样式不变 */
+  /* 原有样式保持不变 */
   .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -16,6 +16,174 @@ comment: true
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   }
   
+  /* 新增样式 - Dexcom 模拟器部分 */
+  .simulator-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #3a3a3a;
+  }
+  
+  .simulator-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: #2c2c2c;
+    border: 1px solid #3a3a3a;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    margin-right: 5px;
+  }
+  
+  .simulator-tab.active {
+    background: #3a3a3a;
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+  
+  .simulator-content {
+    display: none;
+  }
+  
+  .simulator-content.active {
+    display: block;
+  }
+  
+  /* Dexcom 模拟器特定样式 */
+  .step-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    counter-reset: step;
+  }
+  
+  .step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    counter-increment: step;
+    font-size: 14px;
+    color: #e2e8f0;
+  }
+  
+  .step::before {
+    content: counter(step);
+    width: 28px;
+    height: 28px;
+    background: #3a3a3a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-size: 14px;
+  }
+  
+  .step.active::before {
+    background: #3b82f6;
+    color: white;
+  }
+  
+  .step.completed::before {
+    background: #10b981;
+    color: white;
+  }
+
+  .dexcom-arm-area {
+    position: relative;
+    height: 400px;
+    background-color: #3a3a3a;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 2px solid #ffffff;
+  }
+
+  .target-zone {
+    position: absolute;
+    width: 80px;
+    height: 120px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px dashed rgba(58, 134, 255, 0.7);
+    border-radius: 10px;
+    pointer-events: none;
+  }
+
+  .equipment-panel {
+    background: #2c2c2c;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .equipment-items {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .equipment-item {
+    padding: 10px 15px;
+    background: #3a3a3a;
+    border-radius: 8px;
+    cursor: grab;
+    border: 2px dashed #4a5568;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    color: white;
+  }
+
+  .equipment-item:hover {
+    background: #4a5568;
+  }
+
+  .equipment-item.dragging {
+    opacity: 0.6;
+    background: #4a5568;
+  }
+
+  .equipment-icon {
+    width: 20px;
+    height: 20px;
+    stroke: white;
+  }
+
+  .sticker {
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .instructions {
+    background: #2c2c2c;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .instruction-step {
+    margin-bottom: 15px;
+    padding-left: 25px;
+    position: relative;
+    color: #e2e8f0;
+  }
+
+  .instruction-step::before {
+    content: "•";
+    position: absolute;
+    left: 10px;
+    color: #3b82f6;
+    font-weight: bold;
+  }
+
+  /* 原有样式保持不变 */
   .game-section {
     display: flex;
     gap: 20px;
@@ -118,7 +286,7 @@ comment: true
   .form-control {
     width: 100%;
     padding: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #4a5568;
     border-radius: 6px;
     font-size: 14px;
     background-color: #3a3a3a;
@@ -167,13 +335,13 @@ comment: true
     background: #3a3a3a;
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #4a5568;
     font-weight: 600;
   }
   
   .records-table td {
     padding: 12px 15px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid #4a5568;
   }
   
   .table-actions {
@@ -198,74 +366,183 @@ comment: true
     background: #fee2e2;
     color: #b91c1c;
   }
+  
+  .feedback {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    z-index: 1000;
+    display: none;
+  }
+  
+  .feedback-success {
+    background-color: #10b981;
+  }
+  
+  .feedback-error {
+    background-color: #ef4444;
+  }
 </style>
 
 <div class="container">
-  <div class="game-section">
-    <div class="game-panel">
-      <h2>Glucose Monitoring Game</h2>
-      <p>Practice proper needle insertion technique</p>
-      
-  <div class="arm-simulator" id="arm-simulator">
-        <div class="vein-target"></div>
-        <div class="needle" id="needle"></div>
-      </div>
-      
-  <div class="game-result">
-        <h3>CURRENT READING</h3>
-        <div class="glucose-value" id="glucose-value">--</div>
-        <div id="glucose-status">Insert needle to measure</div>
-        <div id="feedback" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px;"></div>
-      </div>
-    </div>
-    
-  <div class="game-panel">
-      <h2>Manual Record</h2>
-      <p>Enter your glucose measurements manually</p>
-      
-  <form id="glucose-form" class="record-form">
-        <input type="hidden" id="record-id" value="">
+  <h1>Diabetes Management Simulator</h1>
+  
+  <!-- 新增标签导航 -->
+  <div class="simulator-tabs">
+    <div class="simulator-tab active" data-tab="blood-test">Blood Glucose Test</div>
+    <div class="simulator-tab" data-tab="dexcom-sensor">Dexcom Sensor Application</div>
+  </div>
+  
+  <!-- 血糖测试模拟器 (原有内容) -->
+  <div class="simulator-content active" id="blood-test">
+    <div class="game-section">
+      <div class="game-panel">
+        <h2>Glucose Monitoring Game</h2>
+        <p>Practice proper needle insertion technique</p>
         
-  <div class="form-grid">
-          <div class="form-group">
-            <label for="manual-glucose">Glucose Value (mmol/L)</label>
-            <input type="number" step="0.1" class="form-control" id="manual-glucose" required min="1" max="30">
+        <div class="arm-simulator" id="arm-simulator">
+          <div class="vein-target"></div>
+          <div class="needle" id="needle"></div>
+        </div>
+        
+        <div class="game-result">
+          <h3>CURRENT READING</h3>
+          <div class="glucose-value" id="glucose-value">--</div>
+          <div id="glucose-status">Insert needle to measure</div>
+          <div id="feedback" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px;"></div>
+        </div>
+      </div>
+      
+      <div class="game-panel">
+        <h2>Manual Record</h2>
+        <p>Enter your glucose measurements manually</p>
+        
+        <form id="glucose-form" class="record-form">
+          <input type="hidden" id="record-id" value="">
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="manual-glucose">Glucose Value (mmol/L)</label>
+              <input type="number" step="0.1" class="form-control" id="manual-glucose" required min="1" max="30">
+            </div>
+            
+            <div class="form-group">
+              <label for="manual-time">Measurement Time</label>
+              <input type="datetime-local" class="form-control" id="manual-time" required>
+            </div>
           </div>
           
-  <div class="form-group">
-            <label for="manual-time">Measurement Time</label>
-            <input type="datetime-local" class="form-control" id="manual-time" required>
+          <div class="form-group">
+            <label for="manual-notes">Notes</label>
+            <textarea class="form-control" id="manual-notes" rows="2"></textarea>
           </div>
-        </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="save-btn">Save Record</button>
+            <button type="button" class="btn btn-outline" id="clear-btn">Clear Form</button>
+          </div>
+        </form>
         
-  <div class="form-group">
-          <label for="manual-notes">Notes</label>
-          <textarea class="form-control" id="manual-notes" rows="2"></textarea>
-        </div>
-        
-  <div class="form-actions">
-          <button type="submit" class="btn btn-primary" id="save-btn">Save Record</button>
-          <button type="button" class="btn btn-outline" id="clear-btn">Clear Form</button>
-        </div>
-      </form>
-      
-  <h3>Your Records</h3>
-      <table class="records-table" id="records-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Value</th>
-            <th>Time</th>
-            <th>Status</th>
-            <th>Notes</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Records will be added here dynamically -->
-        </tbody>
-      </table>
+        <h3>Your Records</h3>
+        <table class="records-table" id="records-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Value</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Records will be added here dynamically -->
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
+  
+  <!-- Dexcom 传感器模拟器 (新增内容) -->
+  <div class="simulator-content" id="dexcom-sensor">
+    <h2>Dexcom Sensor Application Simulator</h2>
+    
+    <div class="step-indicator">
+      <div class="step active" id="step1">Prepare</div>
+      <div class="step" id="step2">Clean</div>
+      <div class="step" id="step3">Apply Sensor</div>
+      <div class="step" id="step4">Insert Needle</div>
+      <div class="step" id="step5">Complete</div>
+    </div>
+
+    <div class="instructions">
+      <h3>Proper Skin Preparation Steps:</h3>
+      <div class="instruction-step">Wash the area with warm water and soap, then dry thoroughly.</div>
+      <div class="instruction-step">Use an alcohol wipe to clean the application site and let it dry completely.</div>
+      <div class="instruction-step">Optional: Apply skin barrier film (like Skin Tac) if needed.</div>
+      <div class="instruction-step">Shave any hair if necessary for better adhesion.</div>
+      <div class="instruction-step">Optional: Warm the skin slightly in cold environments.</div>
+    </div>
+
+    <div class="equipment-panel">
+      <h3>Equipment</h3>
+      <div class="equipment-items">
+        <div class="equipment-item" draggable="true" data-type="alcohol-wipe">
+          <svg class="equipment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+          </svg>
+          Alcohol Wipe
+        </div>
+        <div class="equipment-item" draggable="true" data-type="sensor">
+          <svg class="equipment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+            <line x1="7" y1="2" x2="7" y2="22"></line>
+            <line x1="17" y1="2" x2="17" y2="22"></line>
+          </svg>
+          Dexcom Sensor
+        </div>
+        <div class="equipment-item" draggable="true" data-type="applicator">
+          <svg class="equipment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <line x1="12" y1="5" x2="12" y2="22"></line>
+            <line x1="8" y1="9" x2="16" y2="9"></line>
+          </svg>
+          Applicator
+        </div>
+      </div>
+    </div>
+
+    <div class="dexcom-arm-area" id="dexcom-arm-area">
+      <div class="target-zone"></div>
+      <!-- Stickers will be placed here dynamically -->
+    </div>
+
+    <div class="glucose-display" id="dexcom-glucose-display" style="display: none;">
+      <h3>Current Glucose Reading</h3>
+      <div class="glucose-value" id="dexcom-glucose-value">--</div>
+      <div id="dexcom-glucose-status">Sensor warming up...</div>
+      <div id="dexcom-glucose-trend" style="margin-top: 10px;"></div>
+    </div>
+
+    <table class="records-table" id="dexcom-data-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Glucose</th>
+          <th>Status</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will be inserted here -->
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -273,7 +550,23 @@ comment: true
     import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
     const API_BASE_URL = pythonURI + '/glucose';
 
-    // ==================== 游戏逻辑 ====================
+    // ==================== 标签切换逻辑 ====================
+    document.querySelectorAll('.simulator-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // 更新标签状态
+        document.querySelectorAll('.simulator-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // 更新内容显示
+        const tabId = tab.dataset.tab;
+        document.querySelectorAll('.simulator-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // ==================== 血糖测试游戏逻辑 ====================
     const needle = document.getElementById('needle');
     const vein = document.querySelector('.vein-target');
     const armSimulator = document.getElementById('arm-simulator');
@@ -373,23 +666,11 @@ comment: true
         glucoseStatus.textContent = status;
         glucoseStatus.className = `status-${status.toLowerCase()}`;
         
-        feedback.textContent = 'Measurement successful!';
-        feedback.className = 'feedback-success';
-        feedback.style.display = 'block';
-        
-        setTimeout(() => {
-            feedback.style.display = 'none';
-        }, 3000);
+        showFeedback('Measurement successful!', 'success');
     }
     
     function handleError() {
-        feedback.textContent = 'Please aim for the blue vein area';
-        feedback.className = 'feedback-error';
-        feedback.style.display = 'block';
-        
-        setTimeout(() => {
-            feedback.style.display = 'none';
-        }, 2000);
+        showFeedback('Please aim for the blue vein area', 'error');
     }
     
     function generateGlucoseReading() {
@@ -407,6 +688,185 @@ comment: true
         if (glucose < 4) return 'Low';
         if (glucose > 7.8) return 'High';
         return 'Normal';
+    }
+
+    // ==================== Dexcom 传感器模拟器逻辑 ====================
+    const dexcomArmArea = document.getElementById('dexcom-arm-area');
+    const dexcomSteps = document.querySelectorAll('.step');
+    const dexcomGlucoseDisplay = document.getElementById('dexcom-glucose-display');
+    const dexcomGlucoseValue = document.getElementById('dexcom-glucose-value');
+    const dexcomGlucoseStatus = document.getElementById('dexcom-glucose-status');
+    const dexcomGlucoseTrend = document.getElementById('dexcom-glucose-trend');
+    const dexcomDataTable = document.getElementById('dexcom-data-table').querySelector('tbody');
+    
+    let currentStep = 1;
+    let dexcomGlucoseReadings = [];
+    
+    // Initialize drag and drop for Dexcom simulator
+    document.querySelectorAll('.equipment-item').forEach(item => {
+      item.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('type', item.dataset.type);
+        item.classList.add('dragging');
+      });
+      
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+      });
+    });
+
+    dexcomArmArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    dexcomArmArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const type = e.dataTransfer.getData('type');
+      const rect = dexcomArmArea.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Check if dropped in target zone
+      const targetZone = document.querySelector('.target-zone');
+      const targetRect = targetZone.getBoundingClientRect();
+      const isInTarget = x > targetRect.left - rect.left && 
+                        x < targetRect.right - rect.left && 
+                        y > targetRect.top - rect.top && 
+                        y < targetRect.bottom - rect.top;
+      
+      if (!isInTarget) {
+        showFeedback('Please drop in the target zone', 'error');
+        return;
+      }
+      
+      switch(currentStep) {
+        case 1:
+          if (type === 'alcohol-wipe') {
+            applySticker('alcohol-wipe', x, y);
+            updateDexcomStep(2);
+          }
+          break;
+        case 2:
+          if (type === 'sensor') {
+            applySticker('sensor', x, y);
+            updateDexcomStep(3);
+          }
+          break;
+        case 3:
+          if (type === 'applicator') {
+            applySticker('applicator', x, y);
+            completeDexcomApplication(x, y);
+            updateDexcomStep(4);
+          }
+          break;
+        default:
+          showFeedback('Please complete the current step first', 'error');
+      }
+    });
+
+    function applySticker(type, x, y) {
+      // Remove any existing sticker of this type
+      document.querySelectorAll(`.${type}-sticker`).forEach(el => el.remove());
+      
+      const sticker = document.createElement('div');
+      sticker.className = `sticker ${type}-sticker`;
+      sticker.style.left = `${x - (type === 'applicator' ? 20 : 30)}px`;
+      sticker.style.top = `${y - (type === 'applicator' ? 40 : 30)}px`;
+      dexcomArmArea.appendChild(sticker);
+      
+      showFeedback(`${type.replace('-', ' ')} applied successfully!`, 'success');
+    }
+
+    function completeDexcomApplication(x, y) {
+      // Show needle insertion
+      const needle = document.createElement('div');
+      needle.className = 'sticker';
+      needle.style.left = `${x - 2}px`;
+      needle.style.top = `${y}px`;
+      needle.style.width = '4px';
+      needle.style.height = '20px';
+      needle.style.background = '#e63946';
+      needle.style.borderRadius = '2px';
+      dexcomArmArea.appendChild(needle);
+      
+      showFeedback('Sensor application complete! Starting warm-up...', 'success');
+      
+      // Simulate warm-up period
+      setTimeout(() => {
+        updateDexcomStep(5);
+        dexcomGlucoseDisplay.style.display = 'block';
+        startDexcomGlucoseMonitoring();
+      }, 3000);
+    }
+
+    function startDexcomGlucoseMonitoring() {
+      // Generate initial reading
+      updateDexcomGlucoseReading();
+      
+      // Update every 30 seconds (simulated)
+      setInterval(updateDexcomGlucoseReading, 30000);
+    }
+
+    function updateDexcomGlucoseReading() {
+      const glucose = generateGlucoseReading();
+      const status = getGlucoseStatus(glucose);
+      const trend = getGlucoseTrend();
+      
+      // Update display
+      dexcomGlucoseValue.textContent = glucose;
+      dexcomGlucoseStatus.textContent = status;
+      dexcomGlucoseStatus.className = `status-${status.toLowerCase()}`;
+      dexcomGlucoseTrend.textContent = `Trend: ${trend}`;
+      
+      // Add to records
+      const reading = {
+        time: new Date().toLocaleTimeString(),
+        glucose: glucose,
+        status: status,
+        trend: trend
+      };
+      
+      dexcomGlucoseReadings.unshift(reading);
+      updateDexcomDataTable();
+    }
+
+    function getGlucoseTrend() {
+      const trends = ['↑↑ Rapidly Rising', '↑ Rising', '→ Steady', '↓ Falling', '↓↓ Rapidly Falling'];
+      return trends[Math.floor(Math.random() * trends.length)];
+    }
+
+    function updateDexcomDataTable() {
+      dexcomDataTable.innerHTML = '';
+      
+      dexcomGlucoseReadings.slice(0, 10).forEach(reading => {
+        const row = dexcomDataTable.insertRow();
+        row.innerHTML = `
+          <td>${reading.time}</td>
+          <td>${reading.glucose} mmol/L</td>
+          <td class="status-${reading.status.toLowerCase()}">${reading.status}</td>
+          <td>${reading.trend}</td>
+        `;
+      });
+    }
+
+    function updateDexcomStep(step) {
+      dexcomSteps[currentStep-1].classList.remove('active');
+      dexcomSteps[currentStep-1].classList.add('completed');
+      
+      currentStep = step;
+      dexcomSteps[currentStep-1].classList.add('active');
+    }
+
+    // ==================== 通用函数 ====================
+    function showFeedback(message, type) {
+      const feedback = document.createElement('div');
+      feedback.textContent = message;
+      feedback.className = `feedback feedback-${type}`;
+      document.body.appendChild(feedback);
+      feedback.style.display = 'block';
+      
+      setTimeout(() => {
+        feedback.remove();
+      }, 3000);
     }
 
     // ==================== CRUD 操作 ====================
@@ -428,8 +888,7 @@ comment: true
             displayRecords(records);
         } catch (error) {
             console.error('Error fetching records:', error);
-            document.getElementById('error-message').innerText = 'Error fetching records.';
-            document.getElementById('error-message').style.display = 'block';
+            showFeedback('Error fetching records.', 'error');
         }
     }
 
@@ -582,7 +1041,7 @@ comment: true
             form.scrollIntoView({ behavior: 'smooth' });
         } catch (error) {
             console.error('Error fetching record:', error);
-            alert('Failed to load record for editing.');
+            showFeedback('Failed to load record for editing.', 'error');
         }
     }
 
@@ -594,7 +1053,7 @@ comment: true
                 await window.fetchGlucoseRecords();
             } catch (error) {
                 console.error('Error deleting record:', error);
-                alert('Failed to delete record.');
+                showFeedback('Failed to delete record.', 'error');
             }
         }
     }
@@ -619,7 +1078,7 @@ comment: true
             resetForm();
         } catch (error) {
             console.error('Error saving record:', error);
-            alert('Failed to save record. Please try again.');
+            showFeedback('Failed to save record. Please try again.', 'error');
         }
     });
 
