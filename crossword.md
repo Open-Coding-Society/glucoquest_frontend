@@ -757,10 +757,13 @@
                 return;
             }
             try {
-                const response = await fetch('/api/feedback', {
+                const response = await fetch('http://127.0.0.1:8206/api/feedback', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ accuracy, comment })
+                    body: JSON.stringify({
+                        "accuracy": accuracy, 
+                        "comment": comment, 
+                    })
                 });
                 if (!response.ok) throw new Error('Submission failed');
                 const data = await response.json();
@@ -789,7 +792,7 @@
         // Load existing feedback on page load
         async function loadFeedback() {
             try {
-                const response = await fetch('/api/feedback');
+                const response = await fetch('http://localhost:8206/api/feedback');
                 const feedbacks = await response.json();
                 feedbacks.forEach(f => {
                     const item = document.createElement('li');
