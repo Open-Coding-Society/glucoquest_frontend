@@ -6,6 +6,13 @@ hide: true
 menu: nav/home.html
 show_reading_time: false
 ---
+<link href='https://fonts.googleapis.com/css?family=Oxygen Mono' rel='stylesheet'>
+
+<style>
+    p {
+    font-family: 'Oxygen Mono';font-size: 15px;
+    }
+</style>
 
 # Welcome to Dexcom Glucose Education Game
 {: class="text-5xl font-extrabold text-center text-blue-600 mt-16 drop-shadow-lg"}

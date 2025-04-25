@@ -14,3 +14,39 @@
 
 // Styles for nighthawk theme, do not remove
 @import "nighthawk/main";
+
+html, body, select {   
+    color: white !important;
+    background-color: #1A281A !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+.button {
+    background-color: #3e7e34 !important; /* Darker green */
+    color: white !important;
+    border: none !important;
+    /*border-radius: 9999px !important;*/
+    padding: 1px 20px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    transition: background-color 0.3s !important;
+  }
+  
+.button:hover {
+    background-color: #2f5e27 !important; /* Even darker green */
+  }
+  
+.login-button {
+    background-color: #a3e635 !important; /* Light green */
+    color: black !important;
+    border: none !important;
+    padding: 1px 20px !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s !important;
+  }
+  
+.login-button:hover {
+    background-color: #86c127 !important; /* Slightly darker light green */
+  }
