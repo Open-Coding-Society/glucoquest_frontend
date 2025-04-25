@@ -17,7 +17,7 @@ show_reading_time: false
 
     h1, h2, h3 {
         font-family: 'Oxygen Mono';
-        color:rgb(95, 182, 23);
+        color:#5fb617;
     }
 </style>
 
@@ -54,19 +54,19 @@ show_reading_time: false
 </h2>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-8 mt-10">
-    <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300 border border-green-400">
+    <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300">
         <h3 class="text-2xl font-bold text-green-300">🕹️ Interactive Challenges</h3>
         <p class="text-lg text-gray-300 mt-2">
             Test your glucose management knowledge with engaging tasks and scenarios.
         </p>
     </div>
-    <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300 border border-green-400">
+    <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300">
         <h3 class="text-2xl font-bold text-green-300">📊 Personalized Feedback</h3>
         <p class="text-lg text-gray-300 mt-2">
             Get real-time insights on your performance and improve your learning.
         </p>
     </div>
-    <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300 border border-green-400">
+    <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300">
         <h3 class="text-2xl font-bold text-green-300">📈 Progress Tracking</h3>
         <p class="text-lg text-gray-300 mt-2">
             See how much you’ve learned with custom analytics and feedback.
@@ -83,7 +83,7 @@ show_reading_time: false
     <p class="text-lg text-gray-300 mt-4">
         Create an account and take our diagnostic quiz to get suggestions on what your next monitoring steps should be.
     </p>
-    <button class="bg-green-600 hover:bg-green-700 text-white rounded-full px-6 py-2 mt-4">
+    <button class="quiz-button">
         Take the Quiz!
     </button>
 </div>

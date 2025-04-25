@@ -27,7 +27,7 @@ html, body, select {
     color: white !important;
     border: none !important;
     /*border-radius: 9999px !important;*/
-    padding: 1px 20px !important;
+    padding: 0px 20px !important;
     cursor: pointer !important;
     font-size: 12px !important;
     transition: background-color 0.3s !important;
@@ -49,4 +49,27 @@ html, body, select {
   
 .login-button:hover {
     background-color: #77c127 !important; /* Slightly darker light green */
+  }
+
+  /* Index css*/
+  h1, h2, h3 {
+    font-family: 'Oxygen Mono';
+    color:#5fb617;
+}
+
+  .quiz-button {
+    background-color: #3e7e34 !important; /* Darker green */
+    color: white !important;
+    border: none !important;
+    /*border-radius: 9999px !important;*/
+    padding: 10px 30px !important;
+    margin: 20px;
+    border-radius: 9999px;
+    cursor: pointer !important;
+    font-size: 17px !important;
+    transition: background-color 0.3s !important;
+  }
+
+  .quiz-button:hover {
+    background-color: #2f5e27 !important; /* Even darker green */
   }
