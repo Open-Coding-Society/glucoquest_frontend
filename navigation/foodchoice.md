@@ -22,6 +22,35 @@ h3 {
     justify-content: center;
 }
 
+.foodchoice-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #3a3a3a;
+  }
+  
+  .foodchoice-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: #2c2c2c;
+    border: 1px solid #3a3a3a;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    margin-right: 5px;
+  }
+  
+  .foodchoice-tab.active {
+    background: #3a3a3a;
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+  
+  .foodchoice-content {
+    display: none;
+  }
+  
+  .foodchoice-content.active {
+    display: block;
+  }
 
 .overlay {
     position: fixed;
@@ -53,7 +82,7 @@ h3 {
     box-sizing: border-box;
     border: 2px solid transparent;
     border-radius: 10px;
-    display: block;
+    display: none;
 }
 
 .help-instructions {
@@ -125,18 +154,49 @@ h3 {
 
 <button class="help-btn toggle-help-btn">Help</button>
 
+<div class="foodchoice-tabs">
+  <div class="foodchoice-tab active" data-tab="introduction">Introduction</div>
+  <div class="foodchoice-tab" data-tab="food-choice">Food Choice Game</div>
+</div>
+
+<div class="foodchoice-content active" id="introduction">
+    <div class="introduction-bar">
+      <h2>Smart Food Choices Made Simple with the Glycemic Index Game</h2>
+    <p><strong>Eat Smarter – No Nutrition Degree Needed!</strong></p>
+    <p>Managing diabetes is all about making informed decisions—and that includes what you eat. This <strong>interactive food choice game</strong> helps you explore how different foods impact your blood sugar using an easy-to-understand measure: the <strong>glycemic index (GI)</strong>.</p>
+    <h3>What Is Glycemic Index?</h3>
+    <p>The glycemic index is a number from 0 to 100 that tells you how quickly a food will raise your blood glucose levels. The higher the number, the faster the spike. Foods like white bread or sugary drinks have a high GI, while beans and whole grains have a lower GI, meaning they raise your blood sugar more slowly and steadily.</p>
+    <h3>Why Does It Matter for Diabetes?</h3>
+    <p>If you have diabetes, keeping blood glucose levels within target ranges is critical. Choosing foods with a lower glycemic index can help reduce sudden spikes, making it easier to manage blood sugar throughout the day.</p>
+    <h3>How Dexcom CGM Comes In</h3>
+    <p>Dexcom's <strong>Continuous Glucose Monitoring (CGM)</strong> system tracks glucose levels in real time—no fingersticks required. It shows how your glucose responds to everything you do, including what you eat. With this game, you can see how choosing lower GI foods would keep your levels more stable, just like Dexcom’s CGM would show in real life.</p>
+    <h3>Why Play This Game?</h3>
+    <ul>
+      <li><strong>Interactive Learning</strong>: Pick between two foods and watch how each one affects your total glycemic index.</li>
+      <li><strong>See the Impact</strong>: Every food has a number—compare, learn, and understand how better choices lead to better glucose control.</li>
+      <li><strong>Diabetes-Friendly</strong>: Ideal for anyone living with diabetes, caregivers, or those simply curious about eating in a more glucose-stable way.</li>
+      <li><strong>Train Your Brain</strong>: With repeated play, you’ll naturally start to recognize the better options and make them part of your daily life.</li>
+    </ul>
+  </div>
+</div>
+
+
 <div class="help" id="help">
     <p class="help-instructions"><strong>Background</strong></p>
     <p>Dexcom's continuous glucose monitoring technology tracks glucose (sugar) levels in the blood. This value can change throughout the day based on different factors, including the food you eat! Foods with more carbs will affect blood glucose more. <strong>Glycemic index</strong> is a value 0-100 that measures how fast a food will cause glucose levels to rise—the higher the value, the faster the climb.</p>
     <br>
     <p class="help-instructions"><strong>Instructions</strong></p>
     <p>You will be presented with a choice of two foods. When selecting an option, make sure to watch the glycemic index and make choices that will keep it low to manage diabetes!</p>
-    <button class="help-btn toggle-help-btn">Let's Go!</button>
+    <button class="help-btn toggle-help-btn">OK</button>
 </div>
 
-<div class="card-container" id="card-container"></div>
 
-<h3 style="text-align: center;">Total Glycemic Index: <span id="total-gi">0</span></h3>
+<div class="foodchoice-content active" id="food-choice">
+    <div class="game-section">
+      <div class="game-panel">
+        <div class="card-container" id="card-container"></div>
+        <h3 style="text-align: center;">Total Glycemic Index: <span id="total-gi">0</span></h3>
+        </div></div>
 </div>
 
 
@@ -155,6 +215,19 @@ function toggleHelp() {
 document.querySelectorAll('.toggle-help-btn').forEach(btn => {
     btn.addEventListener('click', toggleHelp);
 });
+
+document.querySelectorAll('.foodchoice-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.foodchoice-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        const tabId = tab.dataset.tab;
+        document.querySelectorAll('.foodchoice-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
 
 let totalGI = 0;
 let currentPairNumber = 1;
