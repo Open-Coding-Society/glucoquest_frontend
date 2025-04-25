@@ -34,7 +34,7 @@ Topics:
     description: "Our model turns complex health data into simple diabetes risk scores - helping people take action while giving businesses like Dexcom a powerful prevention tool"
   - title: "Pin the Needle"
     image: "/needle.png"
-    link: "/needle"
+    link: "dexcom_frontend/needle"
     alt: "Dexcom Insertion Simulator"
     keyPoints:
       - "Uses real Dexcom sensor dimensions with 0.1mm precision modeling"
