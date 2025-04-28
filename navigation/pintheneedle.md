@@ -4,9 +4,11 @@ title: Diabetes Simulator
 permalink: /needle/
 comment: true
 ---
+<link href='https://fonts.googleapis.com/css?family=Oxygen Mono' rel='stylesheet'>
 <style>
   /* 原有样式保持不变 */
   .container {
+    font-family: 'Oxygen Mono';
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
