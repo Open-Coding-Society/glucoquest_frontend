@@ -37,7 +37,8 @@ show_reading_time: false
     }
     .game-box img {
         width: 100%;
-        height: 150px;
+        height: 200px;
+        text-align: center;
         object-fit: cover;
         border-radius: 0.5rem;
         margin-bottom: 1rem;
@@ -64,7 +65,7 @@ show_reading_time: false
     <div class="games-grid">
         <!-- Game 1 -->
         <a href="{{site.baseurl}}/needle/" class="game-box">
-            <img src="path/to/pin-the-needle.jpg" alt="Pin the Needle Placeholder">
+            <img src="{{site.baseurl}}/images/ui-images/pin_needle_image.png" alt="Pin the Needle Placeholder">
             <h2>Pin the Needle</h2>
             <p>
                 An interactive drag-and-drop game where users place a needle correctly on an arm to simulate starting glucose monitoring.
@@ -72,7 +73,7 @@ show_reading_time: false
         </a>
         <!-- Game 2 -->
         <a href="{{site.baseurl}}/lifestyle/" class="game-box">
-            <img src="{{site.baseurl}}path/to/glucose-hero.jpg" alt="Glucose Hero Placeholder">
+            <img src="{{site.baseurl}}/images/food/apple.png" alt="Glucose Hero Placeholder">
             <h2>Glucose Hero</h2>
             <p>
                 An interactive simulation game where players experience a full day living with diabetes by making lifestyle choices.
@@ -80,7 +81,7 @@ show_reading_time: false
         </a>
         <!-- Game 3 -->
         <a href="{{site.baseurl}}/foodchoice/" class="game-box">
-            <img src="path/to/what-do-you-eat.jpg" alt="What Do You Eat Placeholder">
+            <img src="{{site.baseurl}}/images/food/apple.png" alt="What Do You Eat Placeholder">
             <h2>What Do You Eat?</h2>
             <p>
                 A mini-challenge where players choose between two food items for a meal, each associated with a glucose level.
@@ -88,7 +89,7 @@ show_reading_time: false
         </a>
         <!-- Game 4 -->
         <a href="{{site.baseurl}}/crossword/" class="game-box">
-            <img src="{{site.baseurl}}/images/ui-images/dexcom_crossword/" alt="Daily Diabetes Crossword Placeholder">
+            <img src="{{site.baseurl}}/images/ui-images/dexcom_crossword.png" alt="Daily Diabetes Crossword Placeholder">
             <h2>Daily Diabetes Crossword</h2>
             <p>
                 A mini-challenge where players solve diabetes-related crosswords.
