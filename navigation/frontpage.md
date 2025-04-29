@@ -1,9 +1,9 @@
 ---
 toc: False 
 layout: tailwindPost
-infoGraph: intro_infographic
-title: GlucoQuest Introduction
-permalink: /introduction/
+infoGraph: overview_infographic
+title: GlucoQuest Overview
+permalink: /overview/
 ---
 
 <!-- Infographic - this depends on page.infoGraph frontmatter being set -->
