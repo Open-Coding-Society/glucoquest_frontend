@@ -32,7 +32,6 @@ show_reading_time: false
 <div class="w-24 h-1 bg-green-400 mx-auto mt-6 rounded-full"></div>
 
 ---
-
 <h2 class="text-4xl font-bold text-center mt-20">
     About Us
 </h2>
@@ -43,10 +42,15 @@ show_reading_time: false
         in a fun, engaging, and interactive way. Users will learn how to manage glucose levels through 
         interactive challenges and personalized feedback.
     </p>
+    
+    <div class="text-center mt-8">
+        <a href="{{ site.baseurl }}/about/" class="inline-block bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+            Learn More Here
+        </a>
+    </div>
 </div>
 
 <div class="w-24 h-1 bg-green-400 mx-auto mt-10 rounded-full"></div>
-
 ---
 
 <h2 class="text-4xl font-bold text-center mt-20">
