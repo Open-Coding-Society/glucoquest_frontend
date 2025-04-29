@@ -5,6 +5,22 @@ layout: base
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
 
+<!-- Mermaid JS (add this part) -->
+{% if page.mermaid %}
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'default',
+      themeVariables: {
+        primaryColor: '#1a3a1e',
+        primaryTextColor: '#5fb617',
+        primaryBorderColor: '#5fb617'
+      }
+    });
+  </script>
+{% endif %}
+
 <style>
   /* Custom Styling (without dark and light themes) */
   body {

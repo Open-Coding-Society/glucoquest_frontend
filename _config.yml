@@ -16,4 +16,4 @@ plugins:
   - jekyll-remote-theme
 header_pages:
 - navigation/search.md
- 
+- navigation/about.md
