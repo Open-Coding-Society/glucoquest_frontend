@@ -49,6 +49,7 @@ mermaid: true
 
 
 <div class="bg-green-900 rounded-3xl shadow-xl p-10 mx-auto max-w-6xl mt-6">
+    <img style="max-width:550px; margin-left: auto; margin-right: auto" src="{{site.baseurl}}/images/intro/dexcom_product.jpg">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
             <h3 class="text-2xl font-bold text-green-300">1 in 10 Americans</h3>
@@ -92,14 +93,7 @@ mermaid: true
             <h4 class="text-xl font-bold text-green-300 mt-4">⚡ Immediate Feedback</h4>
             <p class="text-lg text-gray-300">Leads to faster habit formation</p>
         </div>
-        <div class="bg-gray-800 p-4 rounded-xl">
-            ```mermaid
-            pie showData
-                title Knowledge Retention
-                "Games" : 90
-                "Lectures" : 10
-            ```
-        </div>
+        <img src="{{site.baseurl}}/images/intro/game_stats.png">
     </div>
 </div>
 
@@ -131,6 +125,27 @@ mermaid: true
 <div class="divider"></div>
 
 
+<div class="bg-green-900 rounded-3xl shadow-xl p-10 mx-auto max-w-6xl mt-6">
+    <h3 class="text-2xl font-bold text-green-300">Data Foundation</h3>
+    <ul class="list-disc pl-5 mt-2 space-y-2">
+        <li class="text-lg text-gray-300"><strong>Dataset:</strong> CDC Diabetes Health Indicators (40K+ records)</li>
+        <li class="text-lg text-gray-300"><strong>Features:</strong> 21 key metrics including BMI, activity levels, hypertension</li>
+        <li class="text-lg text-gray-300"><strong>Processing:</strong> Cleaned/imputed data with optimal feature selection</li>
+    </ul>
+
+    <h3 class="text-2xl font-bold text-green-300 mt-8">Model Performance</h3>
+    <img src="{{site.baseurl}}/images/intro/ml-data.png">
+
+    <h3 class="text-2xl font-bold text-green-300 mt-8">Integration</h3>
+    <ul class="list-disc pl-5 mt-2 space-y-2">
+        <li class="text-lg text-gray-300"><strong>Architecture:</strong> Flask API backend</li>
+        <li class="text-lg text-gray-300"><strong>Input:</strong> User health metrics</li>
+        <li class="text-lg text-gray-300"><strong>Output:</strong> Personalized risk score (0-100%)</li>
+    </ul>
+</div>
+
+<div class="divider"></div>
+
 <h2 class="text-4xl font-bold text-center">
     Dexcom Sensor Training Simulator
 </h2>
@@ -160,36 +175,3 @@ mermaid: true
 </div>
 
 <div class="divider"></div>
-
-
-<div class="bg-green-900 rounded-3xl shadow-xl p-10 mx-auto max-w-6xl mt-6">
-    <h3 class="text-2xl font-bold text-green-300">Data Foundation</h3>
-    <ul class="list-disc pl-5 mt-2 space-y-2">
-        <li class="text-lg text-gray-300"><strong>Dataset:</strong> CDC Diabetes Health Indicators (40K+ records)</li>
-        <li class="text-lg text-gray-300"><strong>Features:</strong> 21 key metrics including BMI, activity levels, hypertension</li>
-        <li class="text-lg text-gray-300"><strong>Processing:</strong> Cleaned/imputed data with optimal feature selection</li>
-    </ul>
-
-    <h3 class="text-2xl font-bold text-green-300 mt-8">Model Performance</h3>
-    <div class="bg-gray-800 p-4 rounded-xl mt-4 overflow-x-auto">
-        ```mermaid
-        bar
-            title Model Accuracy Comparison
-            x-axis Models
-            y-axis Accuracy %
-            bar XGBoost : 90
-            bar Logistic Regression : 75
-            bar Neural Nets : 82
-        ```
-    </div>
-
-    <h3 class="text-2xl font-bold text-green-300 mt-8">Integration</h3>
-    <ul class="list-disc pl-5 mt-2 space-y-2">
-        <li class="text-lg text-gray-300"><strong>Architecture:</strong> Flask API backend</li>
-        <li class="text-lg text-gray-300"><strong>Input:</strong> User health metrics</li>
-        <li class="text-lg text-gray-300"><strong>Output:</strong> Personalized risk score (0-100%)</li>
-    </ul>
-</div>
-
-<div class="divider"></div>
-
