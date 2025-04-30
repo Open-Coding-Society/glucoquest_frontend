@@ -183,7 +183,7 @@ h3 {
 
 <div class="help" id="help">
     <p class="help-instructions"><strong>Background</strong></p>
-    <p>Dexcom's continuous glucose monitoring technology tracks glucose (sugar) levels in the blood. This value can change throughout the day based on different factors, including the food you eat! Foods with more carbs will affect blood glucose more. <strong>Glycemic load</strong> is a value 0-100 that estimates how much a food will cause glucose levels to rise—the higher the value, the greater the climb. It is calculated by multiplying grams of carbohydrate in food by the its glycemic index (a measure of how fast a food will cause blood glucose to increase) and  dividing by 100.</p>
+    <p>Dexcom's continuous glucose monitoring technology tracks glucose (sugar) levels in the blood. This value can change throughout the day based on different factors, including the food you eat! Foods with more carbs will affect blood glucose more. <strong>Glycemic load</strong> is a value that estimates how much a food will cause glucose levels to rise—the higher the value, the greater the climb. It is calculated by multiplying grams of carbohydrate in food by the its glycemic index (a measure of how fast a food will cause blood glucose to increase) and  dividing by 100.</p>
     <br>
     <p class="help-instructions"><strong>Instructions</strong></p>
     <p>You will be presented with a choice of two foods. When selecting an option, make sure to watch the glycemic load and make choices that will keep it low to manage diabetes!</p>
