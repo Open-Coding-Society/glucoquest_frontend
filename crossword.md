@@ -193,12 +193,7 @@
             border-radius: 5px;
         }
         .instructions {
-            background: var(--dexcom-light);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px auto;
-            max-width: 800px;
-            font-size: 0.95rem;
+            color: #000 !important; /* Force the darker font color */
         }
         /* Modal Styles */
         .modal {
@@ -303,8 +298,19 @@
     <header>
         <h1>Dexcom Glucose Crossword</h1>
     </header>
-    <div class="instructions">
-        <p><strong>How to play:</strong> Click on a cell to select it, then type your answer. Press SPACE to switch between Across and Down. Click on clues to jump to that word.</p>
+    <div class="article-container" style="max-width: 900px; margin: 20px auto; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: var(--dexcom-blue); border-bottom: 2px solid var(--dexcom-light); padding-bottom: 10px;">Advancing Diabetes Management</h2>
+        <p>Diabetes is a chronic metabolic condition that requires diligent monitoring of blood glucose levels to prevent complications. Traditional methods, such as fingerstick tests, provide only intermittent snapshots of glucose levels. In contrast, <strong>Continuous Glucose Monitoring (CGM)</strong> systems offer real-time, continuous insights, revolutionizing diabetes management. Dexcom, a leader in CGM technology, has developed systems like the G6 and the recently FDA-approved G7, which provide comprehensive glucose monitoring solutions.</p>
+        <h3 style="color: var(--dexcom-blue); margin-top: 20px;">Continuous and Real-Time Monitoring</h3>
+        <p>Dexcom's CGM systems are designed to track glucose levels without breaks, 24/7. These systems provide <strong>real-time glucose readings</strong>, updating every few minutes, allowing users to observe blood sugar levels dynamically. This continuous monitoring is crucial for detecting trends and making timely adjustments to diet, exercise, or medication.</p>
+        <h3 style="color: var(--dexcom-blue); margin-top: 20px;">Wearable Sensor Technology</h3>
+        <p>At the core of Dexcom's CGM systems is a small, <strong>wearable sensor</strong> that detects interstitial glucose levels just beneath the skin. The G7 sensor, for instance, is 60% smaller than its predecessor, the G6, and includes a single-use transmitter. This design enhances user comfort and discretion, making it easier to incorporate into daily life. The sensor's data is transmitted via Bluetooth to a compatible smart device, providing users with immediate access to their glucose information.</p>
+        <h3 style="color: var(--dexcom-blue); margin-top: 20px;">Accuracy and Reliability</h3>
+        <p><strong>Accuracy</strong> is paramount in glucose monitoring. Clinical studies have demonstrated that the Dexcom G7 delivers precise measurements, with a mean absolute relative difference (MARD) of 8.2% for sensors placed on the arm and 9.1% for those on the abdomen. These figures indicate that Dexcom's CGM systems provide reliable data, supporting informed decision-making in diabetes management.</p>
+        <h3 style="color: var(--dexcom-blue); margin-top: 20px;">Trend Analysis and Alerts</h3>
+        <p>Beyond providing current glucose readings, Dexcom's systems display <strong>glucose patterns</strong> over hours and days, helping users identify trends that may require attention. The system also includes customizable alerts that notify users of dangerous highs (<strong>hyperglycemia</strong>) or lows (<strong>hypoglycemia</strong>) promptly. These alerts enable users to take immediate action, reducing the risk of severe complications.</p>
+        <h3 style="color: var(--dexcom-blue); margin-top: 20px;">Enhancing Diabetes Management</h3>
+        <p>By offering continuous, accurate, and real-time glucose data, Dexcom's CGM systems empower individuals with diabetes to manage their condition more effectively. The integration of wearable sensor technology, trend analysis, and alert systems contributes to improved glycemic control and reduces the risk of complications associated with diabetes. Furthermore, the data collected can be shared with healthcare providers, facilitating more informed treatment decisions and personalized care plans.</p>
     </div>
     <div class="game-container">
         <div class="puzzle-section">
