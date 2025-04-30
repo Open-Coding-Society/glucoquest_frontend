@@ -87,9 +87,10 @@ show_reading_time: false
     <p class="text-lg text-gray-300 mt-4">
         Create an account and take our diagnostic quiz to get suggestions on what your next monitoring steps should be.
     </p>
-    <button class="quiz-button">
-        Take the Quiz!
-    </button>
+    <p> </p>
+    <a href="{{ site.baseurl }}/prediction" class="quiz-button">
+    Take the Quiz!
+    </a>
 </div>
 
 <div class="w-24 h-1 bg-green-400 mx-auto mt-10 rounded-full"></div>
