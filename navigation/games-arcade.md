@@ -72,16 +72,16 @@ show_reading_time: false
             </p>
         </a>
         <!-- Game 2 -->
-        <a href="{{site.baseurl}}/lifestyle/" class="game-box">
-            <img src="{{site.baseurl}}/images/food/apple.png" alt="Glucose Hero Placeholder">
-            <h2>Glucose Hero</h2>
+        <a href="{{site.baseurl}}/Dexcom-lifestyle-minigame/" class="game-box">
+            <img src="{{site.baseurl}}/images/ui-images/lifestyle-icon.jpg" alt="Glucose Hero Placeholder">
+            <h2>Lifestyle Minigame</h2>
             <p>
                 An interactive simulation game where players experience a full day living with diabetes by making lifestyle choices.
             </p>
         </a>
         <!-- Game 3 -->
         <a href="{{site.baseurl}}/foodchoice/" class="game-box">
-            <img src="{{site.baseurl}}/images/food/apple.png" alt="What Do You Eat Placeholder">
+            <img src="{{site.baseurl}}/images/ui-images/green-apple2.png" alt="What Do You Eat Placeholder">
             <h2>What Do You Eat?</h2>
             <p>
                 A mini-challenge where players choose between two food items for a meal, each associated with a glucose level.
