@@ -508,35 +508,23 @@ comment: true
       <div class="instruction-step">Optional: Warm the skin slightly in cold environments.</div>
     </div>
 
-    <div class="equipment-panel">
-      <h3>Equipment</h3>
-      <div class="equipment-items">
-        <div class="equipment-item" draggable="true" data-type="alcohol-wipe">
-          <svg class="equipment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="9" y1="9" x2="15" y2="15"></line>
-            <line x1="15" y1="9" x2="9" y2="15"></line>
-          </svg>
-          Alcohol Wipe
-        </div>
-        <div class="equipment-item" draggable="true" data-type="sensor">
-          <svg class="equipment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
-            <line x1="7" y1="2" x2="7" y2="22"></line>
-            <line x1="17" y1="2" x2="17" y2="22"></line>
-          </svg>
-          Dexcom Sensor
-        </div>
-        <div class="equipment-item" draggable="true" data-type="applicator">
-          <svg class="equipment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            <line x1="12" y1="5" x2="12" y2="22"></line>
-            <line x1="8" y1="9" x2="16" y2="9"></line>
-          </svg>
-          Applicator
-        </div>
-      </div>
+  <div class="equipment-panel">
+  <h3>Equipment</h3>
+  <div class="equipment-items">
+    <div class="equipment-item" draggable="true" data-type="alcohol-wipe">
+      <img src="{{site.baseurl}}/images/needlepin/wipes.png" class="equipment-icon" alt="Alcohol Wipe">
+      Alcohol Wipe
     </div>
+    <div class="equipment-item" draggable="true" data-type="sensor">
+      <img src="{{site.baseurl}}/images/needlepin/cotton-tip.png" class="equipment-icon" alt="Cotton Tip">
+      Cotton Tip
+    </div>
+    <div class="equipment-item" draggable="true" data-type="applicator">
+      <img src="{{site.baseurl}}/images/needlepin/dexcom.png" class="equipment-icon" alt="Dexcom Sensor">
+      Dexcom Sensor
+    </div>
+  </div>
+</div>
 
     <div class="dexcom-arm-area" id="dexcom-arm-area">
       <div class="target-zone"></div>
