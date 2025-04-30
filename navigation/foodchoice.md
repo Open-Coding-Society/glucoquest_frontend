@@ -232,6 +232,10 @@ document.querySelectorAll('.foodchoice-tab').forEach(tab => {
 let totalGL = 0;
 let currentPairNumber = 1;
 
+function roundToTwoDecimals(value) {
+    return Math.round(value * 100) / 100;
+}
+
 async function fetchFoodPair(pairNumber) {
     let response = await fetch(`${pythonURI}/api/foodchoice?number=${pairNumber}`);
     let data = await response.json();
@@ -250,7 +254,7 @@ function displayFoodPair(pair) {
         let foodCard = document.createElement("div");
         foodCard.classList.add("food-card");
         foodCard.setAttribute("data-glycemic", food.glycemic_load);
-        let imgSrc = food.image ? `data:image/png;base64,${food.image}` : 'default-image.jpg';
+        let imgSrc = food.image ? `{{site.baseurl}}/${food.image}` : 'default-image.jpg';
 
         foodCard.innerHTML = `
             <img src="${imgSrc}" alt="${food.food}">
@@ -261,7 +265,7 @@ function displayFoodPair(pair) {
         `;
 
         foodCard.onclick = () => {
-            totalGL += food.glycemic_load;
+            totalGL = roundToTwoDecimals(totalGL + food.glycemic_load);
             document.getElementById("total-gl").textContent = totalGL;
             currentPairNumber++;
             fetchFoodPair(currentPairNumber);
