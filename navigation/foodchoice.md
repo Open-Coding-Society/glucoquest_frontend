@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: tailwind
 permalink: /foodchoice/
 title: Food Choice
 show_reading_time: false
@@ -10,9 +10,18 @@ categories: [Game]
 h1 {
     font-size: 30px;
 }
+
+h2 {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 5px;
+    text-align: center;
+}
+
 h3 {
-    font-size: 24px;
-    color: #000000;
+    font-size: 22px;
+    margin: 5px;
+    /*color: #000000;*/
 }
 .container {
     position: relative;
@@ -76,7 +85,7 @@ h3 {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #66D7D1;
+    background-color:rgb(131, 210, 105)/* #66D7D1*/;
     z-index: 10;
     padding: 20px 40px;
     box-sizing: border-box;
@@ -149,16 +158,19 @@ h3 {
 
 /* Tooltip container */
 .tooltip {
+    display: inline-block;
     position: absolute;
+    max-width: 300px;
+    overflow-wrap: normal;
     bottom: -45px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #333;
+    background-color:rgba(70, 128, 23, 0.71);
     color: #fff;
     padding: 8px 12px;
     border-radius: 6px;
     font-size: 14px;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
     opacity: 0;
     transition: opacity 0.3s;
     z-index: 1;
@@ -187,7 +199,7 @@ h3 {
 
 <div class="container">
 
-<h3 style="text-align: center;">Make the best choices for your body to keep your glucose levels low!</h3>
+<h2 style="text-align: center;">Make the best choices for your body to keep your glucose levels low!</h2>
 
 <button class="help-btn toggle-help-btn">Help</button>
 
