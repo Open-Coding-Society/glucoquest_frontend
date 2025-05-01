@@ -146,6 +146,43 @@ h3 {
 .food-card:first-child {
     margin-right: 300px;
 }
+
+/* Tooltip container */
+.tooltip {
+    position: absolute;
+    bottom: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Arrow */
+.tooltip::after {
+    top: -6px;
+    left: 50%;
+    border-color: transparent transparent #333 transparent;
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+}
+
+/* Show tooltip on hover */
+.food-card:hover .tooltip {
+    opacity: 1;
+}
 </style>
 
 <div class="container">
@@ -186,7 +223,7 @@ h3 {
     <p>Dexcom's continuous glucose monitoring technology tracks glucose (sugar) levels in the blood. This value can change throughout the day based on different factors, including the food you eat! Foods with more carbs will affect blood glucose more. <strong>Glycemic load</strong> is a value that estimates how much a food will cause glucose levels to rise—the higher the value, the greater the climb. It is calculated by multiplying grams of carbohydrate in food by the its glycemic index (a measure of how fast a food will cause blood glucose to increase) and  dividing by 100.</p>
     <br>
     <p class="help-instructions"><strong>Instructions</strong></p>
-    <p>You will be presented with a choice of two foods. When selecting an option, make sure to watch the glycemic load and make choices that will keep it low to manage diabetes!</p>
+    <p>You will be presented with a choice of two foods. Hover over the food to see additional info to help guide your decision. When selecting an option, make sure to watch the glycemic load and make choices that will keep it low to manage diabetes!</p>
     <button class="help-btn toggle-help-btn">OK</button>
 </div>
 
@@ -246,14 +283,15 @@ async function fetchFoodPair(pairNumber) {
     displayFoodPair(data);
 }
 
-function displayFoodPair(pair) {
+async function displayFoodPair(pair) {
     let container = document.getElementById("card-container");
     container.innerHTML = "";
 
-    pair.forEach(food => {
+    pair.forEach(async food => {
         let foodCard = document.createElement("div");
         foodCard.classList.add("food-card");
         foodCard.setAttribute("data-glycemic", food.glycemic_load);
+        foodCard.setAttribute("data-id", food.id);
         let imgSrc = food.image ? `{{site.baseurl}}/${food.image}` : 'default-image.jpg';
 
         foodCard.innerHTML = `
@@ -262,7 +300,22 @@ function displayFoodPair(pair) {
                 <span style="color: black">${food.food}</span>
                 <span style="color: black">Glycemic Load: ${food.glycemic_load}</span>
             </div>
+            <div class="tooltip" id="${food.id}">Loading info...</div>
         `;
+
+        container.appendChild(foodCard);
+
+        try {
+            const response = await fetch(new URL(`${pythonURI}/api/foodchoice/info/${food.id}`), fetchOptions);
+            if (!response.ok) {
+                document.getElementById(`${food.id}`).textContent = "Info not available";
+                throw new Error('Failed to fetch info: ' + response.statusText);
+            }
+            const data = await response.json();
+            document.getElementById(`${food.id}`).textContent = data.info;
+        } catch (error) {
+            console.error(error);
+        }
 
         foodCard.onclick = () => {
             totalGL = roundToTwoDecimals(totalGL + food.glycemic_load);
@@ -270,8 +323,6 @@ function displayFoodPair(pair) {
             currentPairNumber++;
             fetchFoodPair(currentPairNumber);
         };
-
-        container.appendChild(foodCard);
     });
 }
 
