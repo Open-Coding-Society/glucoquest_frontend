@@ -101,12 +101,12 @@ h3 {
     margin-right: auto;
 }
 
-
 .card-container {
     display: flex;
     justify-content: center;
     gap: 20px;
     margin-top: 20px;
+    position: relative;
 }
 .food-card {
     width: 300px;
@@ -196,7 +196,6 @@ h3 {
       <div class="game-panel">
         <div class="card-container" id="card-container"></div>
         <h3 style="text-align: center;">Total Glycemic Load: <span id="total-gl">0</span></h3>
-        <button id="clear-gl" class="btn">Reset Glycemic Load</button>
         </div></div>
 </div>
 
@@ -230,27 +229,8 @@ document.querySelectorAll('.foodchoice-tab').forEach(tab => {
       });
     });
 
-let totalGL = parseFloat(localStorage.getItem('totalGL')) || 0;
-document.addEventListener('DOMContentLoaded', () => {
-    const totalElement = document.getElementById("total-gl");
-    if (totalElement) {
-        totalElement.textContent = totalGL;
-    }
-});
+let totalGL = 0;
 let currentPairNumber = 1;
-
-document.getElementById("clear-gl").addEventListener("click", () => {
-    totalGL = 0;
-    localStorage.removeItem("totalGL");
-
-    const totalElement = document.getElementById("total-gl");
-    if (totalElement) {
-        totalElement.textContent = totalGL;
-    }
-
-    location.reload();
-});
-
 
 function roundToTwoDecimals(value) {
     return Math.round(value * 100) / 100;
@@ -287,9 +267,6 @@ function displayFoodPair(pair) {
         foodCard.onclick = () => {
             totalGL = roundToTwoDecimals(totalGL + food.glycemic_load);
             document.getElementById("total-gl").textContent = totalGL;
-
-            localStorage.setItem('totalGL', totalGL);
-
             currentPairNumber++;
             fetchFoodPair(currentPairNumber);
         };
