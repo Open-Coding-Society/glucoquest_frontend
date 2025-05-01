@@ -409,7 +409,8 @@
             5: "Dexcom delivers precise measurements for reliable decision-making. (8)",
             6: "Dexcom tracks glucose levels without breaks, 24/7. (9)",
             7: "The device is discreetly attached to the body. (6)",
-            8: "Dexcom shares glucose insights with users and healthcare providers. (7)"
+            8: "Dexcom shares glucose insights with users and healthcare providers. (7)",
+            9: "Diseases that result in too much sugar in the blood. (7)"
         };
         const downClues = {
             10: "It monitors high glucose to avoid complications. ",
