@@ -94,6 +94,13 @@ show_reading_time: false
             <p>
                 A mini-challenge where players solve diabetes-related crosswords.
             </p>
+        <!-- Game 5 -->
+        <a href="{{site.baseurl}}/glucoserush/" class="game-box">
+            <img src="{{site.baseurl}}/images/ui-images/x.png" alt="Glucose Rush Placeholder">
+            <h2>Glucose Rush</h2>
+            <p>
+                A game ill fix the description later.
+            </p>
         </a>
     </div>
 </html>

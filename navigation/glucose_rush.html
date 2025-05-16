@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Glucose Rush - Dexcom Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <style>
+        body { margin: 0; background: #f0f4f8; }
+        #game-container { display: flex; justify-content: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            backgroundColor: '#1a5276',
+            physics: {
+                default: 'arcade',
+                arcade: { gravity: { y: 0 }, debug: false }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        const game = new Phaser.Game(config);
+        let cgm, cursors, goodItems, badItems, score = 0, glucoseLevel = 50;
+        let scoreText, glucoseBar, gameOver = false;
+
+        function preload() {
+            // Load assets (replace with your actual images)
+            this.load.image('cgm', 'https://img.icons8.com/color/48/medical-sensor.png');
+            this.load.image('insulin', 'https://img.icons8.com/color/48/medical-syringe.png');
+            this.load.image('veggies', 'https://img.icons8.com/color/48/broccoli.png');
+            this.load.image('soda', 'https://img.icons8.com/color/48/coca-cola.png');
+            this.load.image('donut', 'https://img.icons8.com/color/48/doughnut.png');
+        }
+
+        function create() {
+            // Create CGM sensor (player)
+            cgm = this.physics.add.sprite(400, 550, 'cgm').setScale(1.5);
+            cgm.setCollideWorldBounds(true);
+            cursors = this.input.keyboard.createCursorKeys();
+
+            // Create item groups
+            goodItems = this.physics.add.group();
+            badItems = this.physics.add.group();
+
+            // Spawn items every second
+            this.time.addEvent({
+                delay: 1000,
+                callback: spawnItem,
+                callbackScope: this,
+                loop: true
+            });
+
+            // Score text
+            scoreText = this.add.text(16, 16, 'Score: 0', { 
+                fontSize: '24px', 
+                fill: '#ffffff',
+                fontFamily: 'Arial'
+            });
+
+            // Glucose level bar (Dexcom-style)
+            glucoseBar = this.add.graphics();
+            updateGlucoseBar();
+
+            // Collision handlers
+            this.physics.add.overlap(cgm, goodItems, (sensor, item) => {
+                item.destroy();
+                score += 10;
+                glucoseLevel = Phaser.Math.Clamp(glucoseLevel - 15, 0, 100);
+                scoreText.setText('Score: ' + score);
+                updateGlucoseBar();
+            });
+
+            this.physics.add.overlap(cgm, badItems, (sensor, item) => {
+                item.destroy();
+                glucoseLevel = Phaser.Math.Clamp(glucoseLevel + 20, 0, 100);
+                updateGlucoseBar();
+                if (glucoseLevel >= 100) endGame();
+            });
+        }
+
+        function update() {
+            if (gameOver) return;
+
+            // Player movement
+            if (cursors.left.isDown) {
+                cgm.setVelocityX(-200);
+            } else if (cursors.right.isDown) {
+                cgm.setVelocityX(200);
+            } else {
+                cgm.setVelocityX(0);
+            }
+
+            // Natural glucose decay
+            glucoseLevel = Phaser.Math.Clamp(glucoseLevel - 0.1, 0, 100);
+            updateGlucoseBar();
+        }
+
+        function spawnItem() {
+            const x = Phaser.Math.Between(50, 750);
+            
+            // 60% chance for good items
+            if (Math.random() < 0.6) {
+                const goodItemType = Math.random() < 0.5 ? 'insulin' : 'veggies';
+                goodItems.create(x, 0, goodItemType).setVelocityY(100);
+            } else {
+                const badItemType = Math.random() < 0.5 ? 'soda' : 'donut';
+                badItems.create(x, 0, badItemType).setVelocityY(100);
+            }
+        }
+
+        function updateGlucoseBar() {
+            glucoseBar.clear();
+            
+            // Background
+            glucoseBar.fillStyle(0x333333);
+            glucoseBar.fillRect(300, 30, 200, 20);
+            
+            // Glucose level (Dexcom colors)
+            const color = glucoseLevel > 70 ? 0xff0000 : 0x00ff00; // Red=high, Green=normal
+            glucoseBar.fillStyle(color);
+            glucoseBar.fillRect(300, 30, glucoseLevel * 2, 20);
+            
+            // Text label
+            glucoseBar.fillStyle(0xffffff);
+            glucoseBar.fillText(`Glucose: ${glucoseLevel}`, 300, 25);
+        }
+
+        function endGame() {
+            gameOver = true;
+            this.physics.pause();
+            this.add.text(300, 300, 'GAME OVER\nYour glucose spiked!', { 
+                fontSize: '32px', 
+                fill: '#ff0000',
+                align: 'center'
+            });
+        }
+    </script>
+</body>
+</html>
