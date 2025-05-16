@@ -110,6 +110,42 @@ h3 {
     margin-right: auto;
 }
 
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0,0,0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.popup-content {
+  background: #58A618;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.popup-content p {
+    color: black;
+}
+
+#close-popup {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 .card-container {
     display: flex;
     justify-content: center;
@@ -160,7 +196,7 @@ h3 {
 .tooltip {
     display: inline-block;
     position: absolute;
-    max-width: 300px;
+    max-width: 400px;
     overflow-wrap: normal;
     bottom: -45px;
     left: 50%;
@@ -239,6 +275,12 @@ h3 {
     <button class="help-btn toggle-help-btn">OK</button>
 </div>
 
+<div id="gl-popup" style="display: none;" class="popup-overlay">
+  <div class="popup-content">
+    <div id="gl-info"></div>
+    <button id="close-popup">OK</button>
+  </div>
+</div>
 
 <div class="foodchoice-content active" id="food-choice">
     <div class="game-section">
@@ -289,11 +331,59 @@ async function fetchFoodPair(pairNumber) {
     let response = await fetch(`${pythonURI}/api/foodchoice?number=${pairNumber}`);
     let data = await response.json();
     if (data.length === 0) {
-        document.getElementById("card-container").innerHTML = "<p style='text-align:center;'>Good job making healthy choices!</p>";
+        document.getElementById("card-container").innerHTML = "<h1 style='text-align:center;'>Good job making healthy choices!</h1>";
         return;
     }
     displayFoodPair(data);
 }
+
+// Close popup on button click
+document.getElementById("close-popup").addEventListener("click", () => {
+    document.getElementById("gl-popup").style.display = "none";
+});
+
+function checkFoodChoice(selectedFood, otherFood) {
+    const selectedGL = selectedFood.glycemic_load;
+    const otherGL = otherFood.glycemic_load;
+
+    if (selectedGL < otherGL) {
+        return "Good choice!"
+    } else if (selectedGL > otherGL) {
+        return "There was a better choice for you."
+    } else {
+        return "Both choices were good here";
+    }
+}
+
+async function showGlycemicLoad(pairNumber, selectedFood, otherFood) {
+    try {
+        const response = await fetch(`${pythonURI}/api/foodchoice?number=${pairNumber}`);
+        const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) {
+            alert("No glycemic load data available.");
+            return;
+        }
+
+        const message = checkFoodChoice(selectedFood, otherFood);
+
+        const messageBox = `<h1><strong>${message}</strong></h1>`
+        
+        const glInfo = data.map(food => 
+        `<p><strong>${food.food} Glycemic Index</strong>: ${food.glycemic_load}</p>`
+        ).join("");
+        document.getElementById("gl-info").append(messageBox)
+        document.getElementById("gl-info").innerHTML = messageBox + '\n' + glInfo;
+
+        // Show the popup
+        const popup = document.getElementById("gl-popup");
+        popup.style.display = "flex";
+
+    } catch (error) {
+        console.error("Failed to fetch glycemic load data:", error);
+        alert("Error fetching glycemic load.");
+    }
+}
+
 
 async function displayFoodPair(pair) {
     let container = document.getElementById("card-container");
@@ -310,7 +400,6 @@ async function displayFoodPair(pair) {
             <img src="${imgSrc}" alt="${food.food}">
             <div>
                 <span style="color: black">${food.food}</span>
-                <span style="color: black">Glycemic Load: ${food.glycemic_load}</span>
             </div>
             <div class="tooltip" id="${food.id}">Loading info...</div>
         `;
@@ -332,6 +421,11 @@ async function displayFoodPair(pair) {
         foodCard.onclick = () => {
             totalGL = roundToTwoDecimals(totalGL + food.glycemic_load);
             document.getElementById("total-gl").textContent = totalGL;
+
+            const selectedFood = food;
+            const otherFood = pair.find(f => f !== food);
+            const message = checkFoodChoice(selectedFood, otherFood);
+            showGlycemicLoad(currentPairNumber, selectedFood, otherFood);
             currentPairNumber++;
             fetchFoodPair(currentPairNumber);
         };
