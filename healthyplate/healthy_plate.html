@@ -119,6 +119,18 @@
         #restart-btn:hover {
             background: #45a049;
         }
+        #powerup-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 16px;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 100;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -126,6 +138,7 @@
         <div id="timer">60</div>
         <div id="score">0</div>
         <div id="level">Level: 1</div>
+        <div id="powerup-indicator"></div>
         <div id="game-over">
             <h2>Game Over!</h2>
             <p id="final-score">Score: 0</p>
@@ -160,7 +173,7 @@
         };
 
         const game = new Phaser.Game(config);
-        let plate, foods, cursors;
+        let plate, foods, cursors, powerUps;
         let gameTime = 60;
         let score = 0;
         let level = 1;
@@ -169,6 +182,13 @@
         let spawnRate = 800;
         let foodVelocity = { min: 50, max: 100 };
         let unhealthyRatio = 0.3;
+        
+        // Power-up system variables
+        let activePowerUp = null;
+        let powerUpTimer = null;
+        let scoreMultiplier = 1;
+        let magnetActive = false;
+        let shieldActive = false;
         
         const foodGroups = {
             'vegetables': { target: 3, caught: 0, icon: 'broccoli', color: '#4CAF50', points: 10 },
@@ -185,7 +205,36 @@
             { icon: 'fries', points: -18 }
         ];
 
+        // Power-up definitions
+        const powerUpTypes = {
+            'multiplier': { 
+                icon: 'star', 
+                color: '#FFD700', 
+                duration: 10000, 
+                effect: '2x Score Multiplier' 
+            },
+            'timefreeze': { 
+                icon: 'clock', 
+                color: '#00BCD4', 
+                duration: 5000, 
+                effect: 'Time Freeze' 
+            },
+            'magnet': { 
+                icon: 'magnet', 
+                color: '#9C27B0', 
+                duration: 10000, 
+                effect: 'Food Magnet' 
+            },
+            'shield': { 
+                icon: 'shield', 
+                color: '#3F51B5', 
+                duration: 15000, 
+                effect: 'Junk Shield' 
+            }
+        };
+
         function preload() {
+            // Food images
             this.load.image('broccoli', 'broccoli.png');
             this.load.image('apple', 'apple.png');
             this.load.image('bread', 'bread.png');
@@ -195,7 +244,11 @@
             this.load.image('cheese', 'cheese.png');
             this.load.image('burger', 'burger.png');
             this.load.image('fries', 'fries.png');
-
+            // Power-up images
+            this.load.image('star', 'star.png');
+            this.load.image('clock', 'clock.png');
+            this.load.image('magnet', 'magnet.png');
+            this.load.image('shield', 'shield.png');
         }
 
         function create() {
@@ -213,6 +266,9 @@
 
             // Food group with physics
             foods = this.physics.add.group();
+            
+            // Power-ups group
+            powerUps = this.physics.add.group();
 
             // Controls
             cursors = this.input.keyboard.createCursorKeys();
@@ -233,6 +289,14 @@
                 callbackScope: this,
                 loop: true
             });
+            
+            // Start spawning power-ups (every 15-25 seconds)
+            this.time.addEvent({
+                delay: Phaser.Math.Between(15000, 25000),
+                callback: spawnPowerUp,
+                callbackScope: this,
+                loop: true
+            });
 
             // Start timer
             timer = this.time.addEvent({
@@ -242,7 +306,7 @@
                 loop: true
             });
 
-            // Collision handling
+            // Collision handling - Food
             this.physics.add.collider(plate, foods, (plate, food) => {
                 if (!gameActive) return;
                 
@@ -253,9 +317,26 @@
                 if (healthyGroup) {
                     handleHealthyCatch(this, food, healthyGroup[1].points);
                 } else if (unhealthyItem) {
-                    handleUnhealthyCatch(this, unhealthyItem.points);
+                    if (!shieldActive) {
+                        handleUnhealthyCatch(this, unhealthyItem.points);
+                    } else {
+                        // Shield protects against unhealthy food
+                        this.add.text(food.x, food.y - 30, 'BLOCKED!', {
+                            fontSize: '20px',
+                            fill: '#3F51B5',
+                            fontStyle: 'bold'
+                        }).setOrigin(0.5);
+                    }
                 }
                 food.destroy();
+            });
+            
+            // Collision handling - Power-ups
+            this.physics.add.collider(plate, powerUps, (plate, powerUp) => {
+                if (!gameActive) return;
+                
+                activatePowerUp(this, powerUp.texture.key);
+                powerUp.destroy();
             });
             
             // Set world bounds
@@ -302,6 +383,16 @@
             // Add to foods group
             foods.add(food);
             
+            // Apply magnet effect if active
+            if (magnetActive) {
+                this.tweens.add({
+                    targets: food,
+                    x: plate.x,
+                    duration: 1000,
+                    ease: 'Power2'
+                });
+            }
+            
             // Remove if falls off bottom
             food.body.onWorldBounds = true;
             this.physics.world.on('worldbounds', (body) => {
@@ -310,14 +401,146 @@
                 }
             });
         }
+        
+        function spawnPowerUp() {
+            if (!gameActive || activePowerUp) return;
+            
+            const powerUpType = Phaser.Math.RND.pick(Object.keys(powerUpTypes));
+            const powerUp = this.physics.add.image(
+                Phaser.Math.Between(100, 700),
+                -50,
+                powerUpType
+            ).setScale(0.6);
+            
+            // Make power-up sparkle
+            this.tweens.add({
+                targets: powerUp,
+                angle: 360,
+                duration: 2000,
+                repeat: -1
+            });
+            
+            // Set physics properties
+            powerUp.setVelocity(
+                Phaser.Math.Between(-30, 30), 
+                Phaser.Math.Between(50, 80)
+            );
+            powerUp.setBounce(0.5);
+            powerUp.setCollideWorldBounds(true);
+            
+            // Add to power-ups group
+            powerUps.add(powerUp);
+            
+            // Remove if falls off bottom
+            powerUp.body.onWorldBounds = true;
+            this.physics.world.on('worldbounds', (body) => {
+                if (body.gameObject === powerUp && body.blocked.down) {
+                    powerUp.destroy();
+                }
+            });
+        }
+        
+        function activatePowerUp(scene, powerUpType) {
+            // Clear any existing power-up
+            if (activePowerUp) {
+                clearPowerUp(scene);
+            }
+            
+            const powerUp = powerUpTypes[powerUpType];
+            activePowerUp = powerUpType;
+            
+            // Show power-up indicator
+            const indicator = document.getElementById('powerup-indicator');
+            indicator.textContent = `ACTIVE: ${powerUp.effect}`;
+            indicator.style.display = 'block';
+            indicator.style.backgroundColor = powerUp.color;
+            
+            // Apply power-up effect
+            switch (powerUpType) {
+                case 'multiplier':
+                    scoreMultiplier = 2;
+                    scene.cameras.main.flash(300, 255, 215, 0, false);
+                    break;
+                    
+                case 'timefreeze':
+                    timer.paused = true;
+                    scene.cameras.main.flash(300, 0, 188, 212, false);
+                    break;
+                    
+                case 'magnet':
+                    magnetActive = true;
+                    scene.cameras.main.flash(300, 156, 39, 176, false);
+                    break;
+                    
+                case 'shield':
+                    shieldActive = true;
+                    plate.setFillStyle(0x3F51B5);
+                    scene.cameras.main.flash(300, 63, 81, 181, false);
+                    break;
+            }
+            
+            // Set power-up timer
+            powerUpTimer = scene.time.delayedCall(powerUp.duration, () => {
+                clearPowerUp(scene);
+            });
+        }
+        
+        function clearPowerUp(scene) {
+            if (!activePowerUp) return;
+            
+            // Remove power-up effects
+            switch (activePowerUp) {
+                case 'multiplier':
+                    scoreMultiplier = 1;
+                    break;
+                    
+                case 'timefreeze':
+                    timer.paused = false;
+                    break;
+                    
+                case 'magnet':
+                    magnetActive = false;
+                    break;
+                    
+                case 'shield':
+                    shieldActive = false;
+                    plate.setFillStyle(0xFFFFFF);
+                    break;
+            }
+            
+            // Hide indicator
+            document.getElementById('powerup-indicator').style.display = 'none';
+            
+            // Show power-up expired message
+            scene.add.text(plate.x, plate.y - 50, `${powerUpTypes[activePowerUp].effect} Ended`, {
+                fontSize: '20px',
+                fill: powerUpTypes[activePowerUp].color,
+                fontStyle: 'bold'
+            }).setOrigin(0.5);
+            
+            activePowerUp = null;
+            if (powerUpTimer) {
+                powerUpTimer.destroy();
+                powerUpTimer = null;
+            }
+        }
 
         function handleHealthyCatch(scene, food, points) {
             // Find which food group this belongs to
             const group = Object.entries(foodGroups).find(([_,g]) => g.icon === food.texture.key)[0];
             foodGroups[group].caught++;
             
-            // Add points
-            addScore(points);
+            // Add points with multiplier
+            addScore(points * scoreMultiplier);
+            
+            // Show multiplier if active
+            if (scoreMultiplier > 1) {
+                scene.add.text(food.x, food.y - 30, `x${scoreMultiplier}!`, {
+                    fontSize: '20px',
+                    fill: '#FFD700',
+                    fontStyle: 'bold'
+                }).setOrigin(0.5);
+            }
             
             // Squish and fade animation
             scene.tweens.add({
@@ -365,6 +588,15 @@
                 plate.x = Phaser.Math.Clamp(plate.x - 10, 90, 710);
             } else if (cursors.right.isDown) {
                 plate.x = Phaser.Math.Clamp(plate.x + 10, 90, 710);
+            }
+            
+            // Magnet effect - attract nearby foods
+            if (magnetActive) {
+                foods.getChildren().forEach(food => {
+                    if (Phaser.Math.Distance.Between(food.x, food.y, plate.x, plate.y) < 200) {
+                        this.physics.moveToObject(food, plate, 200);
+                    }
+                });
             }
         }
 
@@ -492,10 +724,24 @@
             // Stop all game events
             scene.time.removeAllEvents();
             
-            // Fade out all foods
+            // Clear any active power-up
+            if (activePowerUp) {
+                clearPowerUp(scene);
+            }
+            
+            // Fade out all foods and power-ups
             foods.getChildren().forEach(food => {
                 scene.tweens.add({
                     targets: food,
+                    alpha: 0,
+                    duration: 1000,
+                    ease: 'Power2'
+                });
+            });
+            
+            powerUps.getChildren().forEach(powerUp => {
+                scene.tweens.add({
+                    targets: powerUp,
                     alpha: 0,
                     duration: 1000,
                     ease: 'Power2'
@@ -513,19 +759,32 @@
             unhealthyRatio = 0.3;
             gameActive = true;
             
+            // Reset power-up system
+            if (activePowerUp) {
+                clearPowerUp(scene);
+            }
+            scoreMultiplier = 1;
+            magnetActive = false;
+            shieldActive = false;
+            
             // Reset UI
             document.getElementById('timer').textContent = gameTime;
             document.getElementById('timer').style.color = 'white';
             document.getElementById('score').textContent = score;
             document.getElementById('level').textContent = `Level: ${level}`;
             document.getElementById('game-over').style.display = 'none';
+            document.getElementById('powerup-indicator').style.display = 'none';
+            
+            // Reset plate appearance
+            plate.setFillStyle(0xFFFFFF);
             
             // Reset food groups
             Object.values(foodGroups).forEach(g => g.caught = 0);
             updateProgressUI();
             
-            // Clear all foods
+            // Clear all foods and power-ups
             foods.clear(true, true);
+            powerUps.clear(true, true);
             
             // Restart timer
             timer = scene.time.addEvent({
@@ -539,6 +798,14 @@
             scene.time.addEvent({
                 delay: spawnRate,
                 callback: spawnFood,
+                callbackScope: scene,
+                loop: true
+            });
+            
+            // Restart power-up spawning
+            scene.time.addEvent({
+                delay: Phaser.Math.Between(15000, 25000),
+                callback: spawnPowerUp,
                 callbackScope: scene,
                 loop: true
             });
