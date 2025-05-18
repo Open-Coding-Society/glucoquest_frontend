@@ -72,7 +72,7 @@
             physics: {
                 default: 'arcade',
                 arcade: {
-                    gravity: { y: 150 },
+                    gravity: { y: 200 }, // Increased gravity for faster falling
                     debug: false
                 }
             },
@@ -90,10 +90,9 @@
         const game = new Phaser.Game(config);
         let plate, cursors, foods, score = 0, health = 100;
         let scoreText, healthBar, healthText, gameOver = false;
-        let lastFoodTime = 0;
 
         function preload() {
-            // Load assets from CDN (replace with your own later)
+            // Temporary CDN assets - replace with your own
             this.load.image('plate', 'https://cdn-icons-png.flaticon.com/512/3081/3081985.png');
             this.load.image('broccoli', 'https://cdn-icons-png.flaticon.com/512/2834/2834973.png');
             this.load.image('salad', 'https://cdn-icons-png.flaticon.com/512/1149/1149168.png');
@@ -101,19 +100,18 @@
             this.load.image('donut', 'https://cdn-icons-png.flaticon.com/512/3048/3048900.png');
             this.load.image('soda', 'https://cdn-icons-png.flaticon.com/512/3048/3048902.png');
             this.load.image('burger', 'https://cdn-icons-png.flaticon.com/512/590/590477.png');
-            
-            // Preload sounds (optional)
-            // this.load.audio('catch', 'assets/sounds/catch.wav');
         }
 
         function create() {
-            // Create plate (player)
-            plate = this.physics.add.sprite(400, 500, 'plate')
-                .setScale(0.8)
+            // Create plate (player) - made smaller
+            plate = this.physics.add.sprite(400, 550, 'plate')
+                .setScale(0.5) // Smaller scale
                 .setCollideWorldBounds(true)
-                .setDepth(1);
+                .setDepth(1)
+                .setSize(100, 30, true) // Adjust collision box
+                .setOffset(20, 20);
 
-            // Food group
+            // Food group with physics
             foods = this.physics.add.group();
 
             // Controls
@@ -143,49 +141,67 @@
                 strokeThickness: 2
             }).setOrigin(0.5).setDepth(3);
 
-            // Game border
-            this.add.rectangle(400, 300, 780, 580, 0x000000, 0)
-                .setStrokeStyle(4, 0xffffff);
-
             // Start food spawn timer
             this.time.addEvent({
-                delay: 1000,
+                delay: 800, // Faster spawn rate
                 callback: spawnFood,
                 callbackScope: this,
                 loop: true
             });
+
+            // Collision detection
+            this.physics.add.overlap(plate, foods, (plate, food) => {
+                if (['broccoli', 'salad', 'fish'].includes(food.texture.key)) {
+                    score++;
+                    scoreText.setText(`Healthy Choices: ${score}`);
+                    health = Math.min(health + 5, 100);
+                } else {
+                    health -= 15;
+                    if (health <= 0) endGame();
+                }
+                food.destroy();
+                updateHealthBar();
+            });
         }
 
-        function update(time) {
+        function update() {
             if (gameOver) return;
 
-            // Keyboard controls (alternative to mouse)
+            // Keyboard controls
             if (cursors.left.isDown) {
-                plate.setVelocityX(-300);
+                plate.setVelocityX(-400); // Faster movement
             } else if (cursors.right.isDown) {
-                plate.setVelocityX(300);
+                plate.setVelocityX(400);
             } else {
                 plate.setVelocityX(0);
             }
+        }
 
-            // Spawn extra foods occasionally
-            if (time > lastFoodTime + 500) {
-                if (Math.random() > 0.7) {
-                    spawnFood();
-                }
-                lastFoodTime = time;
-            }
+        function spawnFood() {
+            if (gameOver) return;
 
-            // Update health bar color
-            const healthColor = Phaser.Display.Color.Interpolate.ColorWithColor(
+            const x = Phaser.Math.Between(50, 750);
+            const isHealthy = Math.random() > 0.4;
+            const foodType = isHealthy ? 
+                Phaser.Math.RND.pick(['broccoli', 'salad', 'fish']) : 
+                Phaser.Math.RND.pick(['donut', 'soda', 'burger']);
+
+            const food = foods.create(x, -50, foodType)
+                .setScale(0.5) // Smaller food items
+                .setVelocity(Phaser.Math.Between(-50, 50), 0)
+                .setBounce(0.3)
+                .setCollideWorldBounds(true);
+        }
+
+        function updateHealthBar() {
+            healthBar.width = health * 2;
+            healthBar.fillColor = Phaser.Display.Color.Interpolate.ColorWithColor(
                 Phaser.Display.Color.ValueToColor(0x00ff00),
                 Phaser.Display.Color.ValueToColor(0xff0000),
                 100,
                 100 - health
             ).color;
-            healthBar.fillColor = healthColor;
 
-            // Update health text
             if (health > 70) {
                 healthText.setText('Glucose Stable').setColor('#ffffff');
             } else if (health > 30) {
@@ -195,46 +211,9 @@
             }
         }
 
-        function spawnFood() {
-            if (gameOver) return;
-
-            const x = Phaser.Math.Between(100, 700);
-            const isHealthy = Math.random() > 0.4;
-            let foodType;
-            
-            if (isHealthy) {
-                foodType = Phaser.Math.RND.pick(['broccoli', 'salad', 'fish']);
-            } else {
-                foodType = Phaser.Math.RND.pick(['donut', 'soda', 'burger']);
-            }
-
-            const food = foods.create(x, -50, foodType)
-                .setScale(0.7)
-                .setVelocity(Phaser.Math.Between(-50, 50), 0);
-            
-            // Collision handler
-            this.physics.add.overlap(plate, food, (plate, food) => {
-                if (['broccoli', 'salad', 'fish'].includes(food.texture.key)) {
-                    // Healthy food caught
-                    score++;
-                    scoreText.setText(`Healthy Choices: ${score}`);
-                    health = Math.min(health + 5, 100);
-                    // this.sound.play('catch');
-                } else {
-                    // Unhealthy food caught
-                    health -= 15;
-                    if (health <= 0) {
-                        endGame();
-                    }
-                }
-                food.destroy();
-            });
-        }
-
         function endGame() {
             gameOver = true;
             this.physics.pause();
-            foods.clear(true, true);
             
             const gameOverText = this.add.text(400, 300, 'Game Over\nYour glucose levels spiked!', {
                 fontSize: '32px',
