@@ -5,30 +5,25 @@ permalink: /glucoserush/
 comment: true
 ---
 
-# Play Glucose Rush
+# Healthy Plate Game
 
-<div class="game-embed-container">
-  <iframe 
-    src="https://vibha1019.github.io/dexcom_frontend/navigation/glucose_rush.html" 
-    allowfullscreen
-    class="game-iframe">
-  </iframe>
-  <a href="https://vibha1019.github.io/dexcom_frontend/navigation/glucose_rush.html" 
-     target="_blank" 
-     class="fullscreen-link">
-    🚀 Open in Fullscreen
+<div class="game-container">
+  <iframe src="{{ site.baseurl }}/healthyplate/healthy_plate.html" class="game-iframe" allowfullscreen></iframe>
+  <a href="{{ site.baseurl }}/healthyplate/healthy_plate.html" target="_blank" class="fullscreen-link">
+    ⛶ Open Fullscreen
   </a>
 </div>
 
 <style>
-.game-embed-container {
+.game-container {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 75%; /* 4:3 aspect ratio */
   height: 0;
   overflow: hidden;
   margin: 2rem 0;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  background: #1a5276;
 }
 
 .game-iframe {
@@ -42,17 +37,20 @@ comment: true
 
 .fullscreen-link {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  padding: 8px 12px;
-  background: #0078D7;
+  bottom: 15px;
+  right: 15px;
+  padding: 8px 15px;
+  background: rgba(0, 120, 215, 0.8);
   color: white;
-  border-radius: 4px;
+  border-radius: 20px;
   text-decoration: none;
+  font-weight: bold;
   z-index: 10;
+  transition: all 0.3s;
 }
 
 .fullscreen-link:hover {
-  background: #0063b8;
+  background: rgba(0, 120, 215, 1);
+  transform: scale(1.05);
 }
 </style>
