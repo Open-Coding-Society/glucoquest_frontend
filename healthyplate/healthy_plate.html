@@ -12,18 +12,21 @@
             overflow: hidden; 
             background: #1a5276;
             display: flex;
+            font-family: Arial, sans-serif;
         }
         #game-container {
             flex: 1;
             height: 100vh;
+            position: relative;
         }
         #progress-container {
             width: 250px;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.5);
             padding: 20px;
             box-sizing: border-box;
             overflow-y: auto;
+            color: white;
         }
         .progress-group {
             margin-bottom: 20px;
@@ -33,26 +36,102 @@
             background: #333;
             margin: 5px 0;
             position: relative;
+            border-radius: 8px;
+            overflow: hidden;
         }
         .progress-fill {
             height: 100%;
             position: absolute;
             left: 0;
             top: 0;
+            transition: width 0.4s ease-out;
         }
         .progress-label {
             color: white;
             font-weight: bold;
             margin-bottom: 5px;
+            font-size: 14px;
         }
         .progress-counter {
             color: white;
             text-align: right;
+            font-size: 12px;
+        }
+        #timer {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        #level {
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            display: none;
+            z-index: 200;
+        }
+        #restart-btn {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #restart-btn:hover {
+            background: #45a049;
         }
     </style>
 </head>
 <body>
-    <div id="game-container"></div>
+    <div id="game-container">
+        <div id="timer">60</div>
+        <div id="score">0</div>
+        <div id="level">Level: 1</div>
+        <div id="game-over">
+            <h2>Game Over!</h2>
+            <p id="final-score">Score: 0</p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
     <div id="progress-container"></div>
 
     <script>
@@ -65,14 +144,8 @@
             physics: {
                 default: 'arcade',
                 arcade: { 
-                    gravity: { y: 200 }, // Increased gravity for faster falling
-                    debug: false,
-                    checkCollision: {
-                        left: true,
-                        right: true,
-                        up: true,
-                        down: true
-                    }
+                    gravity: { y: 200 },
+                    debug: false
                 }
             },
             scene: {
@@ -88,14 +161,30 @@
 
         const game = new Phaser.Game(config);
         let plate, foods, cursors;
+        let gameTime = 60;
+        let score = 0;
+        let level = 1;
+        let timer;
+        let gameActive = true;
+        let spawnRate = 800;
+        let foodVelocity = { min: 50, max: 100 };
+        let unhealthyRatio = 0.3;
+        
         const foodGroups = {
-            'vegetables': { target: 3, caught: 0, icon: 'broccoli', color: '#4CAF50' },
-            'fruits':     { target: 2, caught: 0, icon: 'apple', color: '#FF5722' },
-            'proteins':   { target: 2, caught: 0, icon: 'fish', color: '#2196F3' },
-            'grains':     { target: 2, caught: 0, icon: 'bread', color: '#FFEB3B' },
-            'dairy':      { target: 1, caught: 0, icon: 'cheese', color: '#FFFFFF' }
+            'vegetables': { target: 3, caught: 0, icon: 'broccoli', color: '#4CAF50', points: 10 },
+            'fruits':     { target: 2, caught: 0, icon: 'apple', color: '#FF5722', points: 8 },
+            'proteins':   { target: 2, caught: 0, icon: 'fish', color: '#2196F3', points: 12 },
+            'grains':     { target: 2, caught: 0, icon: 'bread', color: '#FFEB3B', points: 6 },
+            'dairy':      { target: 1, caught: 0, icon: 'cheese', color: '#FFFFFF', points: 5 }
         };
 
+        const unhealthyFoods = [
+            { icon: 'donut', points: -15 },
+            { icon: 'soda', points: -20 },
+            { icon: 'burger', points: -25 },
+            { icon: 'fries', points: -18 }
+        ];
+        
         function preload() {
             this.load.image('broccoli', 'broccoli.png');
             this.load.image('apple', 'apple.png');
@@ -104,10 +193,12 @@
             this.load.image('soda', 'soda.png');
             this.load.image('fish', 'fish.png');
             this.load.image('cheese', 'cheese.png');
+            this.load.image('burger', 'burger.png');
+
         }
 
         function create() {
-            // Create plate as rounded rectangle
+            // Create plate
             plate = this.add.rectangle(400, 550, 180, 30, 0xffffff, 1)
                 .setStrokeStyle(3, 0x333333)
                 .setOrigin(0.5);
@@ -125,41 +216,59 @@
             // Controls
             cursors = this.input.keyboard.createCursorKeys();
             this.input.on('pointermove', (pointer) => {
-                // Adjust pointer x coordinate to account for the game container offset
+                if (!gameActive) return;
                 const gameBounds = this.scale.canvasBounds;
                 const relativeX = (pointer.x - gameBounds.x) / (gameBounds.width / 800);
                 plate.x = Phaser.Math.Clamp(relativeX, 90, 710);
             });
 
-            // Create progress UI in the separate container
+            // Create progress UI
             createProgressUI();
 
-            // Spawn foods only in the game area (not over the progress container)
+            // Start spawning foods
             this.time.addEvent({
-                delay: 800,
+                delay: spawnRate,
                 callback: spawnFood,
+                callbackScope: this,
+                loop: true
+            });
+
+            // Start timer
+            timer = this.time.addEvent({
+                delay: 1000,
+                callback: updateTimer,
                 callbackScope: this,
                 loop: true
             });
 
             // Collision handling
             this.physics.add.collider(plate, foods, (plate, food) => {
-                const foodType = food.texture.key;
-                const isHealthy = Object.values(foodGroups).some(g => g.icon === foodType);
+                if (!gameActive) return;
                 
-                if (isHealthy) {
-                    handleHealthyCatch(this, food);
-                } else {
-                    handleUnhealthyCatch(this);
+                const foodType = food.texture.key;
+                const healthyGroup = Object.entries(foodGroups).find(([_,g]) => g.icon === foodType);
+                const unhealthyItem = unhealthyFoods.find(f => f.icon === foodType);
+                
+                if (healthyGroup) {
+                    handleHealthyCatch(this, food, healthyGroup[1].points);
+                } else if (unhealthyItem) {
+                    handleUnhealthyCatch(this, unhealthyItem.points);
                 }
                 food.destroy();
             });
             
-            // Set world bounds to prevent foods from going into the progress area
+            // Set world bounds
             this.physics.world.setBounds(0, 0, 800, 600);
+            
+            // Setup restart button
+            document.getElementById('restart-btn').addEventListener('click', () => {
+                resetGame(this);
+            });
         }
 
         function spawnFood() {
+            if (!gameActive) return;
+            
             const neededGroups = Object.entries(foodGroups)
                 .filter(([_,g]) => g.caught < g.target)
                 .map(([name]) => name);
@@ -168,22 +277,23 @@
                 ? Phaser.Math.RND.pick(neededGroups)
                 : Phaser.Math.RND.pick(Object.keys(foodGroups));
             
-            const isHealthy = Math.random() > 0.3;
+            const isHealthy = Math.random() > unhealthyRatio;
             const foodType = isHealthy 
                 ? foodGroups[groupToSpawn].icon 
-                : Phaser.Math.RND.pick(['donut', 'soda']);
+                : Phaser.Math.RND.pick(unhealthyFoods).icon;
             
-            // Create food with physics - spawn only in the game area (left of 750)
+            // Create food with physics
             const food = this.physics.add.image(
                 Phaser.Math.Between(100, 700),
                 -50,
                 foodType
             ).setScale(0.7);
             
-            // Set physics properties
+            // Set physics properties with increasing difficulty
+            const velocityY = Phaser.Math.Between(foodVelocity.min, foodVelocity.max);
             food.setVelocity(
                 Phaser.Math.Between(-50, 50), 
-                Phaser.Math.Between(50, 100)
+                velocityY
             );
             food.setBounce(0.3);
             food.setCollideWorldBounds(true);
@@ -200,10 +310,13 @@
             });
         }
 
-        function handleHealthyCatch(scene, food) {
+        function handleHealthyCatch(scene, food, points) {
             // Find which food group this belongs to
             const group = Object.entries(foodGroups).find(([_,g]) => g.icon === food.texture.key)[0];
             foodGroups[group].caught++;
+            
+            // Add points
+            addScore(points);
             
             // Squish and fade animation
             scene.tweens.add({
@@ -217,9 +330,15 @@
             
             // Update progress
             updateProgressUI();
+            
+            // Check if all groups are complete
+            const allComplete = Object.values(foodGroups).every(g => g.caught >= g.target);
+            if (allComplete) {
+                levelUp(scene);
+            }
         }
 
-        function handleUnhealthyCatch(scene) {
+        function handleUnhealthyCatch(scene, points) {
             // Plate shake animation
             scene.tweens.add({
                 targets: plate,
@@ -229,9 +348,17 @@
                 repeat: 2,
                 ease: 'Sine.easeInOut'
             });
+            
+            // Deduct points
+            addScore(points);
+            
+            // Flash red to indicate damage
+            scene.cameras.main.flash(200, 255, 0, 0, false);
         }
 
         function update() {
+            if (!gameActive) return;
+            
             // Keyboard controls
             if (cursors.left.isDown) {
                 plate.x = Phaser.Math.Clamp(plate.x - 10, 90, 710);
@@ -242,7 +369,7 @@
 
         function createProgressUI() {
             const container = document.getElementById('progress-container');
-            container.innerHTML = '';
+            container.innerHTML = '<h3 style="margin-top:0;color:#4CAF50">Nutrition Goals</h3>';
             
             Object.entries(foodGroups).forEach(([name, group]) => {
                 const groupEl = document.createElement('div');
@@ -275,48 +402,145 @@
         }
 
         function updateProgressUI() {
-            let allComplete = true;
-            
             Object.entries(foodGroups).forEach(([name, group]) => {
                 const progress = Math.min(group.caught / group.target, 1);
                 const widthPercent = progress * 100;
                 
-                // Animate progress bar
                 group.fillEl.style.width = `${widthPercent}%`;
-                
-                // Update counter
                 group.counterEl.textContent = `${group.caught}/${group.target}`;
-                
-                if (group.caught < group.target) allComplete = false;
+            });
+        }
+
+        function updateTimer() {
+            if (!gameActive) return;
+            
+            gameTime--;
+            document.getElementById('timer').textContent = gameTime;
+            
+            if (gameTime <= 10) {
+                document.getElementById('timer').style.color = '#ff5555';
+            }
+            
+            if (gameTime <= 0) {
+                endGame(this);
+            }
+        }
+
+        function addScore(points) {
+            score += points;
+            if (score < 0) score = 0;
+            document.getElementById('score').textContent = score;
+            
+            // Score animation
+            const scoreElement = document.getElementById('score');
+            scoreElement.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                scoreElement.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function levelUp(scene) {
+            level++;
+            document.getElementById('level').textContent = `Level: ${level}`;
+            
+            // Increase difficulty
+            spawnRate = Math.max(300, spawnRate - 100);
+            foodVelocity.min += 20;
+            foodVelocity.max += 20;
+            unhealthyRatio = Math.min(0.5, unhealthyRatio + 0.05);
+            
+            // Reset food groups for next level
+            Object.values(foodGroups).forEach(g => g.caught = 0);
+            updateProgressUI();
+            
+            // Add bonus points for completing level
+            const bonus = level * 50;
+            addScore(bonus);
+            
+            // Celebration effects
+            scene.cameras.main.shake(400, 0.02);
+            
+            const congrats = scene.add.text(400, 300, `Level ${level} Complete!\n+${bonus} Bonus`, {
+                fontSize: '32px',
+                fill: '#4CAF50',
+                fontStyle: 'bold',
+                stroke: '#000000',
+                strokeThickness: 5,
+                align: 'center'
+            }).setOrigin(0.5).setAlpha(0);
+            
+            scene.tweens.add({
+                targets: congrats,
+                alpha: 1,
+                scale: 1.2,
+                duration: 800,
+                ease: 'Elastic.out',
+                onComplete: () => {
+                    scene.time.delayedCall(1500, () => {
+                        congrats.destroy();
+                    });
+                }
+            });
+        }
+
+        function endGame(scene) {
+            gameActive = false;
+            document.getElementById('game-over').style.display = 'block';
+            document.getElementById('final-score').textContent = `Score: ${score}`;
+            
+            // Stop all game events
+            scene.time.removeAllEvents();
+            
+            // Fade out all foods
+            foods.getChildren().forEach(food => {
+                scene.tweens.add({
+                    targets: food,
+                    alpha: 0,
+                    duration: 1000,
+                    ease: 'Power2'
+                });
+            });
+        }
+
+        function resetGame(scene) {
+            // Reset game state
+            gameTime = 60;
+            score = 0;
+            level = 1;
+            spawnRate = 800;
+            foodVelocity = { min: 50, max: 100 };
+            unhealthyRatio = 0.3;
+            gameActive = true;
+            
+            // Reset UI
+            document.getElementById('timer').textContent = gameTime;
+            document.getElementById('timer').style.color = 'white';
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = `Level: ${level}`;
+            document.getElementById('game-over').style.display = 'none';
+            
+            // Reset food groups
+            Object.values(foodGroups).forEach(g => g.caught = 0);
+            updateProgressUI();
+            
+            // Clear all foods
+            foods.clear(true, true);
+            
+            // Restart timer
+            timer = scene.time.addEvent({
+                delay: 1000,
+                callback: updateTimer,
+                callbackScope: scene,
+                loop: true
             });
             
-            if (allComplete) {
-                // Celebration effects
-                game.scene.scenes[0].cameras.main.shake(400, 0.02);
-                
-                const congrats = game.scene.scenes[0].add.text(400, 300, 'Perfectly Balanced!', {
-                    fontSize: '42px',
-                    fill: '#4CAF50',
-                    fontStyle: 'bold',
-                    stroke: '#000000',
-                    strokeThickness: 5
-                }).setOrigin(0.5).setAlpha(0);
-                
-                game.scene.scenes[0].tweens.add({
-                    targets: congrats,
-                    alpha: 1,
-                    scale: 1.2,
-                    duration: 800,
-                    ease: 'Elastic.out'
-                });
-                
-                // Reset after delay
-                game.scene.scenes[0].time.delayedCall(2500, () => {
-                    Object.values(foodGroups).forEach(g => g.caught = 0);
-                    updateProgressUI();
-                    congrats.destroy();
-                });
-            }
+            // Restart food spawning
+            scene.time.addEvent({
+                delay: spawnRate,
+                callback: spawnFood,
+                callbackScope: scene,
+                loop: true
+            });
         }
     </script>
 </body>
