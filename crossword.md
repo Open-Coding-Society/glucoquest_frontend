@@ -311,10 +311,6 @@
         <p>Beyond providing current glucose readings, Dexcom's systems display <strong>glucose patterns</strong> over hours and days, helping users identify trends that may require attention. The system also includes customizable alerts that notify users of dangerous highs (<strong>hyperglycemia</strong>) or lows (<strong>hypoglycemia</strong>) promptly. These alerts enable users to take immediate action, reducing the risk of severe complications.</p>
         <h3 style="color: var(--dexcom-blue); margin-top: 20px;">Enhancing Diabetes Management</h3>
         <p>By offering continuous, accurate, and real-time glucose data, Dexcom's CGM systems empower individuals with diabetes to manage their condition more effectively. The integration of wearable sensor technology, trend analysis, and alert systems contributes to improved glycemic control and reduces the risk of complications associated with diabetes. Furthermore, the data collected can be shared with healthcare providers, facilitating more informed treatment decisions and personalized care plans.</p>
-        <p>Article Source: 
-            <ul>
-            <li><a href="https://pubmed.ncbi.nlm.nih.gov/35157505/">Accuracy and Safety of Dexcom G7 Continuous Glucose Monitoring in Adults with Diabetes
-            <li><a href="https://provider.dexcom.com/accuracy-and-safety-dexcom-g7-continuous-glucose-monitoring-adults-diabetes">Dexcom: Accuracy and Safety of the Dexcom G7 Continuous Glucose Monitoring in Adults with Diabetes
     </div>
     <div class="game-container">
         <div class="puzzle-section">
