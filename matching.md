@@ -124,28 +124,22 @@
       <p>Avoid wrong matches - they add 5 seconds to your time!</p>
       <button id="startButton">Start Game</button>
     </div>
-
     <!-- Game Screen -->
     <div class="game-screen hidden" id="gameScreen">
       <h1>Dexcom Device Matching</h1>
       <div class="timer" id="timer">00:00</div>
-      
       <div class="game-board">
         <div class="slots">
           <h3>Body Placement Zones</h3>
           <div class="slot-label">Upper Arm</div>
           <div class="slot" data-correct="sensor"></div>
-          
           <div class="slot-label">Abdomen</div>
           <div class="slot" data-correct="transmitter"></div>
-          
           <div class="slot-label">Pocket/Hand</div>
           <div class="slot" data-correct="app"></div>
-          
           <div class="slot-label">Thigh (Alternative)</div>
           <div class="slot" data-correct="sensor"></div>
         </div>
-        
         <div class="cards">
           <h3>Dexcom Devices</h3>
           <div class="card" draggable="true" data-device="sensor">📟 Glucose Sensor</div>
@@ -155,7 +149,6 @@
         </div>
       </div>
     </div>
-
     <!-- End Screen -->
     <div class="end-screen hidden" id="endScreen">
       <h1>Congratulations!</h1>
