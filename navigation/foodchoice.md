@@ -233,6 +233,9 @@ h3 {
 }
 </style>
 
+<audio id="correct" src="{{ site.baseurl }}/assets/audio/correct.mp3" preload="auto"></audio>
+
+
 <div class="container">
 
 <h2 style="text-align: center;">Make the best choices for your body to keep your glucose levels low!</h2>
@@ -373,6 +376,14 @@ async function showGlycemicLoad(pairNumber, selectedFood, otherFood) {
         ).join("");
         document.getElementById("gl-info").append(messageBox)
         document.getElementById("gl-info").innerHTML = messageBox + '\n' + glInfo;
+
+        if (message !== "There was a better choice for you.") {
+            const audio = document.getElementById("correct");
+            if (audio) {
+                audio.currentTime = 0; // rewind
+                audio.play().catch(e => console.warn("Sound could not play:", e));
+            }
+        }
 
         // Show the popup
         const popup = document.getElementById("gl-popup");
