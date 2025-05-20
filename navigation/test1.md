@@ -135,7 +135,7 @@ comment: true
     </div>
     
 <div class="arm-area" id="arm-area">
-        <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Farm-pain-cartoon&psig=AOvVaw2Y2Vzf1Y9oKyAUqcbrVbmW&ust=1747865211661000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLC0-LuHs40DFQAAAAAdAAAAABAL" class="arm-image" alt="Arm">
+        <img src="{{site.baseurl}}/images/needlepin/arm.png" class="arm-image" alt="Arm">
         <div class="target-zone"></div>
     </div>
     
