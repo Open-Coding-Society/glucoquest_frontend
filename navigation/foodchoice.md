@@ -231,6 +231,25 @@ h3 {
 .food-card:hover .tooltip {
     opacity: 1;
 }
+
+:fullscreen .game-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+}
+
+/* Enlarge food cards in fullscreen */
+:fullscreen .food-card {
+  width: 400px;
+  height: 400px;
+}
+
+:fullscreen .food-card img {
+  width: 300px;
+  height: 300px;
+}
+
 </style>
 
 <audio id="correct" src="{{ site.baseurl }}/assets/audio/correct.mp3" preload="auto"></audio>
@@ -278,20 +297,24 @@ h3 {
     <button class="help-btn toggle-help-btn">OK</button>
 </div>
 
-<div id="gl-popup" style="display: none;" class="popup-overlay">
-  <div class="popup-content">
-    <div id="gl-info"></div>
-    <button id="close-popup">OK</button>
-  </div>
+<div id="game-wrapper">
+    <div id="gl-popup" style="display: none;" class="popup-overlay">
+    <div class="popup-content">
+        <div id="gl-info"></div>
+        <button id="close-popup">OK</button>
+    </div>
+    </div>
+    <!--break-->
+    <div class="foodchoice-content active" id="food-choice">
+        <div class="game-section">
+        <div class="game-panel">
+            <div class="card-container" id="card-container"></div>
+            <h3 style="text-align: center;">Total Glycemic Load: <span id="total-gl">0</span></h3>
+            <button class="help-btn" id="fullscreen-btn">Full Screen</button>
+            </div></div>
+    </div>
 </div>
 
-<div class="foodchoice-content active" id="food-choice">
-    <div class="game-section">
-      <div class="game-panel">
-        <div class="card-container" id="card-container"></div>
-        <h3 style="text-align: center;">Total Glycemic Load: <span id="total-gl">0</span></h3>
-        </div></div>
-</div>
 
 
 <script type="module">
@@ -444,4 +467,26 @@ async function displayFoodPair(pair) {
 }
 
 fetchFoodPair(currentPairNumber);
+
+document.getElementById('fullscreen-btn').addEventListener('click', () => {
+    const gameWrapper = document.getElementById('game-wrapper');
+
+    if (!document.fullscreenElement) {
+        if (gameWrapper.requestFullscreen) {
+            gameWrapper.requestFullscreen();
+        } else if (gameWrapper.webkitRequestFullscreen) { // Safari
+            gameWrapper.webkitRequestFullscreen();
+        } else if (gameWrapper.msRequestFullscreen) { // IE11
+            gameWrapper.msRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { // Safari
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { // IE11
+            document.msExitFullscreen();
+        }
+    }
+});
 </script>
