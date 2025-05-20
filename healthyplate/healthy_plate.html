@@ -876,6 +876,7 @@
     <script type="module">
   // import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
         import { pythonURI, fetchOptions } from 'http://127.0.0.1:4887/dexcom_frontend/assets/js/api/config.js';
+         // Score Submission Function
         async function submitScore(scoreData) {
             try {
                 const response = await fetch(`${pythonURI}/api/score`, {
@@ -912,6 +913,11 @@
         // Display Leaderboard
         async function displayLeaderboard() {
             const container = document.getElementById('leaderboard');
+            if (!container) {
+                console.error('Leaderboard container not found');
+                return;
+            }
+            
             container.innerHTML = '<p class="loading-message">Loading leaderboard...</p>';
             
             const leaderboard = await fetchLeaderboard();
@@ -947,11 +953,14 @@
             container.appendChild(table);
         }
 
-        // Initialize leaderboard when game starts
-        function initializeLeaderboard() {
+        // Create leaderboard container
+        function createLeaderboardContainer() {
             const progressContainer = document.getElementById('progress-container');
+            if (!progressContainer) return;
             
-            // Add leaderboard container
+            // Check if leaderboard already exists
+            if (document.getElementById('leaderboard-container')) return;
+            
             progressContainer.innerHTML += `
                 <div id="leaderboard-container">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -964,9 +973,6 @@
             
             // Add refresh button event
             document.getElementById('refresh-leaderboard').addEventListener('click', displayLeaderboard);
-            
-            // Load initial data
-            displayLeaderboard();
         }
 
         // Modify endGame function to handle score submission
@@ -988,12 +994,16 @@
                 } else {
                     messageEl.innerHTML = '<p style="color: #ff5555;">Failed to submit score</p>';
                 }
+                createLeaderboardContainer();
                 displayLeaderboard();
             });
         };
 
         // Initialize the leaderboard when the page loads
-        window.addEventListener('DOMContentLoaded', initializeLeaderboard);
+        window.addEventListener('DOMContentLoaded', () => {
+            createLeaderboardContainer();
+            displayLeaderboard();
+        });
     </script>
 </body>
 </html>
