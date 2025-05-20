@@ -11,9 +11,6 @@ comment: true
         <label for="meal" class="checklist-label">Meal:</label>
         <input type="text" id="meal" name="meal" required class="checklist-input"><br><br>
 
-        <label for="impact" class="checklist-label">Impact (Low / Medium / High):</label>
-        <input type="text" id="impact" name="impact" required class="checklist-input"><br><br>
-
         <button class="submit-btn checklist-btn">Add Meal</button>
     </form>
 </div>
@@ -26,15 +23,30 @@ comment: true
 <script type="module">
     import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
 
+    function determineImpact(meal) {
+        const lowered = meal.toLowerCase();
+
+        if (lowered.includes("ice cream") || lowered.includes("pizza") || lowered.includes("soda") || lowered.includes("cake")) {
+            return "High";
+        }
+        if (lowered.includes("banana") || lowered.includes("toast") || lowered.includes("pasta") || lowered.includes("rice")) {
+            return "Medium";
+        }
+        if (lowered.includes("salad") || lowered.includes("chicken") || lowered.includes("broccoli") || lowered.includes("grilled")) {
+            return "Low";
+        }
+        return "Medium";  // default fallback
+    }
+
     document.getElementById("foodForm").addEventListener("submit", async function(event) {
         event.preventDefault();
 
         const meal = document.getElementById("meal").value.trim();
-        const impact = document.getElementById("impact").value.trim();
         const token = localStorage.getItem("jwt");
 
-        if (!meal || !impact) return;
+        if (!meal) return;
 
+        const impact = determineImpact(meal);
         console.log("Sending:", { meal, impact });
 
         try {
@@ -45,7 +57,6 @@ comment: true
                     ...fetchOptions.headers,
                     "Authorization": `Bearer ${token}`
                 },
-
                 body: JSON.stringify({ meal, impact })
             });
 
@@ -69,11 +80,10 @@ comment: true
             const response = await fetch(`${pythonURI}/api/foodlog/user`, {
                 ...fetchOptions,
                 method: "GET",
-            headers: {
-             ...fetchOptions.headers,
-            "Authorization": `Bearer ${token}`
-            }
-
+                headers: {
+                    ...fetchOptions.headers,
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             if (!response.ok) {
@@ -81,6 +91,7 @@ comment: true
             }
 
             const logs = await response.json();
+            console.log("Fetched logs:", logs);
             document.getElementById("count").innerHTML = `<h4>Total Meals: ${logs.length || 0}</h4>`;
 
             const container = document.getElementById("food-items");
@@ -114,11 +125,10 @@ comment: true
             await fetch(`${pythonURI}/api/foodlog`, {
                 ...fetchOptions,
                 method: "DELETE",
-            headers: {
-                ...fetchOptions.headers,
-                "Authorization": `Bearer ${token}`
-            },
-
+                headers: {
+                    ...fetchOptions.headers,
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({ id })
             });
             fetchFoodLogs();
