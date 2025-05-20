@@ -1,3 +1,9 @@
+---
+layout: post
+title: Food log
+permalink: /foodlog/
+comment: true
+---
 <h2 class="checklist-title">Food Log</h2>
 
 <div class="checklist-section">
@@ -28,7 +34,7 @@
         const token = localStorage.getItem("jwt");
 
         if (!meal || !impact) return;
-        
+
         console.log("Sending:", { meal, impact });
 
         try {
