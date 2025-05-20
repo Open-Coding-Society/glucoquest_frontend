@@ -88,7 +88,7 @@ show_reading_time: false
             </p>
         </a>
         <!-- Game 4 -->
-        <a href="{{site.baseurl}}/crossword/" class="game-box">
+        <a href="{{site.baseurl}}/crossword" class="game-box">
             <img src="{{site.baseurl}}/images/ui-images/dexcom_crossword.png" alt="Daily Diabetes Crossword Placeholder">
             <h2>Daily Diabetes Crossword</h2>
             <p>

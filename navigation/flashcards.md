@@ -84,7 +84,9 @@ categories: [Education]
     <button onclick="startQuiz()">Quiz Me</button>
   </div>
 
-  <script>
+  <script type="module">
+    import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
+
     let currentCard = 0;
     let showingTerm = true;
     let flashcards = [];
@@ -93,7 +95,7 @@ categories: [Education]
 
     async function fetchFlashcards() {
       try {
-        const response = await fetch("http://localhost:8520/api/flashcards");
+        const response = await fetch(`${pythonURI}/api/flashcards`);
         flashcards = await response.json();
         displayCard();
       } catch (error) {
