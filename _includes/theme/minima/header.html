@@ -17,6 +17,15 @@
   .nav-buttons {
     display: flex;
     gap: 10px;
+    background-color: #519939;
+  }
+
+  a {
+    text-decoration: none;
+    color: white;
+  }
+  a:hover {
+    text-decoration: underline;
   }
   
   /*.button {
@@ -71,13 +80,18 @@
     </div>
   </div>-->
   <div class="trigger" data-baseurl="{{ site.baseurl }}">
+    <!--
     {%- for path in site.header_pages -%}
       {%- assign my_page = site.pages | where: "path", path | first -%}
       {%- if my_page.title -%}
         <a class="page-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
       {%- endif -%}
-    {%- endfor -%}
-    <a id="loginArea" href="{{ site.baseurl }}/profile_page/">Login</a>
+    {%- endfor -%}-->
+    <nav class="nav-buttons">
+      <a href="{{ site.baseurl }}/search/" class="button">Search</a>
+      <a href="{{ site.baseurl }}/about/" class="button">About</a>
+      <a id="loginArea" href="{{ site.baseurl }}/profile_page/">Login</a>
+    </nav>
   </div>
 </header>
 
