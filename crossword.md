@@ -799,7 +799,7 @@
         // Load existing feedback on page load
         async function loadFeedback() {
             try {
-                const response = await fetch('http://localhost:8206/api/feedback');
+                const response = await fetch('/api/feedback');
                 const feedbacks = await response.json();
                 feedbacks.forEach(f => {
                     const item = document.createElement('li');
