@@ -28,15 +28,18 @@
         const token = localStorage.getItem("jwt");
 
         if (!meal || !impact) return;
+        
+        console.log("Sending:", { meal, impact });
 
         try {
             const response = await fetch(`${pythonURI}/api/foodlog`, {
                 ...fetchOptions,
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    ...fetchOptions.headers,
                     "Authorization": `Bearer ${token}`
                 },
+
                 body: JSON.stringify({ meal, impact })
             });
 
@@ -60,9 +63,11 @@
             const response = await fetch(`${pythonURI}/api/foodlog/user`, {
                 ...fetchOptions,
                 method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+            headers: {
+             ...fetchOptions.headers,
+            "Authorization": `Bearer ${token}`
+            }
+
             });
 
             if (!response.ok) {
@@ -103,10 +108,11 @@
             await fetch(`${pythonURI}/api/foodlog`, {
                 ...fetchOptions,
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
+            headers: {
+                ...fetchOptions.headers,
+                "Authorization": `Bearer ${token}`
+            },
+
                 body: JSON.stringify({ id })
             });
             fetchFoodLogs();
