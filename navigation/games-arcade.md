@@ -96,8 +96,8 @@ show_reading_time: false
             </p>
         <!-- Game 5 -->
         <a href="{{site.baseurl}}/glucoserush/" class="game-box">
-            <img src="{{site.baseurl}}/images/ui-images/x.png" alt="Glucose Rush Placeholder">
-            <h2>Glucose Rush</h2>
+            <img src="{{site.baseurl}}/images/healthyplate.jpeg" alt="Healthy Plate">
+            <h2>Healthy Plate</h2>
             <p>
                 A game ill fix the description later.
             </p>

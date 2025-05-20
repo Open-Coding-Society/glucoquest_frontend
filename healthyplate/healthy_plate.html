@@ -131,6 +131,28 @@
             z-index: 100;
             display: none;
         }
+        #leaderboard {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        #leaderboard table {
+            width: 100%;
+            color: white;
+        }
+
+        #leaderboard th {
+            position: sticky;
+            top: 0;
+            background: #1a5276;
+            padding: 5px;
+            text-align: left;
+        }
+
+        #leaderboard tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -810,6 +832,112 @@
                 loop: true
             });
         }
+    </script>
+    <script type="module">
+        import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
+
+        // Score Submission Function
+        async function submitScore(scoreData) {
+            try {
+                const response = await fetch(`${pythonURI}/api/score`, {
+                    ...fetchOptions,
+                    method: 'POST',
+                    body: JSON.stringify(scoreData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('Score submission failed:', error.message);
+                    return false;
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Error submitting score:', error);
+                return false;
+            }
+        }
+
+        // Leaderboard Fetch Function
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch(`${pythonURI}/api/scores/leaderboard?limit=10`, fetchOptions);
+                if (!response.ok) throw new Error('Failed to fetch leaderboard');
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                return [];
+            }
+        }
+
+        // Display Leaderboard
+        async function displayLeaderboard() {
+            const leaderboard = await fetchLeaderboard();
+            const container = document.getElementById('leaderboard');
+            container.innerHTML = '';
+
+            if (leaderboard.length === 0) {
+                container.innerHTML = '<p>No scores yet!</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+            
+            // Create header
+            const header = table.createTHead();
+            const headerRow = header.insertRow();
+            ['Rank', 'Player', 'Score', 'Level'].forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                th.style.padding = '5px';
+                th.style.textAlign = 'left';
+                headerRow.appendChild(th);
+            });
+
+            // Create rows
+            const tbody = table.createTBody();
+            leaderboard.forEach((entry, index) => {
+                const row = tbody.insertRow();
+                row.style.borderTop = '1px solid #444';
+                
+                [index + 1, entry.username || `Player ${entry.user_id}`, entry.points, entry.level].forEach(text => {
+                    const cell = row.insertCell();
+                    cell.textContent = text;
+                    cell.style.padding = '5px';
+                });
+            });
+
+            container.appendChild(table);
+        }
+
+        // Add leaderboard container to your progress panel
+        const progressContainer = document.getElementById('progress-container');
+        progressContainer.innerHTML += `
+            <div id="leaderboard-container" style="margin-top: 20px;">
+                <h3 style="color: #FFD700;">Leaderboard</h3>
+                <div id="leaderboard"></div>
+            </div>
+        `;
+
+        // Initialize leaderboard when game starts
+        displayLeaderboard();
+
+        // Modify endGame function
+        const originalEndGame = window.endGame;
+        window.endGame = function(scene) {
+            originalEndGame.call(this, scene);
+            
+            const scoreData = {
+                points: score,
+                level: level
+            };
+            
+            submitScore(scoreData).then(() => {
+                displayLeaderboard();
+            });
+        };
     </script>
 </body>
 </html>
