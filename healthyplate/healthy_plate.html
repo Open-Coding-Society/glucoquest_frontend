@@ -131,8 +131,17 @@
             z-index: 100;
             display: none;
         }
+        
+        /* Leaderboard specific styles */
+        #leaderboard-container {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
         #leaderboard {
-            max-height: 300px;
+            max-height: 200px;
             overflow-y: auto;
             margin-top: 10px;
         }
@@ -140,6 +149,8 @@
         #leaderboard table {
             width: 100%;
             color: white;
+            font-size: 14px;
+            border-collapse: collapse;
         }
 
         #leaderboard th {
@@ -150,8 +161,36 @@
             text-align: left;
         }
 
+        #leaderboard tr {
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
         #leaderboard tr:nth-child(even) {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.05);
+        }
+        
+        #leaderboard td {
+            padding: 5px;
+        }
+        
+        #refresh-leaderboard {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        #refresh-leaderboard:hover {
+            background: #45a049;
+        }
+        
+        .loading-message {
+            text-align: center;
+            color: #aaa;
+            font-style: italic;
         }
     </style>
 </head>
@@ -164,6 +203,7 @@
         <div id="game-over">
             <h2>Game Over!</h2>
             <p id="final-score">Score: 0</p>
+            <div id="score-submission-message"></div>
             <button id="restart-btn">Play Again</button>
         </div>
     </div>
@@ -196,7 +236,7 @@
 
         const game = new Phaser.Game(config);
         let plate, foods, cursors, powerUps;
-        let gameTime = 60;
+        let gameTime = 10;
         let score = 0;
         let level = 1;
         let timer;
@@ -834,9 +874,8 @@
         }
     </script>
     <script type="module">
-        import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
-
-        // Score Submission Function
+  // import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
+        import { pythonURI, fetchOptions } from 'http://127.0.0.1:4887/dexcom_frontend/assets/js/api/config.js';
         async function submitScore(scoreData) {
             try {
                 const response = await fetch(`${pythonURI}/api/score`, {
@@ -866,24 +905,23 @@
                 return await response.json();
             } catch (error) {
                 console.error('Error:', error);
-                return [];
+                return null;
             }
         }
 
         // Display Leaderboard
         async function displayLeaderboard() {
-            const leaderboard = await fetchLeaderboard();
             const container = document.getElementById('leaderboard');
-            container.innerHTML = '';
-
-            if (leaderboard.length === 0) {
-                container.innerHTML = '<p>No scores yet!</p>';
+            container.innerHTML = '<p class="loading-message">Loading leaderboard...</p>';
+            
+            const leaderboard = await fetchLeaderboard();
+            
+            if (!leaderboard || leaderboard.length === 0) {
+                container.innerHTML = '<p class="loading-message">No scores yet! Be the first!</p>';
                 return;
             }
 
             const table = document.createElement('table');
-            table.style.width = '100%';
-            table.style.borderCollapse = 'collapse';
             
             // Create header
             const header = table.createTHead();
@@ -891,8 +929,6 @@
             ['Rank', 'Player', 'Score', 'Level'].forEach(text => {
                 const th = document.createElement('th');
                 th.textContent = text;
-                th.style.padding = '5px';
-                th.style.textAlign = 'left';
                 headerRow.appendChild(th);
             });
 
@@ -900,44 +936,64 @@
             const tbody = table.createTBody();
             leaderboard.forEach((entry, index) => {
                 const row = tbody.insertRow();
-                row.style.borderTop = '1px solid #444';
                 
                 [index + 1, entry.username || `Player ${entry.user_id}`, entry.points, entry.level].forEach(text => {
                     const cell = row.insertCell();
                     cell.textContent = text;
-                    cell.style.padding = '5px';
                 });
             });
 
+            container.innerHTML = '';
             container.appendChild(table);
         }
 
-        // Add leaderboard container to your progress panel
-        const progressContainer = document.getElementById('progress-container');
-        progressContainer.innerHTML += `
-            <div id="leaderboard-container" style="margin-top: 20px;">
-                <h3 style="color: #FFD700;">Leaderboard</h3>
-                <div id="leaderboard"></div>
-            </div>
-        `;
-
         // Initialize leaderboard when game starts
-        displayLeaderboard();
+        function initializeLeaderboard() {
+            const progressContainer = document.getElementById('progress-container');
+            
+            // Add leaderboard container
+            progressContainer.innerHTML += `
+                <div id="leaderboard-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="color: #FFD700; margin: 0;">Leaderboard</h3>
+                        <button id="refresh-leaderboard">Refresh</button>
+                    </div>
+                    <div id="leaderboard"></div>
+                </div>
+            `;
+            
+            // Add refresh button event
+            document.getElementById('refresh-leaderboard').addEventListener('click', displayLeaderboard);
+            
+            // Load initial data
+            displayLeaderboard();
+        }
 
-        // Modify endGame function
+        // Modify endGame function to handle score submission
         const originalEndGame = window.endGame;
         window.endGame = function(scene) {
             originalEndGame.call(this, scene);
+            
+            const messageEl = document.getElementById('score-submission-message');
+            messageEl.innerHTML = '<p>Submitting score...</p>';
             
             const scoreData = {
                 points: score,
                 level: level
             };
             
-            submitScore(scoreData).then(() => {
+            submitScore(scoreData).then((success) => {
+                if (success) {
+                    messageEl.innerHTML = '<p style="color: #4CAF50;">Score submitted successfully!</p>';
+                } else {
+                    messageEl.innerHTML = '<p style="color: #ff5555;">Failed to submit score</p>';
+                }
                 displayLeaderboard();
             });
         };
+
+        // Initialize the leaderboard when the page loads
+        window.addEventListener('DOMContentLoaded', initializeLeaderboard);
     </script>
 </body>
 </html>
