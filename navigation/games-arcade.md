@@ -102,5 +102,11 @@ show_reading_time: false
                 A game ill fix the description later.
             </p>
         </a>
-    </div>
-</html>
+        <!-- Game 6 -->
+        <a href="{{site.baseurl}}/grandprix/" class="game-box">
+            <img src="{{site.baseurl}}/images/grandprix/default.png" alt="Glucose Grand Prix">
+            <h2>Glucose Grand prix</h2>
+            <p>
+                I will also fix the description later.
+            </p>
+        </a>
