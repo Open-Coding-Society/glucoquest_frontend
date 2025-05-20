@@ -126,6 +126,7 @@ comment: true
         <div class="equipment-item" data-type="alcohol-wipe">
             <img src="{{site.baseurl}}/images/needlepin/wipes.png" class="equipment-icon" alt="Alcohol Wipe"> 
         </div>
+        <div class="equipment-item" data-type="cotton-tip">
         <img src="{{site.baseurl}}/images/needlepin/cotton-tip.png" class="equipment-icon" alt="Cotton Tip">
         </div>
         <div class="equipment-item" data-type="dexcom-sensor">
