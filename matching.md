@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -14,7 +13,6 @@
       --error: #e74c3c;
       --gold: #f1c40f;
     }
-    
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #f5f9fc 0%, #e0eef9 100%);
@@ -23,13 +21,11 @@
       min-height: 100vh;
       color: #2c3e50;
     }
-    
     .game-container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
     }
-    
     /* Screen Styling */
     .screen {
       display: none;
@@ -41,18 +37,15 @@
       margin: 2rem auto;
       text-align: center;
     }
-    
     .screen.active {
       display: block;
     }
-    
     /* Header Styling */
     .game-header {
       text-align: center;
       margin-bottom: 2rem;
       position: relative;
     }
-    
     .game-header h1 {
       color: var(--dexcom-dark);
       font-size: 2.5rem;
@@ -61,7 +54,6 @@
       position: relative;
       display: inline-block;
     }
-    
     .game-header h1:after {
       content: '';
       position: absolute;
@@ -73,7 +65,6 @@
       background: var(--dexcom-blue);
       border-radius: 2px;
     }
-    
     /* Body Outline */
     .body-outline {
       width: 220px;
@@ -84,7 +75,6 @@
       position: relative;
       filter: drop-shadow(0 4px 8px rgba(0,102,204,0.2));
     }
-    
     /* Button Styling */
     .btn {
       background: var(--dexcom-blue);
@@ -100,19 +90,16 @@
       box-shadow: 0 4px 12px rgba(0,102,204,0.3);
       margin: 0.5rem;
     }
-    
     .btn:hover {
       background: var(--dexcom-dark);
       transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(0,102,204,0.4);
     }
-    
     .btn-outline {
       background: white;
       color: var(--dexcom-blue);
       border: 2px solid var(--dexcom-blue);
     }
-    
     /* Game Board Styling */
     .game-board {
       display: flex;
@@ -120,7 +107,6 @@
       margin-top: 2rem;
       gap: 2rem;
     }
-    
     .slots, .cards {
       width: 48%;
       background: rgba(255,255,255,0.7);
@@ -129,7 +115,6 @@
       backdrop-filter: blur(8px);
       border: 1px solid rgba(0,0,0,0.05);
     }
-    
     /* Card Styling */
     .card {
       background: white;
@@ -141,12 +126,10 @@
       margin-bottom: 1rem;
       position: relative;
     }
-    
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 12px 24px rgba(0,0,0,0.12);
     }
-    
     /* Slot Styling */
     .slot {
       background: white;
@@ -158,19 +141,16 @@
       border: 2px solid #ecf0f1;
       transition: all 0.3s ease;
     }
-    
     .slot.highlight {
       background: rgba(0,102,204,0.05);
       border-color: var(--dexcom-blue);
       transform: scale(1.02);
     }
-    
     .slot.correct {
       background: rgba(39,174,96,0.08);
       border-color: var(--success);
       box-shadow: 0 0 0 2px rgba(39,174,96,0.3);
     }
-    
     .slot-label {
       font-weight: 600;
       color: var(--dexcom-dark);
@@ -179,7 +159,6 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-    
     /* Timer Styling */
     .timer {
       font-size: 1.8rem;
@@ -194,39 +173,32 @@
       min-width: 180px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    
     /* Leaderboard Styling */
     .leaderboard {
       width: 100%;
       border-collapse: collapse;
       margin: 2rem 0;
     }
-    
     .leaderboard th {
       background: var(--dexcom-blue);
       color: white;
       padding: 12px;
       text-align: left;
     }
-    
     .leaderboard td {
       padding: 10px 12px;
       border-bottom: 1px solid #eee;
     }
-    
     .leaderboard tr:nth-child(even) {
       background-color: #f8fafc;
     }
-    
     .leaderboard tr:hover {
       background-color: #f1f7fd;
     }
-    
     /* Input Styling */
     .input-group {
       margin-bottom: 1.5rem;
     }
-    
     .input-group input {
       width: 100%;
       padding: 12px;
@@ -234,7 +206,6 @@
       border-radius: 8px;
       font-size: 1rem;
     }
-    
     /* Animations */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -243,37 +214,30 @@
       60% { transform: translateX(-8px); }
       80% { transform: translateX(8px); }
     }
-    
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
-    
     .shake {
       animation: shake 0.5s;
       background-color: rgba(231,76,60,0.08) !important;
       border-color: var(--error) !important;
     }
-    
     .pulse {
       animation: pulse 1.5s infinite;
     }
-    
     /* Responsive Design */
     @media (max-width: 768px) {
       .game-board {
         flex-direction: column;
       }
-      
       .slots, .cards {
         width: 100%;
       }
-      
       .game-header h1 {
         font-size: 2rem;
       }
-      
       .screen {
         padding: 2rem 1rem;
       }
@@ -288,44 +252,34 @@
         <h1>Dexcom CGM Training</h1>
         <p>Master medical device placement through this interactive challenge</p>
       </div>
-      
       <div class="body-outline"></div>
-      
       <div style="max-width: 600px; margin: 0 auto;">
         <p style="color: #34495e; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6;">
           <span style="color: var(--dexcom-blue); font-weight: 600;">Objective:</span> 
           Correctly match all Dexcom CGM components to their proper placement locations on the body.
           Complete the challenge as quickly as possible to earn your spot on the leaderboard!
         </p>
-        
         <button class="btn" id="startButton">Begin Training</button>
       </div>
     </div>
-
     <!-- Game Screen -->
     <div class="screen" id="gameScreen">
       <div class="game-header">
         <h1>CGM Placement Challenge</h1>
         <div class="timer" id="timer">00:00</div>
       </div>
-      
       <div class="game-board">
         <div class="slots">
           <h3 style="color: var(--dexcom-dark); margin-bottom: 1.5rem; font-weight: 600;">Placement Zones</h3>
-          
           <div class="slot-label">Upper Arm (Primary)</div>
           <div class="slot" data-correct="sensor"></div>
-          
           <div class="slot-label">Abdomen (Primary)</div>
           <div class="slot" data-correct="transmitter"></div>
-          
           <div class="slot-label">Pocket/Hand</div>
           <div class="slot" data-correct="receiver"></div>
-          
           <div class="slot-label">Thigh (Alternative)</div>
           <div class="slot" data-correct="sensor-alt"></div>
         </div>
-        
         <div class="cards">
           <h3 style="color: var(--dexcom-dark); margin-bottom: 1.5rem; font-weight: 600;">Dexcom Devices</h3>
           <div id="deviceContainer" class="device-column">
@@ -338,7 +292,6 @@
                 </div>
               </div>
             </div>
-            
             <div class="card pulse" draggable="true" data-device="transmitter">
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 1.5rem;">📡</span>
@@ -348,7 +301,6 @@
                 </div>
               </div>
             </div>
-            
             <div class="card pulse" draggable="true" data-device="receiver">
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 1.5rem;">📱</span>
@@ -358,7 +310,6 @@
                 </div>
               </div>
             </div>
-            
             <div class="card pulse" draggable="true" data-device="sensor-alt">
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 1.5rem;">📟</span>
@@ -371,33 +322,27 @@
           </div>
         </div>
       </div>
-      
       <!-- Add this Continue button container -->
       <div id="continueButtonContainer" style="display:none; text-align:center; margin-top:2rem;">
         <button id="continueButton" class="btn">Continue</button>
       </div>
     </div>
-
     <!-- Name Input Screen -->
     <div class="screen" id="nameScreen">
       <div class="game-header">
         <h1>Record Your Score</h1>
       </div>
-      
       <div style="max-width: 500px; margin: 0 auto;">
         <p style="color: #34495e; margin-bottom: 2rem; font-size: 1.1rem;">
           You completed the training in <span id="scoreTime" style="font-weight: 600;"></span> seconds!
           Enter your name to save your score to the leaderboard.
         </p>
-        
         <div class="input-group">
           <input type="text" id="playerName" placeholder="Your name or initials">
         </div>
-        
         <button class="btn" id="saveScoreButton">Save Score</button>
       </div>
     </div>
-
     <!-- End Screen with Leaderboard -->
     <div class="screen" id="endScreen">
       <div class="game-header">
@@ -406,12 +351,9 @@
           Your time: <span id="finalTime" style="font-weight: 700;"></span> seconds
         </div>
       </div>
-      
       <div class="body-outline"></div>
-      
       <div style="margin: 2rem 0;">
         <h3 style="color: var(--dexcom-dark); margin-bottom: 1rem;">Leaderboard</h3>
-        
         <table id="leaderboard">
           <thead>
             <tr>
@@ -426,13 +368,11 @@
           </tbody>
         </table>
       </div>
-      
       <div style="margin-top: 2rem;">
         <button class="btn" id="restartButton" style="margin-right: 1rem;">Try Again</button>
         <button class="btn btn-outline" id="newPlayerButton">New Player</button>
       </div>
     </div>
-
     <!-- Device Container (added) -->
     <div id="deviceContainer" class="device-column">
       <!-- All .card elements are children of this div at game start -->
