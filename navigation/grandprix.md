@@ -29,6 +29,7 @@ canvas {
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
   const startButton = document.getElementById("startButton");
+  const pauseButton = document.getElementById("pauseButton");
 
   const assets = {
     background: {
@@ -38,6 +39,9 @@ canvas {
       pothole: {
         src: "{{site.baseurl}}/images/grandprix/pothole.png",
       },
+      cone: {
+        src: "{{site.baseurl}}/images/grandprix/cone.png",
+      }
     },
     cars: {
       default: {
@@ -79,16 +83,13 @@ canvas {
   const carHeight = assets.cars.default.height * carScale;
   let carX, carY;
 
-  let obstacles = []; // Declare and initialize the obstacles array
+  let obstacles = [];
+  const obstacleWidth = 40;
+  const obstacleHeight = 40;
+  let obstacleSpawnThreshold = 200;
+  let distanceSinceLastObstacle = 0;
+  let obstacleImages = {};
 
-  let potholeImg;
-  const potholes = [];
-  const potholeWidth = 40;
-  const potholeHeight = 40;
-  let potholeSpawnThreshold = 200; // pixels between potholes
-  let distanceSinceLastPothole = 0;
-
-  
   const carSpeed = 5;
   let backgroundY;
   const backgroundSpeed = 2;
@@ -98,30 +99,31 @@ canvas {
   let isPaused = false;
 
   function resetGameState() {
-  carX = canvas.width / 2 - carWidth / 2;
-  carY = canvas.height - carHeight - 20;
-  backgroundY = 0;
-  keys = { a: false, d: false };
-}
-
+    carX = canvas.width / 2 - carWidth / 2;
+    carY = canvas.height - carHeight - 20;
+    backgroundY = 0;
+    obstacles = [];
+    distanceSinceLastObstacle = 0;
+    keys = { a: false, d: false };
+  }
 
   class Obstacle {
-  constructor(x, y, image) {
-    this.x = x;
-    this.y = y;
-    this.image = image;
-    this.width = 40;  // Customize as needed
-    this.height = 40;
-  }
+    constructor(x, y, image) {
+      this.x = x;
+      this.y = y;
+      this.image = image;
+      this.width = obstacleWidth;
+      this.height = obstacleHeight;
+    }
 
-  update() {
-    this.y += backgroundSpeed; // Move down with the road
-  }
+    update() {
+      this.y += backgroundSpeed;
+    }
 
-  draw(ctx) {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    draw(ctx) {
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
   }
-}
 
   function setupKeyboard() {
     document.addEventListener("keydown", (e) => {
@@ -135,47 +137,48 @@ canvas {
     });
   }
 
-startButton.addEventListener("click", () => {
-  if (!isRunning) {
-    // First time: start the game
-    isRunning = true;
-    isPaused = false;
-    setupKeyboard();
-    requestAnimationFrame(gameLoop);
-    startButton.textContent = "Restart Game";
-  } else {
-    // Restart: reset game state
-    resetGameState();
-    isPaused = false;
-    pauseButton.textContent = "Pause";
-    drawStaticScene();
-    requestAnimationFrame(gameLoop);
-  }
-});
-
-pauseButton.addEventListener("click", () => {
-  if (isRunning) {
-    isPaused = !isPaused;
-    pauseButton.textContent = isPaused ? "Resume" : "Pause";
-    if (!isPaused) {
+  startButton.addEventListener("click", () => {
+    if (!isRunning) {
+      isRunning = true;
+      isPaused = false;
+      setupKeyboard();
+      requestAnimationFrame(gameLoop);
+      startButton.textContent = "Restart Game";
+    } else {
+      resetGameState();
+      isPaused = false;
+      pauseButton.textContent = "Pause";
+      drawStaticScene();
       requestAnimationFrame(gameLoop);
     }
-  }
-});
+  });
 
+  pauseButton.addEventListener("click", () => {
+    if (isRunning) {
+      isPaused = !isPaused;
+      pauseButton.textContent = isPaused ? "Resume" : "Pause";
+      if (!isPaused) {
+        requestAnimationFrame(gameLoop);
+      }
+    }
+  });
 
   async function initGame() {
-  try {
-    bgImg = await loadImage(assets.background.src);
-    carImg = await loadImage(assets.cars.default.src);
-    potholeImg = await loadImage(assets.obstacles.pothole.src);
-    resetGameState();
-    drawStaticScene(); // Draw once before game starts
-  } catch (e) {
-    console.error("Image loading error:", e);
-  }
-}
+    try {
+      bgImg = await loadImage(assets.background.src);
+      carImg = await loadImage(assets.cars.default.src);
 
+      const obstacleNames = Object.keys(assets.obstacles);
+      for (const name of obstacleNames) {
+        obstacleImages[name] = await loadImage(assets.obstacles[name].src);
+      }
+
+      resetGameState();
+      drawStaticScene();
+    } catch (e) {
+      console.error("Image loading error:", e);
+    }
+  }
 
   function drawStaticScene() {
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
@@ -186,45 +189,43 @@ pauseButton.addEventListener("click", () => {
     if (keys.a) carX -= carSpeed;
     if (keys.d) carX += carSpeed;
 
-    // Prevent car from going off screen
     carX = Math.max(0, Math.min(canvas.width - carWidth, carX));
     
-    distanceSinceLastPothole += backgroundSpeed;
+    distanceSinceLastObstacle += backgroundSpeed;
 
-    if (distanceSinceLastPothole >= potholeSpawnThreshold) {
-      distanceSinceLastPothole = 0;
+    if (distanceSinceLastObstacle >= obstacleSpawnThreshold) {
+      distanceSinceLastObstacle = 0;
 
-      const x = Math.random() * (canvas.width - potholeWidth);
-      const y = -potholeHeight; // just above the screen
-      potholes.push(new Obstacle(x, y, potholeImg));
+      const types = Object.keys(obstacleImages);
+      const randomType = types[Math.floor(Math.random() * types.length)];
+      const image = obstacleImages[randomType];
+
+      const x = Math.random() * (canvas.width - obstacleWidth);
+      const y = -obstacleHeight;
+
+      obstacles.push(new Obstacle(x, y, image));
     }
 
-    potholes.forEach((p) => p.update());
+    obstacles.forEach((o) => o.update());
 
-    // Remove potholes that went off screen
-    for (let i = potholes.length - 1; i >= 0; i--) {
-      if (potholes[i].y > canvas.height) {
-        potholes.splice(i, 1);
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      if (obstacles[i].y > canvas.height) {
+        obstacles.splice(i, 1);
       }
     }
 
-  // Move background downward
     backgroundY += backgroundSpeed;
     if (backgroundY >= canvas.height) {
       backgroundY = 0;
     }
   }
 
-  
-
   function draw() {
-    // Loop background image vertically
     ctx.drawImage(bgImg, 0, backgroundY - canvas.height, canvas.width, canvas.height);
     ctx.drawImage(bgImg, 0, backgroundY, canvas.width, canvas.height);
 
-    potholes.forEach((p) => p.draw(ctx));
+    obstacles.forEach((o) => o.draw(ctx));
 
-    // Draw car
     ctx.drawImage(carImg, carX, carY, carWidth, carHeight);
   }
 
@@ -234,7 +235,6 @@ pauseButton.addEventListener("click", () => {
     draw();
     requestAnimationFrame(gameLoop);
   }
-
 
   initGame();
 </script>
