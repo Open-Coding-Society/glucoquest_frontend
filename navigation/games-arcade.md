@@ -64,7 +64,7 @@ show_reading_time: false
     </p>
     <div class="games-grid">
         <!-- Game 1 -->
-        <a href="{{site.baseurl}}/needle/" class="game-box">
+        <a href="{{site.baseurl}}/test2/" class="game-box">
             <img src="{{site.baseurl}}/images/ui-images/pin_needle_image.png" alt="Pin the Needle Placeholder">
             <h2>Pin the Needle</h2>
             <p>
