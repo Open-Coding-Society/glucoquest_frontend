@@ -510,6 +510,7 @@
 
   // Game Functions
   function startGame() {
+    shuffleDeviceBlocks();
     matchedPairs = 0;
     resetSlots();
     resetCards();
@@ -697,6 +698,18 @@
 
     // Re-attach drag-and-drop listeners
     setupDragAndDrop();
+  }
+
+  function shuffleDeviceBlocks() {
+    const container = document.getElementById('deviceContainer');
+    const cards = Array.from(container.children);
+    // Fisher-Yates shuffle
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
+    // Remove all cards and re-append in shuffled order
+    cards.forEach(card => container.appendChild(card));
   }
 
   // Initialize the game when the page loads
