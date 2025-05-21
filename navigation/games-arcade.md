@@ -115,6 +115,6 @@ show_reading_time: false
             <img src="{{site.baseurl}}/images/foodlog.png" alt="Food Log">
             <h2>Food Log</h2>
             <p>
-                I will also fix the description later.
+               "Track your meals, see their impact, and build smarter eating habits, one log at a time."
             </p>
         </a>
