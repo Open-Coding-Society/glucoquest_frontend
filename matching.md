@@ -429,30 +429,6 @@
               <td id="currentPlayerTime">-</td>
               <td>Today</td>
             </tr>
-            <tr>
-              <td>2</td>
-              <td>Medical Expert</td>
-              <td>32</td>
-              <td>2023-10-15</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Nurse Sarah</td>
-              <td>38</td>
-              <td>2023-10-14</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Dr. Chen</td>
-              <td>42</td>
-              <td>2023-10-12</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>Student</td>
-              <td>56</td>
-              <td>2023-10-10</td>
-            </tr>
           </tbody>
         </table>
       </div>
