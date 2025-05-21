@@ -98,6 +98,13 @@ canvas {
   let isRunning = false;
   let isPaused = false;
 
+  let lives = 3;
+  let isGameOver = false;
+  let collisionCooldown = 5; // Prevent multiple hits from one obstacle
+  let wobbleFrames = 0;
+  let wobbleDirection = 1;
+
+
   function resetGameState() {
     carX = canvas.width / 2 - carWidth / 2;
     carY = canvas.height - carHeight - 20;
@@ -105,7 +112,11 @@ canvas {
     obstacles = [];
     distanceSinceLastObstacle = 0;
     keys = { a: false, d: false };
+    lives = 3;
+    isGameOver = false;
+    wobbleFrames = 0;
   }
+
 
   class Obstacle {
     constructor(x, y, image) {
@@ -114,6 +125,7 @@ canvas {
       this.image = image;
       this.width = obstacleWidth;
       this.height = obstacleHeight;
+      this.hasCollided = false;
     }
 
     update() {
@@ -208,11 +220,39 @@ canvas {
 
     obstacles.forEach((o) => o.update());
 
+    // Check collisions
     for (let i = obstacles.length - 1; i >= 0; i--) {
-      if (obstacles[i].y > canvas.height) {
-        obstacles.splice(i, 1);
-      }
+  const o = obstacles[i];
+
+  if (o.y > canvas.height) {
+    obstacles.splice(i, 1);
+    continue;
+  }
+
+  const collision = !(
+    carX + carWidth < o.x ||
+    carX > o.x + o.width ||
+    carY + carHeight < o.y ||
+    carY > o.y + o.height
+  );
+
+  if (collision && !o.hasCollided) {
+    o.hasCollided = true; // ✅ Only trigger once
+    lives--;
+    wobbleFrames = 30;
+
+    if (lives <= 0) {
+      isGameOver = true;
     }
+  }
+}
+
+    // Wobble effect
+  if (wobbleFrames > 0) {
+    carX += wobbleDirection * 2;
+    wobbleDirection *= -1;
+    wobbleFrames--;
+  }
 
     backgroundY += backgroundSpeed;
     if (backgroundY >= canvas.height) {
@@ -227,14 +267,28 @@ canvas {
     obstacles.forEach((o) => o.draw(ctx));
 
     ctx.drawImage(carImg, carX, carY, carWidth, carHeight);
+
+        // Draw lives
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Lives: ${lives}`, 10, 30);
+
+    // Game over
+    if (isGameOver) {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "red";
+      ctx.font = "40px Arial";
+      ctx.fillText("GAME OVER", canvas.width / 2 - 100, canvas.height / 2);
+    }
   }
 
   function gameLoop() {
-    if (!isRunning || isPaused) return;
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-  }
+  if (!isRunning || isPaused || isGameOver) return;
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
 
   initGame();
 </script>
