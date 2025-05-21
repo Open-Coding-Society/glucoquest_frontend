@@ -54,6 +54,10 @@ categories: [Education]
       text-align: center;
       transition: background 0.3s ease;
     }
+    .flashcard:hover {
+      /*transform: translateY(-5px);*/
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
     .controls {
       display: flex;
       justify-content: center;
@@ -77,12 +81,15 @@ categories: [Education]
 <html>
   <h1 style="text-align:center">Diabetes Flashcards</h1>
   <div class="divider"></div>
-  <div class="flashcard" id="flashcard">Click to Flip</div>
-  <div class="controls">
-    <button onclick="prevCard()">Previous</button>
-    <button onclick="nextCard()">Next</button>
-    <button onclick="startQuiz()">Quiz Me</button>
+  <div id="flashcardContainer">
+    <div class="flashcard" id="flashcard">Click to Flip</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="nextBtn">Next</button>
+      <button id="quizBtn">Quiz Me</button>
+    </div>
   </div>
+  <div id="quizSection"></div>
 
   <script type="module">
     import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
@@ -92,6 +99,8 @@ categories: [Education]
     let flashcards = [];
 
     const flashcardEl = document.getElementById("flashcard");
+    const quizSection = document.getElementById("quizSection");
+    const flashcardContainer = document.getElementById("flashcardContainer");
 
     async function fetchFlashcards() {
       try {
@@ -110,11 +119,6 @@ categories: [Education]
       flashcardEl.innerText = showingTerm ? card.term : card.definition;
     }
 
-    flashcardEl.addEventListener("click", () => {
-      showingTerm = !showingTerm;
-      displayCard();
-    });
-
     function nextCard() {
       if (flashcards.length === 0) return;
       currentCard = (currentCard + 1) % flashcards.length;
@@ -129,23 +133,103 @@ categories: [Education]
       displayCard();
     }
 
-    function startQuiz() {
-      if (flashcards.length === 0) return;
-      let score = 0;
-      for (let i = 0; i < flashcards.length; i++) {
-        let userAnswer = prompt(`What is: ${flashcards[i].term}?`);
-        if (userAnswer && userAnswer.toLowerCase().includes(flashcards[i].definition.toLowerCase().split(" ")[0])) {
-          alert("Correct!");
-          score++;
-        } else {
-          alert(`Oops! The correct answer was: ${flashcards[i].definition}`);
-        }
-      }
-      alert(`You got ${score} out of ${flashcards.length} correct!`);
+    function renderQuiz() {
+      // Hide flashcards
+      flashcardContainer.style.display = "none";
+      let quizHtml = `
+        <form id="quizForm" class="feature-card">
+          <h2>Quiz: Type the correct term for each definition</h2>
+          <div style="display:flex; flex-direction:column; gap:15px;">
+      `;
+      flashcards.forEach((card, idx) => {
+        quizHtml += `
+          <div>
+            <label><b>${idx + 1}.</b> ${card.definition}</label><br>
+            <input type="text" name="answer${idx}" style="width:100%;padding:5px;margin-top:5px;" autocomplete="off"/>
+          </div>
+        `;
+      });
+      quizHtml += `
+          </div>
+          <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+            <button type="button" id="cancelQuizBtn">Cancel</button>
+            <button type="submit" id="submitQuizBtn">Submit Quiz</button>
+          </div>
+          <div id="quizWarning" style="color:orange; margin-top:10px;"></div>
+        </form>
+      `;
+      quizSection.innerHTML = quizHtml;
+
+      document.getElementById("cancelQuizBtn").onclick = () => {
+        quizSection.innerHTML = "";
+        flashcardContainer.style.display = "";
+      };
+      document.getElementById("quizForm").onsubmit = handleQuizSubmit;
     }
 
-    // Initialize
+    function handleQuizSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const answers = [];
+      let emptyCount = 0;
+      for (let i = 0; i < flashcards.length; i++) {
+        const val = form[`answer${i}`].value.trim();
+        answers.push(val);
+        if (!val) emptyCount++;
+      }
+      if (emptyCount > 0) {
+        document.getElementById("quizWarning").innerText =
+          "Are you sure you want to submit? You haven't answered all the questions.";
+        // Only submit if user clicks submit again with warning shown
+        if (!form.dataset.warned) {
+          form.dataset.warned = "true";
+          return;
+        }
+      }
+      // Grade quiz
+      let score = 0;
+      let resultsHtml = `<div class="feature-card"><h2>Quiz Results</h2><ul style="text-align:left;">`;
+      flashcards.forEach((card, idx) => {
+        const userAns = answers[idx] || "(no answer)";
+        const correct = userAns.toLowerCase().trim() === card.term.toLowerCase().trim();
+        if (correct) score++;
+        resultsHtml += `<li>
+          <b>Q${idx + 1}:</b> ${card.definition}<br>
+          <span style="color:${correct ? 'limegreen' : 'red'}">
+            Your answer: ${userAns}
+            ${correct ? "✓" : `✗ (Correct: ${card.term})`}
+          </span>
+        </li>`;
+      });
+      resultsHtml += `</ul>
+        <h3 style="text-align:center;">Score: ${score} / ${flashcards.length}</h3>
+        <div style="text-align:center;">
+          <button id="retakeQuizBtn">Retake Quiz</button>
+        </div>
+      </div>`;
+      quizSection.innerHTML = resultsHtml;
+      document.getElementById("retakeQuizBtn").onclick = () => {
+        renderQuiz();
+      };
+      // Show flashcards again after quiz is submitted
+      flashcardContainer.style.display = "";
+    }
+
+    function startQuiz() {
+      if (flashcards.length === 0) return;
+      renderQuiz();
+    }
+
+    flashcardEl.addEventListener("click", () => {
+      showingTerm = !showingTerm;
+      displayCard();
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", nextCard);
+    document.getElementById("prevBtn").addEventListener("click", prevCard);
+    document.getElementById("quizBtn").addEventListener("click", startQuiz);
+
     fetchFlashcards();
-    </script>
+  </script>
 </html>
 
