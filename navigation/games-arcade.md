@@ -72,11 +72,11 @@ show_reading_time: false
             </p>
         </a>
         <!-- Game 2 -->
-        <a href="{{site.baseurl}}/Dexcom-lifestyle-minigame/" class="game-box">
-            <img src="{{site.baseurl}}/images/ui-images/lifestyle-icon.jpg" alt="Glucose Hero Placeholder">
-            <h2>Lifestyle Minigame</h2>
+        <a href="{{site.baseurl}}/foodlog/" class="game-box">
+            <img src="{{site.baseurl}}/images/foodlog.png" alt="Food Log">
+            <h2>Food Log</h2>
             <p>
-                An interactive simulation game where players experience a full day living with diabetes by making lifestyle choices.
+               "Track your meals, see their impact, and build smarter eating habits, one log at a time."
             </p>
         </a>
         <!-- Game 3 -->
@@ -110,11 +110,11 @@ show_reading_time: false
                 I will also fix the description later.
             </p>
         </a>
-                <!-- Game 7 -->
-        <a href="{{site.baseurl}}/foodlog/" class="game-box">
-            <img src="{{site.baseurl}}/images/foodlog.png" alt="Food Log">
-            <h2>Food Log</h2>
+        <!-- Game 7 -->
+        <a href="{{site.baseurl}}/Dexcom-lifestyle-minigame/" class="game-box">
+            <img src="{{site.baseurl}}/images/ui-images/lifestyle-icon.jpg" alt="Glucose Hero Placeholder">
+            <h2>Lifestyle Minigame</h2>
             <p>
-               "Track your meals, see their impact, and build smarter eating habits, one log at a time."
+                An interactive simulation game where players experience a full day living with diabetes by making lifestyle choices.
             </p>
         </a>
