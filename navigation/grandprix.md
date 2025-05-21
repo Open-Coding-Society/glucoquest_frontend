@@ -237,7 +237,7 @@ canvas {
   );
 
   if (collision && !o.hasCollided) {
-    o.hasCollided = true; // ✅ Only trigger once
+    o.hasCollided = true;
     lives--;
     wobbleFrames = 30;
 
