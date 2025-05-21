@@ -295,7 +295,7 @@ comment: true
 
 <script type="module">
   import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
-  const API_BASE_URL = pythonURI + '/glucose';
+  const API_BASE_URL = pythonURI + '/api/glucose';
 
   // ==================== 血糖测试游戏逻辑 ====================
   const needle = document.getElementById('needle');
@@ -446,7 +446,7 @@ comment: true
 
   window.createGlucoseRecord = async function(recordData) {
       try {
-          const response = await fetch(`${API_BASE_URL}/`, {
+          const response = await fetch(`${API_BASE_URL}`, {
               method: 'POST',
               ...fetchOptions,
               headers: {
