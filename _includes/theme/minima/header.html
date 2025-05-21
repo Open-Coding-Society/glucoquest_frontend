@@ -62,7 +62,9 @@
 <header class="site-header">
   <div class="wrapper">
     <!-- Left Section: Search Button -->
-    <button onclick="location.href='{{ "/" | relative_url }}'" class="button">Home</button>
+    <a href="{{ '/' | relative_url }}">
+      <img src="{{ site.baseurl }}/images/dexcom_favicon.ico" alt="Home" style="height:40px; margin-right:10px; margin-top: 5px; vertical-align:middle; cursor:pointer;">
+    </a>
     <!--<button onclick="location.href='{{ site.baseurl }}/search/'" class="button">
       Search
     </button>-->
