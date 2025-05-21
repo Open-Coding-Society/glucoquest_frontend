@@ -65,8 +65,8 @@ show_reading_time: false
     <div class="games-grid">
         <!-- Game 1 -->
         <a href="{{site.baseurl}}/test2/" class="game-box">
-            <img src="{{site.baseurl}}/images/ui-images/pin_needle_image.png" alt="Pin the Needle Placeholder">
-            <h2>Pin the Needle</h2>
+            <img src="{{site.baseurl}}/images/ui-images/pin_dexcom.png" alt="Pin the Dexcom Placeholder">
+            <h2>Pin the Dexcom</h2>
             <p>
                 An interactive drag-and-drop game where users place a needle correctly on an arm to simulate starting glucose monitoring.
             </p>
