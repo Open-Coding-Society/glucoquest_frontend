@@ -102,6 +102,8 @@ comment: true
     transform: scale(1.05);
   }
 
+
+
   .checklist-count {
     text-align: center;
     font-size: 1.5rem;
@@ -187,11 +189,12 @@ comment: true
   document.getElementById("foodForm").addEventListener("submit", async function (event) {
     event.preventDefault();
     const meal = document.getElementById("meal").value.trim();
+    const formattedMeal = meal.charAt(0).toUpperCase() + meal.slice(1);
     const token = localStorage.getItem("jwt");
-    if (!meal) return;
+    if (!formattedMeal) return;
 
-    const impact = determineImpact(meal);
-    const postData = { meal, impact };
+    const impact = determineImpact(formattedMeal);
+    const postData = { meal: formattedMeal, impact };
 
     try {
       await fetch(`${pythonURI}/api/foodlog`, {
@@ -240,12 +243,13 @@ comment: true
 
       logs.forEach(log => {
         const impactClass = `impact-${log.impact.toLowerCase()}`;
+        const icon = log.impact === "High" ? "🔴" : log.impact === "Medium" ? "🟡" : "🟢";
         const div = document.createElement("div");
         div.className = "checklist-item";
         div.innerHTML = `
           <span>
             <span class="meal-name">${log.meal}</span>
-            <span class="impact-pill ${impactClass}">Impact: ${log.impact}</span>
+            <span class="impact-pill ${impactClass}">${icon} IMPACT: ${log.impact}</span>
           </span>
           <button class="delete-btn" data-id="${log.id}">Delete</button>
         `;

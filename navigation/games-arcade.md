@@ -110,3 +110,11 @@ show_reading_time: false
                 I will also fix the description later.
             </p>
         </a>
+                <!-- Game 7 -->
+        <a href="{{site.baseurl}}/foodlog/" class="game-box">
+            <img src="{{site.baseurl}}/images/foodlog.png" alt="Food Log">
+            <h2>Food Log</h2>
+            <p>
+                I will also fix the description later.
+            </p>
+        </a>
