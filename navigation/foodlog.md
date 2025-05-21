@@ -4,6 +4,7 @@ title: Food log
 permalink: /foodlog/
 comment: true
 ---
+
 <h2 class="checklist-title">Food Log</h2>
 
 <div class="checklist-section">
@@ -43,21 +44,21 @@ comment: true
 
         const meal = document.getElementById("meal").value.trim();
         const token = localStorage.getItem("jwt");
-
         if (!meal) return;
 
         const impact = determineImpact(meal);
-        console.log("Sending:", { meal, impact });
+        const postData = { meal, impact };
+        console.log("Sending:", postData);
 
         try {
             const response = await fetch(`${pythonURI}/api/foodlog`, {
                 ...fetchOptions,
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    ...fetchOptions.headers,
-                    "Authorization": `Bearer ${token}`
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
                 },
-                body: JSON.stringify({ meal, impact })
+                body: JSON.stringify(postData)
             });
 
             if (!response.ok) {
@@ -77,12 +78,12 @@ comment: true
         const token = localStorage.getItem("jwt");
 
         try {
-            const response = await fetch(`${pythonURI}/api/foodlog/user`, {
+            const response = await fetch(`${pythonURI}/api/foodlog`, {
                 ...fetchOptions,
-                method: "GET",
+                method: 'GET',
                 headers: {
-                    ...fetchOptions.headers,
-                    "Authorization": `Bearer ${token}`
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
                 }
             });
 
@@ -120,17 +121,23 @@ comment: true
 
     async function deleteFoodLog(id) {
         const token = localStorage.getItem("jwt");
+        const postData = { id };
 
         try {
-            await fetch(`${pythonURI}/api/foodlog`, {
+            const response = await fetch(`${pythonURI}/api/foodlog`, {
                 ...fetchOptions,
-                method: "DELETE",
+                method: 'DELETE',
                 headers: {
-                    ...fetchOptions.headers,
-                    "Authorization": `Bearer ${token}`
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
                 },
-                body: JSON.stringify({ id })
+                body: JSON.stringify(postData)
             });
+
+            if (!response.ok) {
+                throw new Error("Failed to delete log: " + response.statusText);
+            }
+
             fetchFoodLogs();
         } catch (error) {
             console.error("Error deleting log:", error);
