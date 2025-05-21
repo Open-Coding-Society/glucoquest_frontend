@@ -412,23 +412,17 @@
       <div style="margin: 2rem 0;">
         <h3 style="color: var(--dexcom-dark); margin-bottom: 1rem;">Leaderboard</h3>
         
-        <table class="leaderboard" id="leaderboard">
+        <table id="leaderboard">
           <thead>
             <tr>
-              <th>Rank</th>
+              <th>Place</th>
               <th>Name</th>
               <th>Time</th>
               <th>Date</th>
             </tr>
           </thead>
           <tbody>
-            <!-- Sample data - will be replaced with real data when backend is connected -->
-            <tr>
-              <td>1</td>
-              <td>You</td>
-              <td id="currentPlayerTime">-</td>
-              <td>Today</td>
-            </tr>
+            <!-- JS will insert rows here -->
           </tbody>
         </table>
       </div>
@@ -471,6 +465,7 @@
   const totalPairs = 4;
   const penaltySeconds = 5;
   let currentTime = 0;
+  let leaderboardEntries = [];
 
   // Initialize the game
   function init() {
@@ -610,20 +605,44 @@
     showNameScreen();
   }
 
-  function saveScore() {
+  // Fetch leaderboard from backend and render
+  async function loadLeaderboard() {
+    const response = await fetch('/api/leaderboard');
+    leaderboardEntries = await response.json();
+    leaderboardEntries.sort((a, b) => a.time - b.time); // Sort by time ascending
+    renderLeaderboard();
+  }
+
+  // Save score to backend and reload leaderboard
+  async function saveScore() {
+    console.log("saveScore called");
     const playerName = playerNameInput.value.trim() || 'Anonymous';
-    currentPlayerTimeElement.textContent = currentTime;
-    // Update the leaderboard's first row with the new score
-    const firstRow = leaderboard.querySelector('tbody tr:first-child');
-    if (firstRow) {
-      firstRow.cells[1].textContent = playerName;
-      firstRow.cells[2].textContent = currentTime;
-      const today = new Date();
-      firstRow.cells[3].textContent = today.toISOString().split('T')[0];
-    }
+    const today = new Date().toISOString().split('T')[0];
+    leaderboardEntries.push({ name: playerName, time: currentTime, date: today });
+    leaderboardEntries.sort((a, b) => a.time - b.time);
+    renderLeaderboard();
     playerNameInput.value = '';
     showEndScreen();
   }
+
+  // Render leaderboard table
+  function renderLeaderboard() {
+    const tbody = document.querySelector('#leaderboard tbody');
+    tbody.innerHTML = '';
+    leaderboardEntries.forEach((entry, idx) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${idx + 1}</td>
+        <td>${entry.name}</td>
+        <td>${entry.time}</td>
+        <td>${entry.date}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Call loadLeaderboard() when the end screen is shown or on page load
+  window.addEventListener('DOMContentLoaded', loadLeaderboard);
 
   // Add this function to check if all slots are filled
   function checkAllSlotsFilled() {
