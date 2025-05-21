@@ -30,7 +30,23 @@
       padding: 2rem;
     }
     
-    /* Enhanced Header */
+    /* Screen Styling */
+    .screen {
+      display: none;
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.08);
+      max-width: 800px;
+      margin: 2rem auto;
+      text-align: center;
+    }
+    
+    .screen.active {
+      display: block;
+    }
+    
+    /* Header Styling */
     .game-header {
       text-align: center;
       margin-bottom: 2rem;
@@ -42,7 +58,6 @@
       font-size: 2.5rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
       position: relative;
       display: inline-block;
     }
@@ -59,7 +74,7 @@
       border-radius: 2px;
     }
     
-    /* Medical-grade Body Outline */
+    /* Body Outline */
     .body-outline {
       width: 220px;
       height: 440px;
@@ -70,7 +85,52 @@
       filter: drop-shadow(0 4px 8px rgba(0,102,204,0.2));
     }
     
-    /* Premium Card Design */
+    /* Button Styling */
+    .btn {
+      background: var(--dexcom-blue);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+      margin: 0.5rem;
+    }
+    
+    .btn:hover {
+      background: var(--dexcom-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,102,204,0.4);
+    }
+    
+    .btn-outline {
+      background: white;
+      color: var(--dexcom-blue);
+      border: 2px solid var(--dexcom-blue);
+    }
+    
+    /* Game Board Styling */
+    .game-board {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      gap: 2rem;
+    }
+    
+    .slots, .cards {
+      width: 48%;
+      background: rgba(255,255,255,0.7);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    /* Card Styling */
     .card {
       background: white;
       border-radius: 12px;
@@ -78,21 +138,8 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
       cursor: grab;
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border: none;
-      position: relative;
-      overflow: hidden;
       margin-bottom: 1rem;
-    }
-    
-    .card:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: var(--dexcom-blue);
-      transition: width 0.3s ease;
+      position: relative;
     }
     
     .card:hover {
@@ -100,11 +147,7 @@
       box-shadow: 0 12px 24px rgba(0,0,0,0.12);
     }
     
-    .card:hover:before {
-      width: 8px;
-    }
-    
-    /* Slot Design */
+    /* Slot Styling */
     .slot {
       background: white;
       border-radius: 12px;
@@ -137,7 +180,7 @@
       letter-spacing: 1px;
     }
     
-    /* Professional Timer */
+    /* Timer Styling */
     .timer {
       font-size: 1.8rem;
       margin: 2rem 0;
@@ -152,64 +195,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     
-    /* Medical-grade Button */
-    .btn {
-      background: var(--dexcom-blue);
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 50px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 12px rgba(0,102,204,0.3);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .btn:hover {
-      background: var(--dexcom-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,102,204,0.4);
-    }
-    
-    /* Game Board Layout */
-    .game-board {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 2rem;
-      gap: 2rem;
-    }
-    
-    .slots {
-      width: 48%;
-      background: rgba(255,255,255,0.7);
-      border-radius: 16px;
-      padding: 2rem;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .cards {
-      width: 48%;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    /* Screens */
-    .screen {
-      background: white;
-      padding: 3rem;
-      border-radius: 20px;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.08);
-      max-width: 800px;
-      margin: 2rem auto;
-      text-align: center;
-    }
-    
-    /* Leaderboard Table */
+    /* Leaderboard Styling */
     .leaderboard {
       width: 100%;
       border-collapse: collapse;
@@ -236,12 +222,20 @@
       background-color: #f1f7fd;
     }
     
-    /* Animations */
-    @keyframes confetti {
-      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+    /* Input Styling */
+    .input-group {
+      margin-bottom: 1.5rem;
     }
     
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    
+    /* Animations */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20% { transform: translateX(-8px); }
@@ -279,16 +273,20 @@
       .game-header h1 {
         font-size: 2rem;
       }
+      
+      .screen {
+        padding: 2rem 1rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="game-container">
     <!-- Start Screen -->
-    <div class="screen" id="startScreen">
+    <div class="screen active" id="startScreen">
       <div class="game-header">
         <h1>Dexcom CGM Training</h1>
-        <p>Master medical device placement through this interactive matching challenge</p>
+        <p>Master medical device placement through this interactive challenge</p>
       </div>
       
       <div class="body-outline"></div>
@@ -305,7 +303,7 @@
     </div>
 
     <!-- Game Screen -->
-    <div class="screen hidden" id="gameScreen">
+    <div class="screen" id="gameScreen">
       <div class="game-header">
         <h1>CGM Placement Challenge</h1>
         <div class="timer" id="timer">00:00</div>
@@ -374,8 +372,28 @@
       </div>
     </div>
 
+    <!-- Name Input Screen -->
+    <div class="screen" id="nameScreen">
+      <div class="game-header">
+        <h1>Record Your Score</h1>
+      </div>
+      
+      <div style="max-width: 500px; margin: 0 auto;">
+        <p style="color: #34495e; margin-bottom: 2rem; font-size: 1.1rem;">
+          You completed the training in <span id="scoreTime" style="font-weight: 600;"></span> seconds!
+          Enter your name to save your score to the leaderboard.
+        </p>
+        
+        <div class="input-group">
+          <input type="text" id="playerName" placeholder="Your name or initials">
+        </div>
+        
+        <button class="btn" id="saveScoreButton">Save Score</button>
+      </div>
+    </div>
+
     <!-- End Screen with Leaderboard -->
-    <div class="screen hidden" id="endScreen">
+    <div class="screen" id="endScreen">
       <div class="game-header">
         <h1>Training Complete!</h1>
         <div style="font-size: 1.2rem; color: var(--dexcom-blue); margin: 1rem 0 2rem;">
@@ -435,239 +453,207 @@
       
       <div style="margin-top: 2rem;">
         <button class="btn" id="restartButton" style="margin-right: 1rem;">Try Again</button>
-        <button class="btn" id="newPlayerButton" style="background: white; color: var(--dexcom-blue); border: 2px solid var(--dexcom-blue);">New Player</button>
-      </div>
-    </div>
-
-    <!-- Name Input Screen -->
-    <div class="screen hidden" id="nameScreen">
-      <div class="game-header">
-        <h1>Record Your Score</h1>
-      </div>
-      
-      <div style="max-width: 500px; margin: 0 auto;">
-        <p style="color: #34495e; margin-bottom: 2rem; font-size: 1.1rem;">
-          You completed the training in <span id="scoreTime" style="font-weight: 600;"></span> seconds!
-          Enter your name to save your score to the leaderboard.
-        </p>
-        
-        <div style="margin-bottom: 1.5rem;">
-          <input type="text" id="playerName" placeholder="Your name or initials" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-        </div>
-        
-        <button class="btn" id="saveScoreButton">Save Score</button>
+        <button class="btn btn-outline" id="newPlayerButton">New Player</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Game elements
-    const startScreen = document.getElementById('startScreen');
-    const gameScreen = document.getElementById('gameScreen');
-    const endScreen = document.getElementById('endScreen');
-    const nameScreen = document.getElementById('nameScreen');
-    const startButton = document.getElementById('startButton');
-    const restartButton = document.getElementById('restartButton');
-    const newPlayerButton = document.getElementById('newPlayerButton');
-    const saveScoreButton = document.getElementById('saveScoreButton');
-    const timerElement = document.getElementById('timer');
-    const finalTimeElement = document.getElementById('finalTime');
-    const scoreTimeElement = document.getElementById('scoreTime');
-    const currentPlayerTimeElement = document.getElementById('currentPlayerTime');
-    const playerNameInput = document.getElementById('playerName');
-    const leaderboard = document.getElementById('leaderboard');
+  // DOM Elements
+  const startScreen = document.getElementById('startScreen');
+  const gameScreen = document.getElementById('gameScreen');
+  const nameScreen = document.getElementById('nameScreen');
+  const endScreen = document.getElementById('endScreen');
+  const startButton = document.getElementById('startButton');
+  const saveScoreButton = document.getElementById('saveScoreButton');
+  const restartButton = document.getElementById('restartButton');
+  const newPlayerButton = document.getElementById('newPlayerButton');
+  const timerElement = document.getElementById('timer');
+  const scoreTimeElement = document.getElementById('scoreTime');
+  const finalTimeElement = document.getElementById('finalTime');
+  const currentPlayerTimeElement = document.getElementById('currentPlayerTime');
+  const playerNameInput = document.getElementById('playerName');
+  const leaderboard = document.getElementById('leaderboard');
 
-    // Game variables
-    let startTime;
-    let timerInterval;
-    let matchedPairs = 0;
-    const totalPairs = 4;
-    const penaltySeconds = 5;
-    let currentTime = 0;
+  // Game Variables
+  let startTime;
+  let timerInterval;
+  let matchedPairs = 0;
+  const totalPairs = 4;
+  const penaltySeconds = 5;
+  let currentTime = 0;
 
-    // Start game
-    startButton.addEventListener('click', startGame);
-    restartButton.addEventListener('click', startGame);
-    newPlayerButton.addEventListener('click', () => {
-      endScreen.classList.add('hidden');
-      startScreen.classList.remove('hidden');
-    });
+  // Initialize the game
+  function init() {
+    startButton.addEventListener('click', showGameScreen);
     saveScoreButton.addEventListener('click', saveScore);
+    restartButton.addEventListener('click', showGameScreen);
+    newPlayerButton.addEventListener('click', showStartScreen);
+    setupDragAndDrop();
+  }
 
-    function startGame() {
-      // Reset game state
-      matchedPairs = 0;
-      
-      // Show game screen
-      startScreen.classList.add('hidden');
-      endScreen.classList.add('hidden');
-      nameScreen.classList.add('hidden');
-      gameScreen.classList.remove('hidden');
-      
-      // Reset all slots
-      document.querySelectorAll('.slot').forEach(slot => {
-        slot.classList.remove('correct', 'shake');
-        slot.innerHTML = '';
-      });
-      
-      // Reset all cards
-      document.querySelectorAll('.card').forEach(card => {
-        card.style.display = 'flex';
-        card.classList.add('pulse');
-      });
-      
-      // Start timer
-      startTime = new Date();
+  // Screen Navigation Functions
+  function hideAllScreens() {
+    document.querySelectorAll('.screen').forEach(screen => {
+      screen.classList.remove('active');
+    });
+  }
+
+  function showStartScreen() {
+    hideAllScreens();
+    startScreen.classList.add('active');
+  }
+
+  function showGameScreen() {
+    hideAllScreens();
+    gameScreen.classList.add('active');
+    startGame();
+  }
+
+  function showNameScreen() {
+    hideAllScreens();
+    nameScreen.classList.add('active');
+    scoreTimeElement.textContent = currentTime;
+  }
+
+  function showEndScreen() {
+    hideAllScreens();
+    endScreen.classList.add('active');
+    finalTimeElement.textContent = currentTime;
+  }
+
+  // Game Functions
+  function startGame() {
+    matchedPairs = 0;
+    resetSlots();
+    resetCards();
+    startTime = new Date();
+    updateTimer();
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+
+  function updateTimer() {
+    const now = new Date();
+    const elapsed = Math.floor((now - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+    const seconds = (elapsed % 60).toString().padStart(2, '0');
+    timerElement.textContent = `${minutes}:${seconds}`;
+  }
+
+  function setupDragAndDrop() {
+    const cards = document.querySelectorAll('.card');
+    const slots = document.querySelectorAll('.slot');
+    cards.forEach(card => {
+      card.addEventListener('dragstart', dragStart);
+      card.addEventListener('dragend', dragEnd);
+    });
+    slots.forEach(slot => {
+      slot.addEventListener('dragover', dragOver);
+      slot.addEventListener('dragenter', dragEnter);
+      slot.addEventListener('dragleave', dragLeave);
+      slot.addEventListener('drop', drop);
+    });
+  }
+
+  function dragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.dataset.device);
+    setTimeout(() => {
+      e.target.classList.add('dragging');
+      e.target.classList.remove('pulse');
+    }, 0);
+  }
+
+  function dragEnd(e) {
+    e.target.classList.remove('dragging');
+  }
+
+  function dragOver(e) {
+    e.preventDefault();
+  }
+
+  function dragEnter(e) {
+    e.preventDefault();
+    e.target.classList.add('highlight');
+  }
+
+  function dragLeave(e) {
+    e.target.classList.remove('highlight');
+  }
+
+  function drop(e) {
+    e.preventDefault();
+    e.target.classList.remove('highlight');
+    const deviceType = e.dataTransfer.getData('text/plain');
+    const card = document.querySelector(`.card[data-device="${deviceType}"]:not(.dragging)`);
+    if (e.target.dataset.correct === deviceType) {
+      // Correct match
+      e.target.classList.add('correct');
+      e.target.innerHTML = card.innerHTML;
+      card.style.display = 'none';
+      card.classList.remove('pulse');
+      matchedPairs++;
+      e.target.style.animation = 'none';
+      e.target.offsetHeight; // Trigger reflow
+      e.target.style.animation = 'pulse 0.5s';
+      if (matchedPairs === totalPairs) {
+        endGame();
+      }
+    } else {
+      // Incorrect match
+      startTime = new Date(startTime.getTime() - penaltySeconds * 1000);
       updateTimer();
-      timerInterval = setInterval(updateTimer, 1000);
-      
-      // Setup drag and drop
-      setupDragAndDrop();
-    }
-
-    function updateTimer() {
-      const currentTime = new Date();
-      const elapsed = Math.floor((currentTime - startTime) / 1000);
-      const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-      const seconds = (elapsed % 60).toString().padStart(2, '0');
-      timerElement.textContent = `${minutes}:${seconds}`;
-    }
-
-    function setupDragAndDrop() {
-      const cards = document.querySelectorAll('.card');
-      const slots = document.querySelectorAll('.slot');
-      
-      cards.forEach(card => {
-        card.addEventListener('dragstart', dragStart);
-        card.addEventListener('dragend', dragEnd);
-      });
-      
-      slots.forEach(slot => {
-        slot.addEventListener('dragover', dragOver);
-        slot.addEventListener('dragenter', dragEnter);
-        slot.addEventListener('dragleave', dragLeave);
-        slot.addEventListener('drop', drop);
-      });
-    }
-
-    function dragStart(e) {
-      e.dataTransfer.setData('text/plain', e.target.dataset.device);
+      e.target.classList.add('shake');
       setTimeout(() => {
-        e.target.classList.add('dragging');
-        e.target.classList.remove('pulse');
-      }, 0);
+        e.target.classList.remove('shake');
+      }, 500);
     }
+  }
 
-    function dragEnd(e) {
-      e.target.classList.remove('dragging');
-    }
+  function endGame() {
+    clearInterval(timerInterval);
+    const endTime = new Date();
+    currentTime = Math.floor((endTime - startTime) / 1000);
+    showNameScreen();
+  }
 
-    function dragOver(e) {
-      e.preventDefault();
+  function saveScore() {
+    const playerName = playerNameInput.value.trim() || 'Anonymous';
+    currentPlayerTimeElement.textContent = currentTime;
+    // Update the leaderboard's first row with the new score
+    const firstRow = leaderboard.querySelector('tbody tr:first-child');
+    if (firstRow) {
+      firstRow.cells[1].textContent = playerName;
+      firstRow.cells[2].textContent = currentTime;
+      const today = new Date();
+      firstRow.cells[3].textContent = today.toISOString().split('T')[0];
     }
+    playerNameInput.value = '';
+    showEndScreen();
+  }
 
-    function dragEnter(e) {
-      e.preventDefault();
-      e.target.classList.add('highlight');
-    }
+  function resetSlots() {
+    const slotNames = {
+      'sensor': 'Upper Arm (Primary)',
+      'transmitter': 'Abdomen (Primary)',
+      'receiver': 'Pocket/Hand',
+      'sensor-alt': 'Thigh (Alternative)'
+    };
+    document.querySelectorAll('.slot').forEach(slot => {
+      slot.classList.remove('correct', 'shake');
+      slot.innerHTML = '';
+    });
+  }
 
-    function dragLeave(e) {
-      e.target.classList.remove('highlight');
-    }
+  function resetCards() {
+    document.querySelectorAll('.card').forEach(card => {
+      card.style.display = 'flex';
+      card.classList.add('pulse');
+    });
+  }
 
-    function drop(e) {
-      e.preventDefault();
-      e.target.classList.remove('highlight');
-      
-      const deviceType = e.dataTransfer.getData('text/plain');
-      const card = document.querySelector(`.card[data-device="${deviceType}"]:not(.dragging)`);
-      
-      if (e.target.dataset.correct === deviceType) {
-        // Correct match
-        e.target.classList.add('correct');
-        e.target.innerHTML = card.innerHTML;
-        card.style.display = 'none';
-        card.classList.remove('pulse');
-        matchedPairs++;
-        
-        // Visual feedback
-        e.target.style.animation = 'none';
-        e.target.offsetHeight; // Trigger reflow
-        e.target.style.animation = 'pulse 0.5s';
-        
-        if (matchedPairs === totalPairs) {
-          endGame();
-        }
-      } else {
-        // Incorrect match
-        startTime = new Date(startTime.getTime() - penaltySeconds * 1000);
-        updateTimer();
-        
-        e.target.classList.add('shake');
-        setTimeout(() => {
-          e.target.classList.remove('shake');
-        }, 500);
-      }
-    }
-
-    function endGame() {
-      clearInterval(timerInterval);
-      
-      // Calculate final time
-      const endTime = new Date();
-      currentTime = Math.floor((endTime - startTime) / 1000);
-      
-      // Show name input screen
-      gameScreen.classList.add('hidden');
-      nameScreen.classList.remove('hidden');
-      scoreTimeElement.textContent = currentTime;
-    }
-
-    function saveScore() {
-      const playerName = playerNameInput.value.trim() || 'Anonymous';
-      
-      // In a real app, you would send this to your backend:
-      // Example: await fetch('/api/scores', { method: 'POST', body: JSON.stringify({ name: playerName, time: currentTime }) });
-      
-      // For now, we'll just update the UI
-      finalTimeElement.textContent = currentTime;
-      currentPlayerTimeElement.textContent = currentTime;
-      
-      // Update the leaderboard's first row with the new score
-      const firstRow = leaderboard.querySelector('tbody tr:first-child');
-      if (firstRow) {
-        firstRow.cells[1].textContent = playerName;
-        firstRow.cells[2].textContent = currentTime;
-        const today = new Date();
-        firstRow.cells[3].textContent = today.toISOString().split('T')[0];
-      }
-      
-      // Show end screen with leaderboard
-      nameScreen.classList.add('hidden');
-      endScreen.classList.remove('hidden');
-      
-      // Clear the name input for next time
-      playerNameInput.value = '';
-    }
-
-    // Confetti effect for celebration (would activate on perfect score)
-    function createConfetti() {
-      const colors = ['#0066cc', '#27ae60', '#f1c40f', '#e74c3c', '#9b59b6'];
-      
-      for (let i = 0; i < 100; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * 100 + 'vw';
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.animation = `confetti ${Math.random() * 3 + 2}s linear forwards`;
-        confetti.style.opacity = '1';
-        document.body.appendChild(confetti);
-        
-        setTimeout(() => {
-          confetti.remove();
-        }, 5000);
-      }
-    }
+  // Initialize the game when the page loads
+  window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
