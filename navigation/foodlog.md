@@ -36,18 +36,17 @@ comment: true
     align-items: center;
   }
 
-.checklist-title {
-  font-size: 3rem;
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #00ffc8;
-  font-family: 'Inter', sans-serif;
-  text-shadow: 0 0 8px #00ffc8, 0 0 16px #00ffc8;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
+  .checklist-title {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #00ffc8;
+    font-family: 'Inter', sans-serif;
+    text-shadow: 0 0 8px #00ffc8, 0 0 16px #00ffc8;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
 
   .foodlog-wrapper {
     width: 150%;
@@ -110,28 +109,55 @@ comment: true
     color: #00ffc8;
   }
 
-.checklist-item {
-  background-color: #1a1a1a;
-  padding: 1rem 1.5rem;
-  margin: 0.5rem 0;
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
-  font-family: 'Inter', sans-serif;
-  align-items: center;
-  box-shadow: 0 0 12px rgba(0, 255, 200, 0.15);
-  font-size: 1.1rem;
-  line-height: 1.5;
-}
+  .checklist-item {
+    background-color: #1a1a1a;
+    padding: 1rem 1.5rem;
+    margin: 0.5rem 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 12px rgba(0, 255, 200, 0.15);
+    font-size: 1.1rem;
+    font-family: 'Inter', sans-serif;
+  }
 
-.checklist-item span strong {
-  font-weight: 600;
-  color: #ffffff;
-}
+  .checklist-item span {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
 
-.checklist-item span {
-  color: #cccccc;
-}
+  .meal-name {
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .impact-pill {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 999px;
+    font-weight: 600;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .impact-low {
+    background-color: #00ff88;
+    color: #000;
+  }
+
+  .impact-medium {
+    background-color: #ffcc00;
+    color: #000;
+  }
+
+  .impact-high {
+    background-color: #ff4d4d;
+    color: #fff;
+  }
 
   .delete-btn {
     background-color: #ff4d4d;
@@ -213,10 +239,16 @@ comment: true
       container.innerHTML = "";
 
       logs.forEach(log => {
+        const impactClass = `impact-${log.impact.toLowerCase()}`;
         const div = document.createElement("div");
         div.className = "checklist-item";
-        div.innerHTML = `<span><strong>${log.meal}</strong> — Impact: ${log.impact}</span>
-                         <button class="delete-btn" data-id="${log.id}">Delete</button>`;
+        div.innerHTML = `
+          <span>
+            <span class="meal-name">${log.meal}</span>
+            <span class="impact-pill ${impactClass}">Impact: ${log.impact}</span>
+          </span>
+          <button class="delete-btn" data-id="${log.id}">Delete</button>
+        `;
         container.appendChild(div);
       });
 
