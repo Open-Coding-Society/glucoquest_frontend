@@ -406,7 +406,6 @@ comment: true
       <h2>Engaging Introduction to the Dexcom Sensor Simulator Game</h2>
       <p><strong>Learning Made Interactive – No Manual Required!</strong></p>
       <p>Mastering new medical devices like the <strong>Dexcom Continuous Glucose Monitoring (CGM) System</strong> can feel overwhelming—especially when faced with lengthy manuals or complex instructions. That’s why we’ve created this <strong>interactive simulator game</strong>—a hands-on, stress-free way to learn how to use the Dexcom sensor correctly and confidently!</p>
-      
       <h3>Why This Simulator?</h3>
       <ul>
         <li><strong>Learn by Doing</strong>: Forget passive reading—practice applying the sensor step-by-step in a <strong>risk-free virtual environment</strong>.</li>
@@ -416,78 +415,7 @@ comment: true
       </ul>
     </div>
   </div>
-  
-  <!-- 血糖测试模拟器 (原有内容) -->
-  <div class="simulator-content active" id="blood-test">
-    <div class="game-section">
-      <div class="game-panel">
-        <h2>Glucose Monitoring Game</h2>
-        <p>Practice proper needle insertion technique</p>
-        
-        <div class="arm-simulator" id="arm-simulator">
-          <div class="vein-target"></div>
-          <div class="needle" id="needle"></div>
-        </div>
-        
-        <div class="game-result">
-          <h3>CURRENT READING</h3>
-          <div class="glucose-value" id="glucose-value">--</div>
-          <div id="glucose-status">Insert needle to measure</div>
-          <div id="feedback" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px;"></div>
-        </div>
-      </div>
-      
-      <div class="game-panel">
-        <h2>Manual Record</h2>
-        <p>Enter your glucose measurements manually</p>
-        
-        <form id="glucose-form" class="record-form">
-          <input type="hidden" id="record-id" value="">
-          
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="manual-glucose">Glucose Value (mmol/L)</label>
-              <input type="number" step="0.1" class="form-control" id="manual-glucose" required min="1" max="30">
-            </div>
-            
-            <div class="form-group">
-              <label for="manual-time">Measurement Time</label>
-              <input type="datetime-local" class="form-control" id="manual-time" required>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="manual-notes">Notes</label>
-            <textarea class="form-control" id="manual-notes" rows="2"></textarea>
-          </div>
-          
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary" id="save-btn">Save Record</button>
-            <button type="button" class="btn btn-outline" id="clear-btn">Clear Form</button>
-          </div>
-        </form>
-        
-        <h3>Your Records</h3>
-        <table class="records-table" id="records-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Value</th>
-              <th>Time</th>
-              <th>Status</th>
-              <th>Notes</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Records will be added here dynamically -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Dexcom 传感器模拟器 (新增内容) -->
+   <!-- Dexcom 传感器模拟器 (新增内容) -->
   <div class="simulator-content" id="dexcom-sensor">
     <h2>Dexcom Sensor Application Simulator</h2>
     
@@ -526,19 +454,19 @@ comment: true
   </div>
 </div>
 
-    <div class="dexcom-arm-area" id="dexcom-arm-area">
-      <div class="target-zone"></div>
-      <!-- Stickers will be placed here dynamically -->
+<div class="dexcom-arm-area" id="dexcom-arm-area">
+        <img src="{{site.baseurl}}/images/needlepin/arm.png" class="arm-image" alt="Arm">
+        <div class="target-zone"></div>
     </div>
 
-    <div class="glucose-display" id="dexcom-glucose-display" style="display: none;">
+<div class="glucose-display" id="dexcom-glucose-display" style="display: none;">
       <h3>Current Glucose Reading</h3>
       <div class="glucose-value" id="dexcom-glucose-value">--</div>
       <div id="dexcom-glucose-status">Sensor warming up...</div>
       <div id="dexcom-glucose-trend" style="margin-top: 10px;"></div>
     </div>
 
-    <table class="records-table" id="dexcom-data-table">
+  <table class="records-table" id="dexcom-data-table">
       <thead>
         <tr>
           <th>Time</th>
@@ -553,6 +481,76 @@ comment: true
     </table>
   </div>
 </div>
+
+  <!-- 血糖测试模拟器 (原有内容) -->
+  <div class="simulator-content active" id="blood-test">
+    <div class="game-section">
+      <div class="game-panel">
+        <h2>Glucose Monitoring Game</h2>
+        <p>Practice proper needle insertion technique</p>
+        
+  <div class="arm-simulator" id="arm-simulator">
+          <div class="vein-target"></div>
+          <div class="needle" id="needle"></div>
+        </div>
+        
+  <div class="game-result">
+          <h3>CURRENT READING</h3>
+          <div class="glucose-value" id="glucose-value">--</div>
+          <div id="glucose-status">Insert needle to measure</div>
+          <div id="feedback" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px;"></div>
+        </div>
+      </div>
+      
+  <div class="game-panel">
+        <h2>Manual Record</h2>
+        <p>Enter your glucose measurements manually</p>
+        
+  <form id="glucose-form" class="record-form">
+          <input type="hidden" id="record-id" value="">
+          
+  <div class="form-grid">
+            <div class="form-group">
+              <label for="manual-glucose">Glucose Value (mmol/L)</label>
+              <input type="number" step="0.1" class="form-control" id="manual-glucose" required min="1" max="30">
+            </div>
+            
+  <div class="form-group">
+              <label for="manual-time">Measurement Time</label>
+              <input type="datetime-local" class="form-control" id="manual-time" required>
+            </div>
+          </div>
+          
+  <div class="form-group">
+            <label for="manual-notes">Notes</label>
+            <textarea class="form-control" id="manual-notes" rows="2"></textarea>
+          </div>
+          
+  <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="save-btn">Save Record</button>
+            <button type="button" class="btn btn-outline" id="clear-btn">Clear Form</button>
+          </div>
+        </form>
+        
+<h3>Your Records</h3>
+        <table class="records-table" id="records-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Value</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Records will be added here dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
 <script type="module">
     import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';

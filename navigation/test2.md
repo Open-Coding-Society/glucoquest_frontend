@@ -330,7 +330,7 @@ comment: true
   let dexcomGlucoseReadings = [];
   
   // Initialize drag and drop for Dexcom simulator
-  document.querySelectorAll('.equipment-item').forEach(item => {
+  document.querySelectorAll('.equipment-icon').forEach(item => {
     item.addEventListener('dragstart', (e) => {
       e.dataTransfer.setData('type', item.dataset.type);
       e.dataTransfer.setData('sound', item.dataset.sound);
