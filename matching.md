@@ -328,43 +328,44 @@
         
         <div class="cards">
           <h3 style="color: var(--dexcom-dark); margin-bottom: 1.5rem; font-weight: 600;">Dexcom Devices</h3>
-          
-          <div class="card pulse" draggable="true" data-device="sensor">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.5rem;">📟</span>
-              <div>
-                <div style="font-weight: 600; color: var(--dexcom-dark);">Glucose Sensor</div>
-                <div style="font-size: 0.9rem; color: #7f8c8d;">Measures interstitial fluid</div>
+          <div id="deviceContainer" class="device-column">
+            <div class="card pulse" draggable="true" data-device="sensor">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5rem;">📟</span>
+                <div>
+                  <div style="font-weight: 600; color: var(--dexcom-dark);">Glucose Sensor</div>
+                  <div style="font-size: 0.9rem; color: #7f8c8d;">Measures interstitial fluid</div>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div class="card pulse" draggable="true" data-device="transmitter">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.5rem;">📡</span>
-              <div>
-                <div style="font-weight: 600; color: var(--dexcom-dark);">Transmitter</div>
-                <div style="font-size: 0.9rem; color: #7f8c8d;">Sends data every 5 minutes</div>
+            
+            <div class="card pulse" draggable="true" data-device="transmitter">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5rem;">📡</span>
+                <div>
+                  <div style="font-weight: 600; color: var(--dexcom-dark);">Transmitter</div>
+                  <div style="font-size: 0.9rem; color: #7f8c8d;">Sends data every 5 minutes</div>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div class="card pulse" draggable="true" data-device="receiver">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.5rem;">📱</span>
-              <div>
-                <div style="font-weight: 600; color: var(--dexcom-dark);">Receiver/Phone</div>
-                <div style="font-size: 0.9rem; color: #7f8c8d;">Displays glucose data</div>
+            
+            <div class="card pulse" draggable="true" data-device="receiver">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5rem;">📱</span>
+                <div>
+                  <div style="font-weight: 600; color: var(--dexcom-dark);">Receiver/Phone</div>
+                  <div style="font-size: 0.9rem; color: #7f8c8d;">Displays glucose data</div>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div class="card pulse" draggable="true" data-device="sensor-alt">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.5rem;">📟</span>
-              <div>
-                <div style="font-weight: 600; color: var(--dexcom-dark);">Backup Sensor</div>
-                <div style="font-size: 0.9rem; color: #7f8c8d;">Alternative placement</div>
+            
+            <div class="card pulse" draggable="true" data-device="sensor-alt">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5rem;">📟</span>
+                <div>
+                  <div style="font-weight: 600; color: var(--dexcom-dark);">Backup Sensor</div>
+                  <div style="font-size: 0.9rem; color: #7f8c8d;">Alternative placement</div>
+                </div>
               </div>
             </div>
           </div>
@@ -461,6 +462,11 @@
         <button class="btn btn-outline" id="newPlayerButton">New Player</button>
       </div>
     </div>
+
+    <!-- Device Container (added) -->
+    <div id="deviceContainer" class="device-column">
+      <!-- All .card elements are children of this div at game start -->
+    </div>
   </div>
 
   <script>
@@ -515,6 +521,7 @@
   function showGameScreen() {
     hideAllScreens();
     gameScreen.classList.add('active');
+    resetGameBoard(); // <-- Add this line
     startGame();
   }
 
@@ -663,6 +670,38 @@
       card.style.display = 'flex';
       card.classList.add('pulse');
     });
+  }
+
+  const originalCardOrder = Array.from(document.querySelectorAll('.card')).map(card => card.id);
+
+  function resetGameBoard() {
+    const deviceContainer = document.getElementById('deviceContainer');
+    const slots = document.querySelectorAll('.slot');
+    const cards = document.querySelectorAll('.card');
+
+    // Move all cards back to deviceContainer and restore properties
+    cards.forEach(card => {
+      deviceContainer.appendChild(card);
+      card.style.display = 'flex';
+      card.style.margin = '';
+      card.setAttribute('draggable', 'true');
+      card.style.pointerEvents = '';
+      card.classList.remove('dragging', 'pulse');
+    });
+
+    // Clear all slots
+    slots.forEach(slot => {
+      slot.classList.remove('correct', 'highlight', 'shake');
+      while (slot.firstChild) {
+        slot.removeChild(slot.firstChild);
+      }
+    });
+
+    // Hide the continue button if visible
+    document.getElementById('continueButtonContainer').style.display = 'none';
+
+    // Re-attach drag-and-drop listeners
+    setupDragAndDrop();
   }
 
   // Initialize the game when the page loads
