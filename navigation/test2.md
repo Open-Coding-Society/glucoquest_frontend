@@ -16,15 +16,12 @@ comment: true
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   }
-  
-  /* Enhanced Step Indicator */
   .step-indicator {
     display: flex;
     justify-content: space-between;
     margin-bottom: 30px;
     counter-reset: step;
   }
-  
   .step {
     flex: 1;
     text-align: center;
@@ -33,7 +30,6 @@ comment: true
     font-size: 14px;
     color: #e2e8f0;
   }
-  
   .step::before {
     content: counter(step);
     width: 35px;
@@ -242,11 +238,63 @@ comment: true
     background-color: #ef4444;
     animation: shake 0.5s;
   }
+  .simulator-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #3a3a3a;
+}
+  .simulator-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: #2c2c2c;
+    border: 1px solid #3a3a3a;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    margin-right: 5px;
+    color: #e2e8f0;
+  }
+  .simulator-tab.active {
+    background: #3a3a3a;
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+  .simulator-content { display: none; }
+  .simulator-content.active { display: block; }
+  .about-bar {
+    background: #2c2c2c;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    color: #e2e8f0;
+  }
+  .about-bar h2 { color: #3b82f6; margin-bottom: 15px; }
+  .about-bar p { margin-bottom: 10px; line-height: 1.6; }
+  .about-bar ul { margin-left: 1.5em; }
 </style>
 
 <div class="container">
   <h1>Dexcom Sensor Application Simulator</h1>
-  
+  <div class="simulator-tabs">
+    <div class="simulator-tab active" data-tab="about">About</div>
+    <div class="simulator-tab" data-tab="dexcom-sensor">Dexcom Sensor Application</div>
+  </div>
+  <div class="simulator-content active" id="about">
+  <div class="about-bar">
+    <h2>Engaging Introduction to the Dexcom Sensor Simulator Game</h2>
+    <p><strong>Learning Made Interactive – No Manual Required!</strong></p>
+    <p>Mastering new medical devices like the <strong>Dexcom Continuous Glucose Monitoring (CGM) System</strong> can feel overwhelming—especially when faced with lengthy manuals or complex instructions. That’s why we’ve created this <strong>interactive simulator game</strong>—a hands-on, stress-free way to learn how to use the Dexcom sensor correctly and confidently!</p>
+    <h3>Why This Simulator?</h3>
+    <ul>
+      <li><strong>Learn by Doing</strong>: Forget passive reading—practice applying the sensor step-by-step in a <strong>risk-free virtual environment</strong>.</li>
+      <li><strong>Memorable & Fun</strong>: Games enhance retention! By simulating real-world scenarios, you’ll internalize the process more effectively than with text alone.</li>
+      <li><strong>Build Confidence</strong>: Repeat the steps until they feel natural, ensuring you’re prepared for real-life application.</li>
+      <li><strong>For Everyone</strong>: Whether you’re a patient, caregiver, or healthcare professional, this tool simplifies the learning curve.</li>
+    </ul>
+  </div>
+</div>
+
+  <div class="simulator-content" id="dexcom-sensor">
   <div class="step-indicator">
     <div class="step active" id="step1">Prepare</div>
     <div class="step" id="step2">Clean</div>
@@ -301,6 +349,21 @@ comment: true
     </tbody>
   </table>
 </div>
+</div>
+
+<script>
+document.querySelectorAll('.simulator-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.simulator-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const tabId = tab.dataset.tab;
+    document.querySelectorAll('.simulator-content').forEach(content => {
+      content.classList.remove('active');
+    });
+    document.getElementById(tabId).classList.add('active');
+  });
+});
+</script>
 
 <script type="module">
   // Audio elements for sound effects
