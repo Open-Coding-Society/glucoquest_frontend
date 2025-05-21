@@ -370,6 +370,11 @@
           </div>
         </div>
       </div>
+      
+      <!-- Add this Continue button container -->
+      <div id="continueButtonContainer" style="display:none; text-align:center; margin-top:2rem;">
+        <button id="continueButton" class="btn">Continue</button>
+      </div>
     </div>
 
     <!-- Name Input Screen -->
@@ -474,6 +479,8 @@
   const currentPlayerTimeElement = document.getElementById('currentPlayerTime');
   const playerNameInput = document.getElementById('playerName');
   const leaderboard = document.getElementById('leaderboard');
+  const continueButton = document.getElementById('continueButton');
+  const continueButtonContainer = document.getElementById('continueButtonContainer');
 
   // Game Variables
   let startTime;
@@ -490,6 +497,7 @@
     restartButton.addEventListener('click', showGameScreen);
     newPlayerButton.addEventListener('click', showStartScreen);
     setupDragAndDrop();
+    document.getElementById('continueButton').addEventListener('click', endGame);
   }
 
   // Screen Navigation Functions
@@ -531,6 +539,7 @@
     updateTimer();
     clearInterval(timerInterval);
     timerInterval = setInterval(updateTimer, 1000);
+    continueButtonContainer.style.display = 'none'; // Hide continue button on start
   }
 
   function updateTimer() {
@@ -585,19 +594,20 @@
     e.preventDefault();
     e.target.classList.remove('highlight');
     const deviceType = e.dataTransfer.getData('text/plain');
-    const card = document.querySelector(`.card[data-device="${deviceType}"]:not(.dragging)`);
-    if (e.target.dataset.correct === deviceType) {
-      // Correct match
+    const card = document.querySelector(`.card[data-device="${deviceType}"]`);
+    // Only allow drop if slot is empty
+    if (e.target.dataset.correct === deviceType && e.target.children.length === 0) {
       e.target.classList.add('correct');
-      e.target.innerHTML = card.innerHTML;
-      card.style.display = 'none';
-      card.classList.remove('pulse');
-      matchedPairs++;
-      e.target.style.animation = 'none';
-      e.target.offsetHeight; // Trigger reflow
-      e.target.style.animation = 'pulse 0.5s';
-      if (matchedPairs === totalPairs) {
-        endGame();
+      // Move the card DOM node into the slot
+      card.style.margin = "0 auto";
+      card.style.display = "flex";
+      card.setAttribute('draggable', 'false');
+      e.target.appendChild(card);
+      // Optionally, disable pointer events on the card
+      card.style.pointerEvents = "none";
+      // After each drop, check if all slots are filled
+      if (checkAllSlotsFilled()) {
+        document.getElementById('continueButtonContainer').style.display = 'block';
       }
     } else {
       // Incorrect match
@@ -632,16 +642,19 @@
     showEndScreen();
   }
 
+  // Add this function to check if all slots are filled
+  function checkAllSlotsFilled() {
+    const slots = document.querySelectorAll('.slot');
+    return Array.from(slots).every(slot => slot.children.length > 0);
+  }
+
   function resetSlots() {
-    const slotNames = {
-      'sensor': 'Upper Arm (Primary)',
-      'transmitter': 'Abdomen (Primary)',
-      'receiver': 'Pocket/Hand',
-      'sensor-alt': 'Thigh (Alternative)'
-    };
     document.querySelectorAll('.slot').forEach(slot => {
       slot.classList.remove('correct', 'shake');
-      slot.innerHTML = '';
+      // Remove all children (labels) from the slot
+      while (slot.firstChild) {
+        slot.removeChild(slot.firstChild);
+      }
     });
   }
 
