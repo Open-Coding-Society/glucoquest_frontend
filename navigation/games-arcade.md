@@ -111,6 +111,14 @@ show_reading_time: false
             </p>
         </a>
         <!-- Game 7 -->
+        <a href="{{site.baseurl}}/matching/" class="game-box">
+            <img src="{{site.baseurl}}/images/matching.png" alt="Matching Placeholder">
+            <h2>Matching Minigame</h2>
+            <p>
+                Match diabetes-related objects to where they belong on the body
+            </p>
+        </a>
+        <!-- Game 8 -->
         <a href="{{site.baseurl}}/Dexcom-lifestyle-minigame/" class="game-box">
             <img src="{{site.baseurl}}/images/ui-images/lifestyle-icon.jpg" alt="Glucose Hero Placeholder">
             <h2>Lifestyle Minigame</h2>
