@@ -7,7 +7,9 @@ layout: default
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balanced Plate Challenge</title>
+    <title>Perfect Plate</title>
+    <link rel="icon" href="{{site.baseurl}}/images/dexcom_favicon.ico" type="image/x-icon">
+
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <style>
         body { 
@@ -310,7 +312,7 @@ layout: default
 
         const game = new Phaser.Game(config);
         let plate, foods, cursors, powerUps;
-        let gameTime = 10;
+        let gameTime = 60;
         let score = 0;
         let level = 1;
         let timer;

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Balanced Plate Challenge
+title: Perfect Plate
 permalink: /glucoserush/
 comment: true
 ---

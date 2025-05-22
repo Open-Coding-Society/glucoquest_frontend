@@ -96,7 +96,7 @@ show_reading_time: false
             </p>
        <a href="{{site.baseurl}}/glucoserush/" class="game-box">
             <img src="{{site.baseurl}}/images/healthyplate.jpeg" alt="Balanced Plate Challenge">
-            <h2>Balanced Plate Challenge</h2>
+            <h2>Perfect Plate</h2>
             <p>
                 Catch the right combination of foods from different groups to build a perfect meal while avoiding junk food!
             </p>
