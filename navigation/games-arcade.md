@@ -99,7 +99,7 @@ show_reading_time: false
             <img src="{{site.baseurl}}/images/grandprix/default.png" alt="Glucose Grand Prix">
             <h2>Glucose Grand Prix</h2>
             <p>
-                I will also fix the description later.
+                Dodge obstacles while testing your diabetes knowledge!
             </p>
         </a>
         <!-- Game 6 -->
