@@ -239,17 +239,14 @@ comment: true
 
 <div class="container">
   <h1>Glucose Test Simulator</h1>
-  
   <div class="game-section">
     <div class="game-panel">
       <h2>Glucose Monitoring Game</h2>
       <p>Practice proper needle insertion technique</p>
-      
       <div class="arm-simulator" id="arm-simulator">
         <div class="vein-target"></div>
         <div class="needle" id="needle"></div>
       </div>
-      
       <div class="game-result">
         <h3>CURRENT READING</h3>
         <div class="glucose-value" id="glucose-value">--</div>
@@ -257,43 +254,33 @@ comment: true
         <div id="feedback" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px;"></div>
       </div>
     </div>
-    
     <div class="game-panel">
       <h2>Manual Record</h2>
-      <p>Enter your glucose measurements manually</p>
-      
       <form id="glucose-form" class="record-form">
         <input type="hidden" id="record-id" value="">
-        
         <div class="form-grid">
           <div class="form-group">
             <label for="manual-glucose">Glucose Value (mmol/L)</label>
             <input type="number" step="0.1" class="form-control" id="manual-glucose" required min="1" max="30">
           </div>
-          
           <div class="form-group">
             <label for="manual-time">Measurement Time</label>
             <input type="datetime-local" class="form-control" id="manual-time" required>
           </div>
         </div>
-        
         <div class="form-group">
           <label for="manual-notes">Notes</label>
           <textarea class="form-control" id="manual-notes" rows="2"></textarea>
         </div>
-        
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" id="save-btn">Save Record</button>
           <button type="button" class="btn btn-outline" id="clear-btn">Clear Form</button>
         </div>
       </form>
-      
-      <!-- 新增图表部分 -->
-      <div class="chart-container">
+    <div class="chart-container">
         <h3 class="chart-title">Last 3 Days Glucose Trend</h3>
         <canvas id="glucose-chart"></canvas>
       </div>
-      
       <h3>Your Records</h3>
       <table class="records-table" id="records-table">
         <thead>
@@ -315,479 +302,376 @@ comment: true
 </div>
 
 <script type="module">
-  import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
-  const API_BASE_URL = pythonURI + '/glucose';
+import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+import Chart from 'chart.js/auto';
 
-  // 引入Chart.js
-  import Chart from 'chart.js/auto';
+let glucoseChart = null;
 
-  // ==================== 血糖测试游戏逻辑 ====================
-  const needle = document.getElementById('needle');
-  const vein = document.querySelector('.vein-target');
-  const armSimulator = document.getElementById('arm-simulator');
-  const feedback = document.getElementById('feedback');
-  const glucoseValue = document.getElementById('glucose-value');
-  const glucoseStatus = document.getElementById('glucose-status');
-  
-  let isDragging = false;
-  let offsetX, offsetY;
-  
-  needle.addEventListener('mousedown', startDrag);
-  needle.addEventListener('touchstart', startDrag);
-  
-  document.addEventListener('mousemove', drag);
-  document.addEventListener('touchmove', drag);
-  
-  document.addEventListener('mouseup', endDrag);
-  document.addEventListener('touchend', endDrag);
-  
-  function startDrag(e) {
-      isDragging = true;
-      const rect = needle.getBoundingClientRect();
-      
-      if (e.type === 'mousedown') {
-          offsetX = e.clientX - rect.left;
-          offsetY = e.clientY - rect.top;
-      } else if (e.type === 'touchstart') {
-          e.preventDefault();
-          offsetX = e.touches[0].clientX - rect.left;
-          offsetY = e.touches[0].clientY - rect.top;
-      }
-      
-      needle.style.cursor = 'grabbing';
-      needle.style.opacity = '0.8';
-  }
-  
-  function drag(e) {
-      if (!isDragging) return;
-      
-      e.preventDefault();
-      const armRect = armSimulator.getBoundingClientRect();
-      let clientX, clientY;
-      
-      if (e.type === 'mousemove') {
-          clientX = e.clientX;
-          clientY = e.clientY;
-      } else if (e.type === 'touchmove') {
-          clientX = e.touches[0].clientX;
-          clientY = e.touches[0].clientY;
-      }
-      
-      let newLeft = clientX - armRect.left - offsetX;
-      let newTop = clientY - armRect.top - offsetY;
-      
-      newLeft = Math.max(0, Math.min(newLeft, armRect.width - needle.offsetWidth));
-      newTop = Math.max(0, Math.min(newTop, armRect.height - needle.offsetHeight));
-      
-      needle.style.left = `${newLeft}px`;
-      needle.style.top = `${newTop}px`;
-  }
-  
-  function endDrag(e) {
-      if (!isDragging) return;
-      isDragging = false;
-      needle.style.cursor = 'grab';
-      needle.style.opacity = '1';
-      
-      if (isColliding(needle.getBoundingClientRect(), vein.getBoundingClientRect())) {
-          handleSuccess();
-      } else {
-          handleError();
-      }
-  }
-  
-  function isColliding(rect1, rect2) {
-      const center1 = {
-          x: rect1.left + rect1.width / 2,
-          y: rect1.top + rect1.height / 2
-      };
-      
-      const center2 = {
-          x: rect2.left + rect2.width / 2,
-          y: rect2.top + rect2.height / 2
-      };
-      
-      return (
-          Math.abs(center1.x - center2.x) < rect2.width / 2 &&
-          Math.abs(center1.y - center2.y) < rect2.height / 2
-      );
-  }
-  
-  function handleSuccess() {
-      const glucose = generateGlucoseReading();
-      const status = getGlucoseStatus(glucose);
-      
-      glucoseValue.textContent = `${glucose} mmol/L`;
-      glucoseStatus.textContent = status;
-      glucoseStatus.className = `status-${status.toLowerCase()}`;
-      
-      showFeedback('Measurement successful!', 'success');
-  }
-  
-  function handleError() {
-      showFeedback('Please aim for the blue vein area', 'error');
-  }
-  
-  function generateGlucoseReading() {
-      if (Math.random() < 0.7) {
-          return (4 + Math.random() * 3.8).toFixed(1);
-      } else {
-          return Math.random() < 0.5 
-              ? (2 + Math.random() * 2).toFixed(1)
-              : (7.8 + Math.random() * 5).toFixed(1);
-      }
-  }
-  
-  function getGlucoseStatus(glucose) {
-      glucose = parseFloat(glucose);
-      if (glucose < 4) return 'Low';
-      if (glucose > 7.8) return 'High';
-      return 'Normal';
-  }
-
-  // ==================== 图表相关逻辑 ====================
-  let glucoseChart = null;
-
-  function initChart(records) {
-    // 过滤出最近3天的数据
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    
-    const recentRecords = records.filter(record => {
-      return new Date(record.time) >= threeDaysAgo;
-    }).sort((a, b) => new Date(a.time) - new Date(b.time));
-    
-    const ctx = document.getElementById('glucose-chart').getContext('2d');
-    
-    // 销毁现有图表
-    if (glucoseChart) {
-      glucoseChart.destroy();
-    }
-    
-    // 准备数据
-    const labels = recentRecords.map(record => {
-      const date = new Date(record.time);
-      return `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
-    });
-    
-    const data = recentRecords.map(record => record.value);
-    
-    // 创建图表
-    glucoseChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Glucose (mmol/L)',
-          data: data,
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          borderWidth: 2,
-          tension: 0.1,
-          fill: true,
-          pointBackgroundColor: function(context) {
-            const value = context.dataset.data[context.dataIndex];
-            if (value < 4) return '#ef4444'; // 低血糖红色
-            if (value > 7.8) return '#f59e0b'; // 高血糖橙色
-            return '#10b981'; // 正常绿色
-          },
-          pointRadius: 5,
-          pointHoverRadius: 7
-        }]
+function initChart(records) {
+  // 仅显示最近3天
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+  const recentRecords = records.filter(r => new Date(r.time) >= threeDaysAgo)
+    .sort((a, b) => new Date(a.time) - new Date(b.time));
+  const ctx = document.getElementById('glucose-chart').getContext('2d');
+  if (glucoseChart) glucoseChart.destroy();
+  const labels = recentRecords.map(r => {
+    const d = new Date(r.time);
+    return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+  });
+  const data = recentRecords.map(r => r.value);
+  glucoseChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Glucose (mmol/L)',
+        data: data,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.1)',
+        tension: 0.2,
+        fill: true,
+        pointRadius: 4,
+        pointBackgroundColor: data.map(v => v < 4 ? '#ef4444' : v > 7.8 ? '#f59e0b' : '#10b981')
+      }]
+    },
+    options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: { labels: { color: '#e2e8f0' } }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: false,
-            min: Math.max(0, Math.min(...data) - 2),
-            max: Math.max(...data) + 2,
-            title: {
-              display: true,
-              text: 'Glucose (mmol/L)',
-              color: '#e2e8f0'
-            },
-            grid: {
-              color: '#4a5568'
-            },
-            ticks: {
-              color: '#e2e8f0'
-            }
-          },
-          x: {
-            grid: {
-              color: '#4a5568'
-            },
-            ticks: {
-              color: '#e2e8f0',
-              maxRotation: 45,
-              minRotation: 45
-            }
-          }
+    scales: {
+        y: {
+          beginAtZero: false,
+          min: Math.max(0, Math.min(...data, 4) - 2),
+          max: Math.max(...data, 8) + 2,
+          ticks: { color: '#e2e8f0' },
+          grid: { color: '#4a5568' }
         },
-        plugins: {
-          legend: {
-            labels: {
-              color: '#e2e8f0'
-            }
-          },
-          tooltip: {
-            callbacks: {
-              afterLabel: function(context) {
-                const value = context.parsed.y;
-                if (value < 4) return 'Status: Low';
-                if (value > 7.8) return 'Status: High';
-                return 'Status: Normal';
-              }
-            }
-          }
-        },
-        interaction: {
-          mode: 'nearest',
-          axis: 'x',
-          intersect: false
+        x: {
+          ticks: { color: '#e2e8f0', maxRotation: 45, minRotation: 45 },
+          grid: { color: '#4a5568' }
         }
       }
-    });
-  }
-
-  // ==================== CRUD 操作 ====================
-  window.fetchGlucoseRecords = async function() {
-      try {
-          const response = await fetch(`${API_BASE_URL}/`, {
-              ...fetchOptions,
-              headers: {
-                  ...fetchOptions.headers,
-                  'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-              }
-          });
-          
-          if (!response.ok) {
-              throw new Error('Failed to fetch records: ' + response.statusText);
-          }
-          
-          const records = await response.json();
-          displayRecords(records);
-      } catch (error) {
-          console.error('Error fetching records:', error);
-          showFeedback('Error fetching records.', 'error');
-      }
-  }
-
-  window.createGlucoseRecord = async function(recordData) {
-      try {
-          const response = await fetch(`${API_BASE_URL}/`, {
-              method: 'POST',
-              ...fetchOptions,
-              headers: {
-                  ...fetchOptions.headers,
-                  'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-              },
-              body: JSON.stringify(recordData)
-          });
-          
-          if (!response.ok) {
-              throw new Error('Failed to create record: ' + response.statusText);
-          }
-          
-          return await response.json();
-      } catch (error) {
-          console.error('Error creating record:', error);
-          throw error;
-      }
-  }
-
-  window.updateGlucoseRecord = async function(id, recordData) {
-      try {
-          const response = await fetch(`${API_BASE_URL}/${id}`, {
-              method: 'PUT',
-              ...fetchOptions,
-              headers: {
-                  ...fetchOptions.headers,
-                  'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-              },
-              body: JSON.stringify(recordData)
-          });
-          
-          if (!response.ok) {
-              throw new Error('Failed to update record: ' + response.statusText);
-          }
-          
-          return await response.json();
-      } catch (error) {
-          console.error('Error updating record:', error);
-          throw error;
-      }
-  }
-
-  window.deleteGlucoseRecord = async function(id) {
-      try {
-          const response = await fetch(`${API_BASE_URL}/${id}`, {
-              method: 'DELETE',
-              ...fetchOptions,
-              headers: {
-                  ...fetchOptions.headers,
-                  'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-              }
-          });
-          
-          if (!response.ok) {
-              throw new Error('Failed to delete record: ' + response.statusText);
-          }
-          
-          return await response.json();
-      } catch (error) {
-          console.error('Error deleting record:', error);
-          throw error;
-      }
-  }
-
-  // ==================== UI 操作 ====================
-  let currentEditId = null;
-  const form = document.getElementById('glucose-form');
-  const recordIdInput = document.getElementById('record-id');
-  const glucoseInput = document.getElementById('manual-glucose');
-  const timeInput = document.getElementById('manual-time');
-  const notesInput = document.getElementById('manual-notes');
-  const saveBtn = document.getElementById('save-btn');
-  const clearBtn = document.getElementById('clear-btn');
-  const recordsTable = document.getElementById('records-table').querySelector('tbody');
-
-  // 初始化
-  window.fetchGlucoseRecords();
-  timeInput.value = new Date().toISOString().slice(0, 16);
-
-  // 显示记录
-  function displayRecords(records) {
-      recordsTable.innerHTML = '';
-      
-      const sortedRecords = [...records].sort((a, b) => new Date(b.time) - new Date(a.time));
-      
-      sortedRecords.forEach(record => {
-          const row = recordsTable.insertRow();
-          
-          row.innerHTML = `
-              <td>${record.id.slice(-4)}</td>
-              <td>${record.value} mmol/L</td>
-              <td>${formatDateTime(record.time)}</td>
-              <td><span class="status-${record.status.toLowerCase()}">${record.status}</span></td>
-              <td>${record.notes || '-'}</td>
-              <td class="table-actions">
-                  <button class="action-btn edit-btn" data-id="${record.id}">Edit</button>
-                  <button class="action-btn delete-btn" data-id="${record.id}">Delete</button>
-              </td>
-          `;
-      });
-      
-      // 初始化图表
-      initChart(records);
-      
-      // 添加事件监听器
-      document.querySelectorAll('.edit-btn').forEach(btn => {
-          btn.addEventListener('click', () => editRecordHandler(btn.dataset.id));
-      });
-      
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-          btn.addEventListener('click', () => deleteRecordHandler(btn.dataset.id));
-      });
-  }
-
-  // 格式化日期时间
-  function formatDateTime(datetimeStr) {
-      if (!datetimeStr) return '-';
-      const dt = new Date(datetimeStr);
-      return dt.toLocaleString();
-  }
-
-  // 编辑记录处理
-  async function editRecordHandler(id) {
-      try {
-          const response = await fetch(`${API_BASE_URL}/${id}`, {
-              ...fetchOptions,
-              headers: {
-                  ...fetchOptions.headers,
-                  'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-              }
-          });
-          
-          if (!response.ok) {
-              throw new Error('Failed to fetch record');
-          }
-          
-          const record = await response.json();
-          
-          currentEditId = record.id;
-          recordIdInput.value = record.id;
-          glucoseInput.value = record.value;
-          timeInput.value = record.time.slice(0, 16);
-          notesInput.value = record.notes || '';
-          saveBtn.textContent = 'Update Record';
-          
-          form.scrollIntoView({ behavior: 'smooth' });
-      } catch (error) {
-          console.error('Error fetching record:', error);
-          showFeedback('Failed to load record for editing.', 'error');
-      }
-  }
-
-  // 删除记录处理
-  async function deleteRecordHandler(id) {
-      if (confirm('Are you sure you want to delete this record?')) {
-          try {
-              await window.deleteGlucoseRecord(id);
-              await window.fetchGlucoseRecords();
-          } catch (error) {
-              console.error('Error deleting record:', error);
-              showFeedback('Failed to delete record.', 'error');
-          }
-      }
-  }
-
-  // 表单提交
-  form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const recordData = {
-          value: parseFloat(glucoseInput.value),
-          time: timeInput.value,
-          notes: notesInput.value
-      };
-      
-      try {
-          if (currentEditId) {
-              await window.updateGlucoseRecord(currentEditId, recordData);
-          } else {
-              await window.createGlucoseRecord(recordData);
-          }
-          await window.fetchGlucoseRecords();
-          resetForm();
-      } catch (error) {
-          console.error('Error saving record:', error);
-          showFeedback('Failed to save record. Please try again.', 'error');
-      }
+    }
   });
+}
 
-  // 清除表单
-  function resetForm() {
-      currentEditId = null;
-      form.reset();
-      saveBtn.textContent = 'Save Record';
-      timeInput.value = new Date().toISOString().slice(0, 16);
-  }
+// ==================== Utility Functions ====================
+function showFeedback(message, type) {
+    const feedback = document.getElementById('feedback');
+    if (!feedback) return;
+    feedback.textContent = message;
+    feedback.className = `feedback feedback-${type}`;
+    feedback.style.display = 'block';
+    setTimeout(() => { feedback.style.display = 'none'; }, 2500);
+}
 
-  clearBtn.addEventListener('click', resetForm);
+function formatDateTime(datetimeStr) {
+    if (!datetimeStr) return '-';
+    const dt = new Date(datetimeStr);
+    return dt.toLocaleString();
+}
 
-  // ==================== 通用函数 ====================
-  function showFeedback(message, type) {
-      const feedback = document.createElement('div');
-      feedback.textContent = message;
-      feedback.className = `feedback feedback-${type}`;
-      document.body.appendChild(feedback);
-      feedback.style.display = 'block';
-      
-      setTimeout(() => {
-          feedback.remove();
-      }, 3000);
-  }
+function getGlucoseStatus(glucose) {
+    glucose = parseFloat(glucose);
+    if (glucose < 4) return 'Low';
+    if (glucose > 7.8) return 'High';
+    return 'Normal';
+}
+
+// ==================== Game Logic ====================
+const needle = document.getElementById('needle');
+const vein = document.querySelector('.vein-target');
+const armSimulator = document.getElementById('arm-simulator');
+const glucoseValue = document.getElementById('glucose-value');
+const glucoseStatus = document.getElementById('glucose-status');
+const glucoseInput = document.getElementById('manual-glucose');
+const timeInput = document.getElementById('manual-time');
+
+let isDragging = false;
+let offsetX, offsetY;
+
+needle.addEventListener('mousedown', startDrag);
+needle.addEventListener('touchstart', startDrag);
+document.addEventListener('mousemove', drag);
+document.addEventListener('touchmove', drag);
+document.addEventListener('mouseup', endDrag);
+document.addEventListener('touchend', endDrag);
+
+function startDrag(e) {
+    isDragging = true;
+    const rect = needle.getBoundingClientRect();
+    if (e.type === 'mousedown') {
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+    } else if (e.type === 'touchstart') {
+        e.preventDefault();
+        offsetX = e.touches[0].clientX - rect.left;
+        offsetY = e.touches[0].clientY - rect.top;
+    }
+    needle.style.cursor = 'grabbing';
+    needle.style.opacity = '0.8';
+}
+
+function drag(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    const armRect = armSimulator.getBoundingClientRect();
+    let clientX, clientY;
+    if (e.type === 'mousemove') {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    } else if (e.type === 'touchmove') {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    }
+    let newLeft = clientX - armRect.left - offsetX;
+    let newTop = clientY - armRect.top - offsetY;
+    newLeft = Math.max(0, Math.min(newLeft, armRect.width - needle.offsetWidth));
+    newTop = Math.max(0, Math.min(newTop, armRect.height - needle.offsetHeight));
+    needle.style.left = `${newLeft}px`;
+    needle.style.top = `${newTop}px`;
+}
+
+function endDrag(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    needle.style.cursor = 'grab';
+    needle.style.opacity = '1';
+    if (isColliding(needle.getBoundingClientRect(), vein.getBoundingClientRect())) {
+        handleSuccess();
+    } else {
+        handleError();
+    }
+}
+
+function isColliding(rect1, rect2) {
+    const center1 = {
+        x: rect1.left + rect1.width / 2,
+        y: rect1.top + rect1.height / 2
+    };
+    const center2 = {
+        x: rect2.left + rect2.width / 2,
+        y: rect2.top + rect2.height / 2
+    };
+    return (
+        Math.abs(center1.x - center2.x) < rect2.width / 2 &&
+        Math.abs(center1.y - center2.y) < rect2.height / 2
+    );
+}
+
+function handleSuccess() {
+    const glucose = generateGlucoseReading();
+    const status = getGlucoseStatus(glucose);
+    glucoseValue.textContent = `${glucose} mmol/L`;
+    glucoseStatus.textContent = status;
+    glucoseStatus.className = `status-${status.toLowerCase()}`;
+    showFeedback('Measurement successful!', 'success');
+    // 自动填充表单
+    glucoseInput.value = glucose;
+    timeInput.value = new Date().toISOString().slice(0, 16);
+    document.getElementById('glucose-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+function handleError() {
+    showFeedback('Please aim for the blue vein area', 'error');
+}
+
+function generateGlucoseReading() {
+    if (Math.random() < 0.7) {
+        return (4 + Math.random() * 3.8).toFixed(1);
+    } else {
+        return Math.random() < 0.5 
+            ? (2 + Math.random() * 2).toFixed(1)
+            : (7.8 + Math.random() * 5).toFixed(1);
+    }
+}
+
+// ==================== CRUD Operations ====================
+let currentEditId = null;
+const form = document.getElementById('glucose-form');
+const recordIdInput = document.getElementById('record-id');
+const notesInput = document.getElementById('manual-notes');
+const saveBtn = document.getElementById('save-btn');
+const clearBtn = document.getElementById('clear-btn');
+const recordsTable = document.getElementById('records-table').querySelector('tbody');
+
+window.fetchGlucoseRecords = async function() {
+    try {
+        const response = await fetch(`${pythonURI}/api/glucose`, {
+            ...fetchOptions,
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch records: ' + response.statusText);
+        }
+        const records = await response.json();
+        displayRecords(records);
+    } catch (error) {
+        console.error('Error fetching records:', error);
+        showFeedback('Error fetching records.', 'error');
+    }
+};
+
+async function createGlucoseRecord(recordData) {
+    try {
+        const response = await fetch(`${pythonURI}/api/glucose`, {
+            ...fetchOptions,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(recordData)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to create record: ' + response.statusText);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error creating record:', error);
+        throw error;
+    }
+}
+
+async function updateGlucoseRecord(id, recordData) {
+    try {
+        const response = await fetch(`${pythonURI}/api/glucose`, {
+            ...fetchOptions,
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, ...recordData })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update record: ' + response.statusText);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating record:', error);
+        throw error;
+    }
+}
+
+async function deleteGlucoseRecord(id) {
+    try {
+        const response = await fetch(`${pythonURI}/api/glucose`, {
+            ...fetchOptions,
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete record: ' + response.statusText);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error deleting record:', error);
+        throw error;
+    }
+}
+
+// ==================== Record Display ====================
+function displayRecords(records) {
+    recordsTable.innerHTML = '';
+    const sortedRecords = [...records].sort((a, b) => new Date(b.time) - new Date(a.time));
+    sortedRecords.forEach(record => {
+        const row = recordsTable.insertRow();
+        row.innerHTML = `
+            <td>${record.id.slice(-4)}</td>
+            <td>${record.value} mmol/L</td>
+            <td>${formatDateTime(record.time)}</td>
+            <td><span class="status-${getGlucoseStatus(record.value).toLowerCase()}">${getGlucoseStatus(record.value)}</span></td>
+            <td>${record.notes || '-'}</td>
+            <td class="table-actions">
+                <button class="action-btn edit-btn" data-id="${record.id}">Edit</button>
+                <button class="action-btn delete-btn" data-id="${record.id}">Delete</button>
+            </td>
+        `;
+    });
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => editRecordHandler(btn.dataset.id));
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteRecordHandler(btn.dataset.id));
+    });
+    // 渲染折线图
+    initChart(records);
+}
+
+
+// ==================== Event Handlers ====================
+async function editRecordHandler(id) {
+    try {
+        const response = await fetch(`${pythonURI}/api/glucose`, {
+            ...fetchOptions,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch record');
+        }
+        const record = await response.json();
+        currentEditId = record.id;
+        recordIdInput.value = record.id;
+        glucoseInput.value = record.value;
+        timeInput.value = record.time.slice(0, 16);
+        notesInput.value = record.notes || '';
+        saveBtn.textContent = 'Update Record';
+        form.scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('Error fetching record:', error);
+        showFeedback('Failed to load record for editing.', 'error');
+    }
+}
+
+async function deleteRecordHandler(id) {
+    if (confirm('Are you sure you want to delete this record?')) {
+        try {
+            await deleteGlucoseRecord(id);
+            await fetchGlucoseRecords();
+            showFeedback('Record deleted successfully!', 'success');
+        } catch (error) {
+            console.error('Error deleting record:', error);
+            showFeedback('Failed to delete record.', 'error');
+        }
+    }
+}
+
+// Form submission handler
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+        const recordData = {
+            value: parseFloat(glucoseInput.value),
+            time: timeInput.value,
+            notes: notesInput.value
+        };
+        if (currentEditId) {
+            await updateGlucoseRecord(currentEditId, recordData);
+            showFeedback('Record updated successfully!', 'success');
+        } else {
+            await createGlucoseRecord(recordData);
+            showFeedback('Record created successfully!', 'success');
+        }
+        await fetchGlucoseRecords();
+        resetForm();
+    } catch (error) {
+        console.error('Error saving record:', error);
+        showFeedback('Failed to save record. Please try again.', 'error');
+    }
+});
+
+// Clear form handler
+function resetForm() {
+    currentEditId = null;
+    form.reset();
+    saveBtn.textContent = 'Save Record';
+    timeInput.value = new Date().toISOString().slice(0, 16);
+}
+clearBtn.addEventListener('click', resetForm);
+
+// 初始化
+fetchGlucoseRecords();
+timeInput.value = new Date().toISOString().slice(0, 16);
 </script>
