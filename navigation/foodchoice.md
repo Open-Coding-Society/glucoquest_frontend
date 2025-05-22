@@ -9,6 +9,7 @@ categories: [Game]
 <style>
 h1 {
     font-size: 30px;
+    color: white;
 }
 
 h2 {
