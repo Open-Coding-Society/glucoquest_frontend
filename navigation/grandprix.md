@@ -13,6 +13,49 @@ canvas {
     display: block;
     margin: 0 auto;
 }
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.75); /* Slightly transparent for polish */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.popup-content {
+  background: #58A618;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.popup-content p {
+  color: black;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.popup-content button {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup-content button:hover {
+  background-color: #0056b3;
+}
+
 </style>
 
 <button id="startButton">Start Game</button>
@@ -25,10 +68,14 @@ canvas {
   <canvas id="gameCanvas" width="360" height="639"></canvas>
 </div>
 
-<div id="triviaModal" style="display: none; position: absolute; top: 10%; left: 5%; width: 90%; background: white; padding: 20px; border: 2px solid black; z-index: 100;">
-  <p id="triviaQuestion"></p>
-  <div id="triviaOptions"></div>
+<div id="triviaModal" class="popup-overlay" style="display: none;">
+  <div class="popup-content">
+    <p id="triviaQuestion"></p>
+    <div id="triviaOptions" style="margin-top: 1rem;"></div>
+    <button id="close-popup" style="display: none;">OK</button>
+  </div>
 </div>
+
 
 
 <script type="module">
@@ -200,6 +247,12 @@ canvas {
         obstacleImages[name] = await loadImage(assets.obstacles[name].src);
       }
 
+      setInterval(() => {
+        if (isRunning && !isPaused && !showingTrivia && !isGameOver) {
+          showTrivia();
+        }
+      }, 10000);
+
       resetGameState();
       drawStaticScene();
     } catch (e) {
@@ -221,13 +274,11 @@ async function showTrivia() {
     isPaused = true;
 
     const res = await fetch(`${pythonURI}/api/trivia/${triviaIndex}`, fetchOptions);
-    if (!res.ok) throw new Error("Failed to fetch trivia");
     const data = await res.json();
 
-    triviaIndex++; // Increment for next question
+    triviaIndex++;
 
     document.getElementById("triviaQuestion").textContent = data.question;
-
     const optionsContainer = document.getElementById("triviaOptions");
     optionsContainer.innerHTML = "";
 
@@ -238,29 +289,37 @@ async function showTrivia() {
       optionsContainer.appendChild(btn);
     });
 
-    document.getElementById("triviaModal").style.display = "block";
+    document.getElementById("triviaModal").style.display = "flex";
+    document.getElementById("close-popup").style.display = "none";
 
   } catch (err) {
-    console.error("Trivia error:", err);
+    console.error("Error showing trivia:", err);
     showingTrivia = false;
     isPaused = false;
   }
 }
 
-
 function handleTriviaAnswer(selectedId, correctId) {
-  document.getElementById("triviaModal").style.display = "none";
+  const resultText = selectedId === correctId
+    ? "Correct! Keep going!"
+    : "Wrong! You lost a life.";
+
+  document.getElementById("triviaQuestion").textContent = resultText;
+  document.getElementById("triviaOptions").innerHTML = "";
+  document.getElementById("close-popup").style.display = "inline-block";
 
   if (selectedId !== correctId) {
     lives--;
-    wobbleFrames = 30;
     if (lives <= 0) isGameOver = true;
   }
+}
 
+document.getElementById("close-popup").addEventListener("click", () => {
+  document.getElementById("triviaModal").style.display = "none";
   showingTrivia = false;
   isPaused = false;
-  requestAnimationFrame(gameLoop); // resume
-}
+  if (!isGameOver) requestAnimationFrame(gameLoop);
+});
 
 
   function drawStaticScene() {
