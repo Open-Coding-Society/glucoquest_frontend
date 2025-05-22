@@ -46,7 +46,7 @@ categories: [Education]
       cursor: pointer;
       user-select: none;
       background: #1a3a1e;
-      padding: 30px;
+      padding: 100px;
       border-radius: 10px;
       font-size: 18px;
       margin: 20px auto;
