@@ -198,7 +198,77 @@ layout: default
         }
     </style>
 </head>
+
 <body>
+    <!-- Add this at the top of your game's body (healthy_plate.html) -->
+    <div id="instructionModal" class="modal">
+    <div class="modal-content">
+        <h2>How to Play Balanced Plate Challenge</h2>
+        <p>Drag and drop food items onto the plate to create a balanced meal!</p>
+        <ul>
+        <li>Include foods from all food groups</li>
+        <li>Aim for proper portions</li>
+        <li>Watch out for sugary items!</li>
+        <li>Submit your plate when you're done</li>
+        </ul>
+        <button id="startGameBtn">Let's Play!</button>
+    </div>
+    </div>
+
+    <style>
+    .modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .modal-content {
+    background-color: #1a5276;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 500px;
+    color: white;
+    text-align: center;
+    }
+
+    .modal-content button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 1rem;
+    }
+
+    .modal-content button:hover {
+    background-color: #45a049;
+    }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('instructionModal');
+    const startBtn = document.getElementById('startGameBtn');
+    
+    // Show modal when game loads
+    modal.style.display = 'flex';
+    
+    // Hide modal and start game when button clicked
+    startBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        // Initialize your game here if needed
+    });
+    });
+    </script>
     <div id="game-container">
         <div id="timer">60</div>
         <div id="score">0</div>

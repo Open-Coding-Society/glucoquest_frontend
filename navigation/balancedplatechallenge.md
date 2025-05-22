@@ -1,11 +1,10 @@
 ---
 layout: post
-title: Glucose Rush Game
+title: Balanced Plate Challenge
 permalink: /glucoserush/
 comment: true
 ---
 
-# Healthy Plate Game
 
 <div class="game-container">
   <iframe src="{{ site.baseurl }}/healthyplate/healthy_plate.html" class="game-iframe" allowfullscreen></iframe>
