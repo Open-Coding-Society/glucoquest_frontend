@@ -72,14 +72,6 @@ show_reading_time: false
             </p>
         </a>
         <!-- Game 2 -->
-        <a href="{{site.baseurl}}/foodlog/" class="game-box">
-            <img src="{{site.baseurl}}/images/foodlog.png" alt="Food Log">
-            <h2>Food Log</h2>
-            <p>
-               "Track your meals, see their impact, and build smarter eating habits, one log at a time."
-            </p>
-        </a>
-        <!-- Game 3 -->
         <a href="{{site.baseurl}}/foodchoice/" class="game-box">
             <img src="{{site.baseurl}}/images/ui-images/green-apple2.png" alt="What Do You Eat Placeholder">
             <h2>What Do You Eat?</h2>
@@ -87,26 +79,35 @@ show_reading_time: false
                 A mini-challenge where players choose between two food items for a meal, each associated with a glucose level.
             </p>
         </a>
-        <!-- Game 4 -->
+        <!-- Game 3 -->
         <a href="{{site.baseurl}}/crossword" class="game-box">
             <img src="{{site.baseurl}}/images/ui-images/dexcom_crossword.png" alt="Daily Diabetes Crossword Placeholder">
             <h2>Daily Diabetes Crossword</h2>
             <p>
                 A mini-challenge where players solve diabetes-related crosswords.
             </p>
-       <a href="{{site.baseurl}}/glucoserush/" class="game-box">
+        <!-- Game 4 -->>
+        <a href="{{site.baseurl}}/glucoserush/" class="game-box">
             <img src="{{site.baseurl}}/images/healthyplate.jpeg" alt="Balanced Plate Challenge">
             <h2>Perfect Plate</h2>
             <p>
                 Catch the right combination of foods from different groups to build a perfect meal while avoiding junk food!
             </p>
         </a>
-        <!-- Game 6 -->
+        <!-- Game 5 -->
         <a href="{{site.baseurl}}/grandprix/" class="game-box">
             <img src="{{site.baseurl}}/images/grandprix/default.png" alt="Glucose Grand Prix">
             <h2>Glucose Grand Prix</h2>
             <p>
                 I will also fix the description later.
+            </p>
+        </a>
+        <!-- Game 6 -->
+        <a href="{{site.baseurl}}/foodlog/" class="game-box">
+            <img src="{{site.baseurl}}/images/foodlog.png" alt="Food Log">
+            <h2>Food Log</h2>
+            <p>
+               "Track your meals, see their impact, and build smarter eating habits, one log at a time."
             </p>
         </a>
         <!-- Game 7 -->
