@@ -25,7 +25,15 @@ canvas {
   <canvas id="gameCanvas" width="360" height="639"></canvas>
 </div>
 
+<div id="triviaModal" style="display: none; position: absolute; top: 10%; left: 5%; width: 90%; background: white; padding: 20px; border: 2px solid black; z-index: 100;">
+  <p id="triviaQuestion"></p>
+  <div id="triviaOptions"></div>
+</div>
+
+
 <script type="module">
+  import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
+
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
   const startButton = document.getElementById("startButton");
@@ -104,6 +112,9 @@ canvas {
   let wobbleFrames = 0;
   let wobbleDirection = 1;
 
+  let triviaInterval;
+  let triviaIndex = 1;
+  let showingTrivia = false;
 
   function resetGameState() {
     carX = canvas.width / 2 - carWidth / 2;
@@ -150,20 +161,24 @@ canvas {
   }
 
   startButton.addEventListener("click", () => {
-    if (!isRunning) {
-      isRunning = true;
-      isPaused = false;
-      setupKeyboard();
-      requestAnimationFrame(gameLoop);
-      startButton.textContent = "Restart Game";
-    } else {
-      resetGameState();
-      isPaused = false;
-      pauseButton.textContent = "Pause";
-      drawStaticScene();
-      requestAnimationFrame(gameLoop);
-    }
-  });
+  if (!isRunning) {
+    isRunning = true;
+    isPaused = false;
+    setupKeyboard();
+    startTriviaTimer();
+    requestAnimationFrame(gameLoop);
+    startButton.textContent = "Restart Game";
+  } else {
+    resetGameState();
+    isPaused = false;
+    pauseButton.textContent = "Pause";
+    drawStaticScene();
+    triviaIndex = 1; // reset questions
+    startTriviaTimer();
+    requestAnimationFrame(gameLoop);
+  }
+});
+
 
   pauseButton.addEventListener("click", () => {
     if (isRunning) {
@@ -191,6 +206,62 @@ canvas {
       console.error("Image loading error:", e);
     }
   }
+
+  function startTriviaTimer() {
+  triviaInterval = setInterval(() => {
+    if (!isPaused && !isGameOver && !showingTrivia) {
+      showTrivia();
+    }
+  }, 10000); // every 10 seconds
+}
+
+async function showTrivia() {
+  try {
+    showingTrivia = true;
+    isPaused = true;
+
+    const res = await fetch(`${pythonURI}/api/trivia/${triviaIndex}`, fetchOptions);
+    if (!res.ok) throw new Error("Failed to fetch trivia");
+    const data = await res.json();
+
+    triviaIndex++; // Increment for next question
+
+    document.getElementById("triviaQuestion").textContent = data.question;
+
+    const optionsContainer = document.getElementById("triviaOptions");
+    optionsContainer.innerHTML = "";
+
+    data.answers.forEach((ans) => {
+      const btn = document.createElement("button");
+      btn.textContent = `${ans.answer_id}: ${ans.answer}`;
+      btn.onclick = () => handleTriviaAnswer(ans.answer_id, data.correct_answer);
+      optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById("triviaModal").style.display = "block";
+
+  } catch (err) {
+    console.error("Trivia error:", err);
+    showingTrivia = false;
+    isPaused = false;
+  }
+}
+
+
+function handleTriviaAnswer(selectedId, correctId) {
+  document.getElementById("triviaModal").style.display = "none";
+
+  if (selectedId !== correctId) {
+    lives--;
+    wobbleFrames = 30;
+    if (lives <= 0) isGameOver = true;
+  }
+
+  showingTrivia = false;
+  isPaused = false;
+  requestAnimationFrame(gameLoop); // resume
+}
+
 
   function drawStaticScene() {
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
