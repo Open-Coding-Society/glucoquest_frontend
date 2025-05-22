@@ -548,7 +548,7 @@
 
   // Fetch leaderboard from backend and render
   async function loadLeaderboard() {
-    const response = await fetch('/api/leaderboard');
+    const response = await fetch('http://127.0.0.1:8520/api/leaderboard');
     leaderboardEntries = await response.json();
     leaderboardEntries.sort((a, b) => a.time - b.time); // Sort by time ascending
     renderLeaderboard();
@@ -556,16 +556,27 @@
 
   // Save score to backend and reload leaderboard
   async function saveScore() {
-    console.log("saveScore called");
-    const playerName = playerNameInput.value.trim() || 'Anonymous';
-    const today = new Date().toISOString().split('T')[0];
-    leaderboardEntries.push({ name: playerName, time: currentTime, date: today });
-    leaderboardEntries.sort((a, b) => a.time - b.time);
-    renderLeaderboard();
-    playerNameInput.value = '';
-    showEndScreen();
+  const playerName = playerNameInput.value.trim() || 'Anonymous';
+  const today = new Date().toISOString().split('T')[0];
+  const entry = { name: playerName, time: currentTime, date: today };
+
+  // Always use a relative URL for same-server requests
+  const response = await fetch('http://127.0.0.1:8520/api/leaderboard', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(entry)
+  });
+
+  if (!response.ok) {
+    alert("Failed to record score. Please try again.");
+    return;
   }
 
+  // Reload leaderboard from backend so you see the real data
+  await loadLeaderboard();
+  playerNameInput.value = '';
+  showEndScreen();
+}
   // Render leaderboard table
   function renderLeaderboard() {
     const tbody = document.querySelector('#leaderboard tbody');
