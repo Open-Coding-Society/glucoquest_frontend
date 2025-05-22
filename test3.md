@@ -295,13 +295,39 @@ comment: true
 
 <script type="module">
   import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
-  const API_BASE_URL = pythonURI + '/api/glucose';
 
-  // ==================== 血糖测试游戏逻辑 ====================
+  // ==================== Utility Functions ====================
+  function showFeedback(message, type) {
+      const feedback = document.createElement('div');
+      feedback.className = `feedback feedback-${type}`;
+      feedback.textContent = message;
+      feedback.style.display = 'block';
+      
+      document.body.appendChild(feedback);
+      
+      setTimeout(() => {
+          feedback.style.display = 'none';
+          document.body.removeChild(feedback);
+      }, 3000);
+  }
+
+  function formatDateTime(datetimeStr) {
+      if (!datetimeStr) return '-';
+      const dt = new Date(datetimeStr);
+      return dt.toLocaleString();
+  }
+
+  function getGlucoseStatus(glucose) {
+      glucose = parseFloat(glucose);
+      if (glucose < 4) return 'Low';
+      if (glucose > 7.8) return 'High';
+      return 'Normal';
+  }
+
+  // ==================== Game Logic ====================
   const needle = document.getElementById('needle');
   const vein = document.querySelector('.vein-target');
   const armSimulator = document.getElementById('arm-simulator');
-  const feedback = document.getElementById('feedback');
   const glucoseValue = document.getElementById('glucose-value');
   const glucoseStatus = document.getElementById('glucose-status');
   
@@ -413,17 +439,9 @@ comment: true
               : (7.8 + Math.random() * 5).toFixed(1);
       }
   }
-  
-  function getGlucoseStatus(glucose) {
-      glucose = parseFloat(glucose);
-      if (glucose < 4) return 'Low';
-      if (glucose > 7.8) return 'High';
-      return 'Normal';
-  }
 
-  // ==================== UI 操作 ====================
-  
-let currentEditId = null;
+  // ==================== UI Elements ====================
+  let currentEditId = null;
   const form = document.getElementById('glucose-form');
   const recordIdInput = document.getElementById('record-id');
   const glucoseInput = document.getElementById('manual-glucose');
@@ -433,45 +451,91 @@ let currentEditId = null;
   const clearBtn = document.getElementById('clear-btn');
   const recordsTable = document.getElementById('records-table').querySelector('tbody');
 
-  // 表单提交
-  form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const recordData = {
-          value: parseFloat(glucoseInput.value),
-          time: timeInput.value,
-          notes: notesInput.value
-      };
-      
+  // ==================== CRUD Operations ====================
+  async function fetchRecords() {
       try {
-          if (currentEditId) {
-              await window.updateGlucoseRecord(currentEditId, recordData);
-          } else {
-              await window.createGlucoseRecord(recordData);
-          }
-          await window.fetchGlucoseRecords();
-          resetForm();
-      } catch (error) {
-          console.error('Error saving record:', error);
-          showFeedback('Failed to save record. Please try again.', 'error');
-      }
-  });
+          const response = await fetch(`${pythonURI}/api/glucose`, {
+              ...fetchOptions,
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
 
-  // 清除表单
-  function resetForm() {
-      currentEditId = null;
-      form.reset();
-      saveBtn.textContent = 'Save Record';
-      timeInput.value = new Date().toISOString().slice(0, 16);
+          });
+          
+          if (!response.ok) {
+              throw new Error('Failed to fetch records: ' + response.statusText);
+          }
+          
+          const records = await response.json();
+          displayRecords(records);
+      } catch (error) {
+          console.error('Error fetching records:', error);
+          showFeedback('Error fetching records.', 'error');
+      }
   }
 
-  clearBtn.addEventListener('click', resetForm);
+  async function createRecord(recordData) {
+      try {
+          const response = await fetch(`${pythonURI}/api/glucose`, {
+                ...fetchOptions,
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
 
-  // 初始化
-  window.fetchGlucoseRecords();
-  timeInput.value = new Date().toISOString().slice(0, 16);
+              body: JSON.stringify(recordData)
+          });
+          
+          if (!response.ok) {
+              throw new Error('Failed to create record: ' + response.statusText);
+          }
+          
+          return await response.json();
+      } catch (error) {
+          console.error('Error creating record:', error);
+          throw error;
+      }
+  }
 
-  // 显示记录
+  async function updateRecord(id, recordData) {
+      try {
+          const response = await fetch(`${pythonURI}/api/glucose`, {        
+              ...fetchOptions,
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+
+              body: JSON.stringify(recordData)
+          });
+          
+          if (!response.ok) {
+              throw new Error('Failed to update record: ' + response.statusText);
+          }
+          
+          return await response.json();
+      } catch (error) {
+          console.error('Error updating record:', error);
+          throw error;
+      }
+  }
+
+  async function deleteRecord(id) {
+      try {
+          const response = await fetch(`${pythonURI}/api/glucose`, {            
+              ...fetchOptions,
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+
+          });
+          
+          if (!response.ok) {
+              throw new Error('Failed to delete record: ' + response.statusText);
+          }
+          
+          return await response.json();
+      } catch (error) {
+          console.error('Error deleting record:', error);
+          throw error;
+      }
+  }
+
+  // ==================== Record Display ====================
   function displayRecords(records) {
       recordsTable.innerHTML = '';
       
@@ -484,7 +548,7 @@ let currentEditId = null;
               <td>${record.id.slice(-4)}</td>
               <td>${record.value} mmol/L</td>
               <td>${formatDateTime(record.time)}</td>
-              <td><span class="status-${record.status.toLowerCase()}">${record.status}</span></td>
+              <td><span class="status-${getGlucoseStatus(record.value).toLowerCase()}">${getGlucoseStatus(record.value)}</span></td>
               <td>${record.notes || '-'}</td>
               <td class="table-actions">
                   <button class="action-btn edit-btn" data-id="${record.id}">Edit</button>
@@ -493,7 +557,7 @@ let currentEditId = null;
           `;
       });
       
-      // 添加事件监听器
+      // Add event listeners for edit and delete buttons
       document.querySelectorAll('.edit-btn').forEach(btn => {
           btn.addEventListener('click', () => editRecordHandler(btn.dataset.id));
       });
@@ -503,22 +567,13 @@ let currentEditId = null;
       });
   }
 
-  // 格式化日期时间
-  function formatDateTime(datetimeStr) {
-      if (!datetimeStr) return '-';
-      const dt = new Date(datetimeStr);
-      return dt.toLocaleString();
-  }
-
-  // 编辑记录处理
+  // ==================== Event Handlers ====================
   async function editRecordHandler(id) {
       try {
-          const response = await fetch(`${API_BASE_URL}/${id}`, {
+          const response = await fetch(`${pythonURI}/api/glucose`, {       
               ...fetchOptions,
-              headers: {
-                  ...fetchOptions.headers,
-                  'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-              }
+              headers: { 'Content-Type': 'application/json' },
+
           });
           
           if (!response.ok) {
@@ -541,12 +596,12 @@ let currentEditId = null;
       }
   }
 
-  // 删除记录处理
   async function deleteRecordHandler(id) {
       if (confirm('Are you sure you want to delete this record?')) {
           try {
-              await window.deleteGlucoseRecord(id);
-              await window.fetchGlucoseRecords();
+              await deleteRecord(id);
+              await fetchRecords();
+              showFeedback('Record deleted successfully!', 'success');
           } catch (error) {
               console.error('Error deleting record:', error);
               showFeedback('Failed to delete record.', 'error');
@@ -554,89 +609,43 @@ let currentEditId = null;
       }
   }
 
+  // Form submission handler
+  form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      try {
+          const recordData = {
+              value: parseFloat(glucoseInput.value),
+              time: timeInput.value,
+              notes: notesInput.value
+          };
+          
+          if (currentEditId) {
+              await updateRecord(currentEditId, recordData);
+              showFeedback('Record updated successfully!', 'success');
+          } else {
+              await createRecord(recordData);
+              showFeedback('Record created successfully!', 'success');
+          }
+          await fetchRecords();
+          resetForm();
+      } catch (error) {
+          console.error('Error saving record:', error);
+          showFeedback('Failed to save record. Please try again.', 'error');
+      }
+  });
 
-// ==================== CRUD 操作 ====================
+  // Clear form handler
+  function resetForm() {
+      currentEditId = null;
+      form.reset();
+      saveBtn.textContent = 'Save Record';
+      timeInput.value = new Date().toISOString().slice(0, 16);
+  }
 
-// Define all the functions first
-window.fetchGlucoseRecords = async function() {
-    try {
-        const response = await fetch(`${pythonURI}/api/glucose`, {
-            ...fetchOptions,
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch records: ' + response.statusText);
-        }
-        
-        const records = await response.json();
-        displayRecords(records);
-    } catch (error) {
-        console.error('Error fetching records:', error);
-        showFeedback('Error fetching records.', 'error');
-    }
-}
+  clearBtn.addEventListener('click', resetForm);
 
-window.createGlucoseRecord = async function(recordData) {
-    try {
-        const response = await fetch(`${pythonURI}/api/glucose`, {
-            ...fetchOptions,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(recordData)
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to create record: ' + response.statusText);
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Error creating record:', error);
-        throw error;
-    }
-}
-
-window.updateGlucoseRecord = async function(id, recordData) {
-    try {
-        const response = await fetch(`${pythonURI}/api/glucose/${id}`, {
-            ...fetchOptions,
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(recordData)
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to update record: ' + response.statusText);
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Error updating record:', error);
-        throw error;
-    }
-}
-
-window.deleteGlucoseRecord = async function(id) {
-    try {
-        const response = await fetch(`${pythonURI}/api/glucose/${id}`, {
-            ...fetchOptions,
-            method: 'DELETE'
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to delete record: ' + response.statusText);
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Error deleting record:', error);
-        throw error;
-    }
-}
-
-// Then call the functions after they're defined
-window.fetchGlucoseRecords();
-timeInput.value = new Date().toISOString().slice(0, 16);
+  // Initialize the page
+  fetchRecords();
+  timeInput.value = new Date().toISOString().slice(0, 16);
 </script>
