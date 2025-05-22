@@ -94,12 +94,11 @@ show_reading_time: false
             <p>
                 A mini-challenge where players solve diabetes-related crosswords.
             </p>
-        <!-- Game 5 -->
-        <a href="{{site.baseurl}}/glucoserush/" class="game-box">
-            <img src="{{site.baseurl}}/images/healthyplate.jpeg" alt="Healthy Plate">
-            <h2>Healthy Plate</h2>
+       <a href="{{site.baseurl}}/glucoserush/" class="game-box">
+            <img src="{{site.baseurl}}/images/healthyplate.jpeg" alt="Balanced Plate Challenge">
+            <h2>Balanced Plate Challenge</h2>
             <p>
-                A game ill fix the description later.
+                Catch the right combination of foods from different groups to build a perfect meal while avoiding junk food!
             </p>
         </a>
         <!-- Game 6 -->
