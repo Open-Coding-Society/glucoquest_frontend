@@ -162,6 +162,16 @@ canvas {
   let triviaInterval;
   let triviaIndex = 1;
   let showingTrivia = false;
+  let triviaTimeout;
+
+function scheduleNextTrivia() {
+  triviaTimeout = setTimeout(() => {
+    if (!isPaused && !isGameOver) {
+      showTrivia();
+    }
+  }, 10000); // wait 10 seconds *after* last one was closed
+}
+
 
   function resetGameState() {
     carX = canvas.width / 2 - carWidth / 2;
@@ -212,7 +222,6 @@ canvas {
     isRunning = true;
     isPaused = false;
     setupKeyboard();
-    startTriviaTimer();
     requestAnimationFrame(gameLoop);
     startButton.textContent = "Restart Game";
   } else {
@@ -221,7 +230,6 @@ canvas {
     pauseButton.textContent = "Pause";
     drawStaticScene();
     triviaIndex = 1; // reset questions
-    startTriviaTimer();
     requestAnimationFrame(gameLoop);
   }
 });
@@ -259,14 +267,6 @@ canvas {
       console.error("Image loading error:", e);
     }
   }
-
-  function startTriviaTimer() {
-  triviaInterval = setInterval(() => {
-    if (!isPaused && !isGameOver && !showingTrivia) {
-      showTrivia();
-    }
-  }, 10000); // every 10 seconds
-}
 
 async function showTrivia() {
   try {
@@ -318,8 +318,12 @@ document.getElementById("close-popup").addEventListener("click", () => {
   document.getElementById("triviaModal").style.display = "none";
   showingTrivia = false;
   isPaused = false;
-  if (!isGameOver) requestAnimationFrame(gameLoop);
+  if (!isGameOver) {
+    requestAnimationFrame(gameLoop);
+    scheduleNextTrivia(); 
+  }
 });
+
 
 
   function drawStaticScene() {
