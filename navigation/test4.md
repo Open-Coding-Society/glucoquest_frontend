@@ -301,12 +301,10 @@ comment: true
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module">
 import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
-import Chart from 'chart.js/auto';
-
 let glucoseChart = null;
-
 function initChart(records) {
   // 仅显示最近3天
   const threeDaysAgo = new Date();
