@@ -352,12 +352,10 @@
           </div>
         </div>
       </div>
-      <!-- Add this Continue button container -->
       <div id="continueButtonContainer" style="display:none; text-align:center; margin-top:2rem;">
         <button id="continueButton" class="btn">Continue</button>
       </div>
     </div>
-    <!-- Name Input Screen -->
     <div class="screen" id="nameScreen">
       <div class="game-header">
         <h1>Record Your Score</h1>
