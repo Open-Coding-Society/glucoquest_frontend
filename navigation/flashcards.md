@@ -76,8 +76,8 @@ categories: [Education]
       height: 200px;
       position: relative;
       box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      min-height: 120px;
-      max-width: 400px;
+      min-height: 180px;
+      max-width: 500px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -107,16 +107,20 @@ categories: [Education]
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      /*font-size: 22px;*/
       font-family: 'Oxygen Mono', monospace;
       box-sizing: border-box;
       padding: 40px 20px;
       box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }
+    .flashcard-front {
+      font-size: 22px;
+    }
     .flashcard-back {
       transform: rotateY(180deg);
       background: #2a4a2e;
       color: #b6ffb6;
+      font-size: 18px;
     }
 </style>
 <html>
@@ -194,8 +198,6 @@ categories: [Education]
       showingTerm = true;
       displayCard();
     }
-
-    // ...existing code...
 
     // Utility to get N random elements from an array
     function getRandomSample(arr, n) {
