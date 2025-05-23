@@ -654,7 +654,7 @@
 
   // Fetch leaderboard from backend and render
   async function loadLeaderboard() {
-    const response = await fetch('http://127.0.0.1:8520/api/leaderboard');
+    const response = await fetch('/api/leaderboard');
     leaderboardEntries = await response.json();
     leaderboardEntries.sort((a, b) => a.time - b.time); // Sort by time ascending
     renderLeaderboard();
@@ -667,7 +667,7 @@
   const entry = { name: playerName, time: currentTime, date: today };
 
   // Always use a relative URL for same-server requests
-  const response = await fetch('http://127.0.0.1:8520/api/leaderboard', {
+  const response = await fetch('/api/leaderboard', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(entry)
