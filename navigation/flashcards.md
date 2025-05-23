@@ -135,102 +135,101 @@ categories: [Education]
 
     // ...existing code...
 
-// Utility to get N random elements from an array
-function getRandomSample(arr, n) {
-  const copy = arr.slice();
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy.slice(0, n);
-}
-
-let quizCards = []; // Store the random 10 cards for the current quiz
-
-function renderQuiz() {
-  // Hide flashcards
-  flashcardContainer.style.display = "none";
-  // Pick 10 random cards for this quiz
-  quizCards = getRandomSample(flashcards, Math.min(10, flashcards.length));
-  let quizHtml = `
-    <form id="quizForm" class="feature-card">
-      <h2>Quiz: Type the correct term for each definition</h2>
-      <div style="display:flex; flex-direction:column; gap:15px;">
-  `;
-  quizCards.forEach((card, idx) => {
-    quizHtml += `
-      <div>
-        <label><b>${idx + 1}.</b> ${card.definition}</label><br>
-        <input type="text" name="answer${idx}" style="width:100%;padding:5px;margin-top:5px;" autocomplete="off"/>
-      </div>
-    `;
-  });
-  quizHtml += `
-      </div>
-      <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
-        <button type="button" id="cancelQuizBtn">Cancel</button>
-        <button type="submit" id="submitQuizBtn">Submit Quiz</button>
-      </div>
-      <div id="quizWarning" style="color:orange; margin-top:10px;"></div>
-    </form>
-  `;
-  quizSection.innerHTML = quizHtml;
-
-  document.getElementById("cancelQuizBtn").onclick = () => {
-    quizSection.innerHTML = "";
-    flashcardContainer.style.display = "";
-  };
-  document.getElementById("quizForm").onsubmit = handleQuizSubmit;
-}
-
-function handleQuizSubmit(e) {
-  e.preventDefault();
-  const form = e.target;
-  const answers = [];
-  let emptyCount = 0;
-  for (let i = 0; i < quizCards.length; i++) {
-    const val = form[`answer${i}`].value.trim();
-    answers.push(val);
-    if (!val) emptyCount++;
-  }
-  if (emptyCount > 0) {
-    document.getElementById("quizWarning").innerText =
-      "Are you sure you want to submit? You haven't answered all the questions.";
-    // Only submit if user clicks submit again with warning shown
-    if (!form.dataset.warned) {
-      form.dataset.warned = "true";
-      return;
+    // Utility to get N random elements from an array
+    function getRandomSample(arr, n) {
+      const copy = arr.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      } 
+      return copy.slice(0, n);
     }
-  }
-  // Grade quiz
-  let score = 0;
-  let resultsHtml = `<div class="feature-card"><h2>Quiz Results</h2><ul style="text-align:left;">`;
-  quizCards.forEach((card, idx) => {
-    const userAns = answers[idx] || "(no answer)";
-    const correct = userAns.toLowerCase().trim() === card.term.toLowerCase().trim();
-    if (correct) score++;
-    resultsHtml += `<li>
-      <b>Q${idx + 1}:</b> ${card.definition}<br>
-      <span style="color:${correct ? 'limegreen' : 'red'}">
-        Your answer: ${userAns}
-        ${correct ? "✓" : `✗ (Correct: ${card.term})`}
-      </span>
-    </li>`;
-  });
-  resultsHtml += `</ul>
-    <h3 style="text-align:center;">Score: ${score} / ${quizCards.length}</h3>
-    <div style="text-align:center;">
-      <button id="retakeQuizBtn">Retake Quiz</button>
-    </div>
-  </div>`;
-  quizSection.innerHTML = resultsHtml;
-  document.getElementById("retakeQuizBtn").onclick = () => {
-    renderQuiz();
-  };
-  // Show flashcards again after quiz is submitted
-  flashcardContainer.style.display = "";
-}
 
+    let quizCards = []; // Store the random 10 cards for the current quiz
+
+    function renderQuiz() {
+      // Hide flashcards
+      flashcardContainer.style.display = "none";
+      // Pick 10 random cards for this quiz
+      quizCards = getRandomSample(flashcards, Math.min(10, flashcards.length));
+      let quizHtml = `
+        <form id="quizForm" class="feature-card">
+          <h2>Quiz: Type the correct term for each definition</h2>
+          <div style="display:flex; flex-direction:column; gap:15px;">
+      `;
+      quizCards.forEach((card, idx) => {
+        quizHtml += `
+          <div>
+            <label><b>${idx + 1}.</b> ${card.definition}</label><br>
+            <input type="text" name="answer${idx}" style="width:100%;padding:5px;margin-top:5px;" autocomplete="off"/>
+          </div>
+        `;
+      });
+      quizHtml += `
+          </div>
+          <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+            <button type="button" id="cancelQuizBtn">Cancel</button>
+            <button type="submit" id="submitQuizBtn">Submit Quiz</button>
+          </div>
+          <div id="quizWarning" style="color:orange; margin-top:10px;"></div>
+        </form>
+      `;
+      quizSection.innerHTML = quizHtml;
+
+      document.getElementById("cancelQuizBtn").onclick = () => {
+        quizSection.innerHTML = "";
+        flashcardContainer.style.display = "";
+      };
+      document.getElementById("quizForm").onsubmit = handleQuizSubmit;
+    }
+
+    function handleQuizSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const answers = [];
+      let emptyCount = 0;
+      for (let i = 0; i < quizCards.length; i++) {
+        const val = form[`answer${i}`].value.trim();
+        answers.push(val);
+        if (!val) emptyCount++;
+      }
+      if (emptyCount > 0) {
+        document.getElementById("quizWarning").innerText =
+          "Are you sure you want to submit? You haven't answered all the questions.";
+        // Only submit if user clicks submit again with warning shown
+        if (!form.dataset.warned) {
+          form.dataset.warned = "true";
+          return;
+        }
+      }
+      // Grade quiz
+      let score = 0;
+      let resultsHtml = `<div class="feature-card"><h2>Quiz Results</h2><ul style="text-align:left;">`;
+      quizCards.forEach((card, idx) => {
+        const userAns = answers[idx] || "(no answer)";
+        const correct = userAns.toLowerCase().trim() === card.term.toLowerCase().trim();
+        if (correct) score++;
+        resultsHtml += `<li>
+          <b>Q${idx + 1}:</b> ${card.definition}<br>
+          <span style="color:${correct ? 'limegreen' : 'red'}">
+            Your answer: ${userAns}
+            ${correct ? "✓" : `✗ (Correct: ${card.term})`}
+          </span>
+        </li>`;
+      });
+      resultsHtml += `</ul>
+        <h3 style="text-align:center;">Score: ${score} / ${quizCards.length}</h3>
+        <div style="text-align:center;">
+          <button id="retakeQuizBtn">Retake Quiz</button>
+        </div>
+      </div>`;
+      quizSection.innerHTML = resultsHtml;
+      document.getElementById("retakeQuizBtn").onclick = () => {
+        renderQuiz();
+      };
+      // Show flashcards again after quiz is submitted
+      flashcardContainer.style.display = "";
+    }
 
     function startQuiz() {
       if (flashcards.length === 0) return;
