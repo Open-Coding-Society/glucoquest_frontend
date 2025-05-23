@@ -336,7 +336,7 @@
                 <span style="font-size: 1.5rem;">📱</span>
                 <div>
                   <div style="font-weight: 600; color: var(--dexcom-dark);">Receiver/Phone</div>
-                  <div style="font-size: 0.9rem; color: #7f8c8d;">Displays glucose data</div>
+                  <div style="font-size: 0.9rem; color:rgb(118, 133, 134);">Displays glucose data</div>
                 </div>
               </div>
             </div>
@@ -345,7 +345,7 @@
                 <span style="font-size: 1.5rem;">📟</span>
                 <div>
                   <div style="font-weight: 600; color: var(--dexcom-dark);">Backup Sensor</div>
-                  <div style="font-size: 0.9rem; color: #7f8c8d;">Alternative placement</div>
+                  <div style="font-size: 0.9rem; color:rgb(127, 145, 146);">Alternative placement</div>
                 </div>
               </div>
             </div>
