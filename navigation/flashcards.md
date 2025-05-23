@@ -83,6 +83,7 @@ categories: [Education]
   <div class="divider"></div>
   <div id="flashcardContainer">
     <div class="flashcard" id="flashcard">Click to Flip</div>
+    <div id="cardCounter" style="text-align:center; font-family:'Oxygen Mono'; margin-top:10px; color:#5fb617;"></div>
     <div class="controls">
       <button id="prevBtn">Previous</button>
       <button id="nextBtn">Next</button>
@@ -113,10 +114,14 @@ categories: [Education]
       }
     }
 
+    const cardCounter = document.getElementById("cardCounter");
+
     function displayCard() {
       if (flashcards.length === 0) return;
       const card = flashcards[currentCard];
       flashcardEl.innerText = showingTerm ? card.term : card.definition;
+      // Show current card number out of total
+      cardCounter.innerText = `Card ${currentCard + 1} of ${flashcards.length}`;
     }
 
     function nextCard() {
