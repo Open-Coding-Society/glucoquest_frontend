@@ -242,6 +242,13 @@
         padding: 2rem 1rem;
       }
     }
+    #helpModal ul,
+    #helpModal li,
+    #helpModal p,
+    #helpModal b,
+    #helpModal strong {
+      color: #1a2633 !important;
+    }
   </style>
 </head>
 <body>
