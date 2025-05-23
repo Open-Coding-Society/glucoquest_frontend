@@ -261,9 +261,27 @@
         </p>
         <div style="display: flex; gap: 1rem; align-items: center;">
           <button class="btn" id="startButton">Begin Training</button>
-          <button id="helpButton" title="How to play" style="background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--dexcom-blue); padding: 0 0.5rem;">
-            <span aria-label="Help" style="font-weight: bold;">?</span>
-          </button>
+          <button id="helpButton" title="How to play"
+  style="
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--dexcom-blue);
+    color: #fff;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,102,204,0.10);
+    transition: background 0.2s, transform 0.2s;
+  "
+  onmouseover="this.style.background='#003366'; this.style.transform='scale(1.08)'"
+  onmouseout="this.style.background='var(--dexcom-blue)'; this.style.transform='scale(1)'"
+>
+  <span aria-label="Help" style="font-weight: bold;">?</span>
+</button>
         </div>
       </div> 
     </div>
