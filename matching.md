@@ -401,20 +401,45 @@
       <!-- All .card elements are children of this div at game start -->
     </div>
     <!-- Help Modal -->
-    <div id="helpModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(44,62,80,0.25); z-index:1000; align-items:center; justify-content:center;">
-      <div style="background:white; border-radius:16px; max-width:400px; margin:auto; padding:2rem; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
-        <button id="closeHelpModal" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;">&times;</button>
-        <h2 style="color:var(--dexcom-blue); margin-top:0;">How to Play</h2>
-        <ul style="text-align:left; color:#34495e; font-size:1rem; margin-bottom:1rem; line-height:1.7;">
-          <li><b>Instructions:</b> Drag each Dexcom device to its correct placement zone on the body outline.</li>
-          <li><b>Purpose:</b> Practice and reinforce your knowledge of proper CGM device placement for safe and effective glucose monitoring.</li>
-          <li><b>Why Dexcom?</b> Correct placement of Dexcom CGM components is crucial for accurate glucose readings and patient safety. This game is part of our Dexcom glucose project to help users and clinicians master device setup in a fun, interactive way.</li>
-        </ul>
-        <div style="text-align:center;">
-          <button class="btn" id="closeHelpButton" style="margin-top:1rem;">Got it!</button>
-        </div>
-      </div>
+    <div id="helpModal" style="
+  display:none;
+  position:fixed;
+  top:0; left:0; width:100vw; height:100vh;
+  background:rgba(44,62,80,0.25);
+  z-index:1000;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="
+    background:white;
+    border-radius:20px;
+    max-width:600px;
+    width:90vw;
+    margin:auto;
+    padding:2.5rem 2rem 2rem 2rem;
+    box-shadow:0 8px 32px rgba(0,0,0,0.18);
+    position:relative;
+    border: 2px solid var(--dexcom-blue);
+    color: #1a2633;
+    font-size: 1.1rem;
+    line-height: 1.7;
+  ">
+    <button id="closeHelpModal" style="
+      position:absolute; top:1rem; right:1rem;
+      background:none; border:none;
+      font-size:1.5rem; color:#888; cursor:pointer;
+    ">&times;</button>
+    <h2 style="color:var(--dexcom-blue); margin-top:0; margin-bottom:1rem;">How to Play</h2>
+    <ul style="text-align:left; color:#1a2633; font-size:1.08rem; margin-bottom:1.5rem; line-height:1.8;">
+      <li><b>Instructions:</b> Drag each Dexcom device to its correct placement zone on the body outline.</li>
+      <li><b>Purpose:</b> Practice and reinforce your knowledge of proper CGM device placement for safe and effective glucose monitoring.</li>
+      <li><b>Why Dexcom?</b> Correct placement of Dexcom CGM components is crucial for accurate glucose readings and patient safety. This game is part of our Dexcom glucose project to help users and clinicians master device setup in a fun, interactive way.</li>
+    </ul>
+    <div style="text-align:center;">
+      <button class="btn" id="closeHelpButton" style="margin-top:1rem;">Got it!</button>
     </div>
+  </div>
+</div>
   </div>
 
   <script>
