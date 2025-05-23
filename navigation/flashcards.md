@@ -42,22 +42,6 @@ categories: [Education]
       background: #5fb617;
       margin: 30px auto;
     }
-    .flashcard {
-      cursor: pointer;
-      user-select: none;
-      background: #1a3a1e;
-      padding: 100px;
-      border-radius: 10px;
-      font-size: 18px;
-      margin: 20px auto;
-      width: 80%;
-      text-align: center;
-      transition: background 0.3s ease;
-    }
-    .flashcard:hover {
-      /*transform: translateY(-5px);*/
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    }
     .controls {
       display: flex;
       justify-content: center;
@@ -77,12 +61,74 @@ categories: [Education]
     button:hover {
       background-color: #4da514;
     }
+    .flashcard {
+      cursor: pointer;
+      user-select: none;
+      background: transparent;
+      padding: 0;
+      border-radius: 10px;
+      font-size: 18px;
+      margin: 20px auto;
+      width: 80%;
+      text-align: center;
+      transition: box-shadow 0.3s ease;
+      perspective: 1000px;
+      height: 200px;
+      position: relative;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      min-height: 120px;
+      max-width: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /*.flashcard:hover {
+      /*transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }*/
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s cubic-bezier(.4,2,.6,1);
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: #1a3a1e;
+      color: #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-family: 'Oxygen Mono', monospace;
+      box-sizing: border-box;
+      padding: 40px 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .flashcard-back {
+      transform: rotateY(180deg);
+      background: #2a4a2e;
+      color: #b6ffb6;
+    }
 </style>
 <html>
   <h1 style="text-align:center">Diabetes Flashcards</h1>
   <div class="divider"></div>
   <div id="flashcardContainer">
-    <div class="flashcard" id="flashcard">Click to Flip</div>
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcardFront">Click to Flip</div>
+        <div class="flashcard-back" id="flashcardBack"></div>
+      </div>
+    </div>
     <div id="cardCounter" style="text-align:center; font-family:'Oxygen Mono'; margin-top:10px; color:#5fb617;"></div>
     <div class="controls">
       <button id="prevBtn">Previous</button>
@@ -100,6 +146,8 @@ categories: [Education]
     let flashcards = [];
 
     const flashcardEl = document.getElementById("flashcard");
+    const flashcardFront = document.getElementById("flashcardFront");
+    const flashcardBack = document.getElementById("flashcardBack");
     const quizSection = document.getElementById("quizSection");
     const flashcardContainer = document.getElementById("flashcardContainer");
 
@@ -119,10 +167,19 @@ categories: [Education]
     function displayCard() {
       if (flashcards.length === 0) return;
       const card = flashcards[currentCard];
-      flashcardEl.innerText = showingTerm ? card.term : card.definition;
-      // Show current card number out of total
+      flashcardFront.innerText = card.term;
+      flashcardBack.innerText = card.definition;
+      // Always show front when changing card
+      flashcardEl.classList.remove("flipped");
+      showingTerm = true;
       cardCounter.innerText = `Card ${currentCard + 1} of ${flashcards.length}`;
     }
+
+    // Flip card on click (toggle flipped class)
+    flashcardEl.addEventListener("click", () => {
+      flashcardEl.classList.toggle("flipped");
+      showingTerm = !showingTerm;
+    });
 
     function nextCard() {
       if (flashcards.length === 0) return;
