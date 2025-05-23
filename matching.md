@@ -260,7 +260,7 @@
           Complete the challenge as quickly as possible to earn your spot on the leaderboard!
         </p>
         <button class="btn" id="startButton">Begin Training</button>
-      </div>
+      </div> 
     </div>
     <!-- Game Screen -->
     <div class="screen" id="gameScreen">
