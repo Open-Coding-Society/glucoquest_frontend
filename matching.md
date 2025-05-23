@@ -262,7 +262,7 @@
       <div class="body-outline"></div>
       <div style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
         <p style="color: #34495e; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6;">
-          <span style="color: var(--dexcom-blue); font-weight: 600;">Objective:</span> 
+          <span><b>Objective:</b></span> 
           Correctly match all Dexcom CGM components to their proper placement locations on the body.
           Complete the challenge as quickly as possible to earn your spot on the leaderboard!
         </p>
