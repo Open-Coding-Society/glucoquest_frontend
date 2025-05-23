@@ -447,6 +447,45 @@
     </div>
   </div>
 </div>
+<!-- Hint Modal (new) -->
+<div id="hintModal" style="
+  display:none;
+  position:fixed;
+  top:0; left:0; width:100vw; height:100vh;
+  background:rgba(44,62,80,0.25);
+  z-index:2000;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="
+    background:white;
+    border-radius:18px;
+    max-width:400px;
+    width:90vw;
+    margin:auto;
+    padding:2rem 1.5rem 1.5rem 1.5rem;
+    box-shadow:0 8px 32px rgba(0,0,0,0.18);
+    position:relative;
+    border: 2px solid var(--dexcom-blue);
+    color: #1a2633;
+    font-size: 1.08rem;
+    line-height: 1.7;
+    text-align: center;
+  ">
+    <button id="closeHintModal" style="
+      position:absolute; top:1rem; right:1rem;
+      background:none; border:none;
+      font-size:1.3rem; color:#888; cursor:pointer;
+    ">&times;</button>
+    <h3 style="color:var(--dexcom-blue); margin-top:0;">Hint</h3>
+    <div id="hintText">
+      Remember: Each Dexcom device has a specific placement zone. Try matching by the device description!
+    </div>
+    <div style="text-align:center;">
+      <button class="btn" id="closeHintButton" style="margin-top:1rem;">Got it!</button>
+    </div>
+  </div>
+</div>
   </div>
 
   <script>
@@ -754,6 +793,26 @@ closeHelpButton.addEventListener('click', () => {
 // Optional: close modal when clicking outside the modal box
 helpModal.addEventListener('click', (e) => {
   if (e.target === helpModal) helpModal.style.display = 'none';
+});
+
+// Hint modal logic
+const hintButton = document.getElementById('hintButton');
+const hintModal = document.getElementById('hintModal');
+const closeHintModal = document.getElementById('closeHintModal');
+const closeHintButton = document.getElementById('closeHintButton');
+
+hintButton.addEventListener('click', () => {
+  hintModal.style.display = 'flex';
+});
+closeHintModal.addEventListener('click', () => {
+  hintModal.style.display = 'none';
+});
+closeHintButton.addEventListener('click', () => {
+  hintModal.style.display = 'none';
+});
+// Optional: close modal when clicking outside the modal box
+hintModal.addEventListener('click', (e) => {
+  if (e.target === hintModal) hintModal.style.display = 'none';
 });
   </script>
 </body>
