@@ -636,7 +636,6 @@
         document.getElementById('continueButtonContainer').style.display = 'block';
       }
     } else {
-      // Incorrect match
       startTime = new Date(startTime.getTime() - penaltySeconds * 1000);
       updateTimer();
       e.target.classList.add('shake');
