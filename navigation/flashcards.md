@@ -164,6 +164,12 @@ categories: [Education]
 
     const cardCounter = document.getElementById("cardCounter");
 
+    // Flip card on click (toggle flipped class)
+    flashcardEl.addEventListener("click", () => {
+      flashcardEl.classList.toggle("flipped");
+      showingTerm = !showingTerm;
+    });
+
     function displayCard() {
       if (flashcards.length === 0) return;
       const card = flashcards[currentCard];
@@ -174,12 +180,6 @@ categories: [Education]
       showingTerm = true;
       cardCounter.innerText = `Card ${currentCard + 1} of ${flashcards.length}`;
     }
-
-    // Flip card on click (toggle flipped class)
-    flashcardEl.addEventListener("click", () => {
-      flashcardEl.classList.toggle("flipped");
-      showingTerm = !showingTerm;
-    });
 
     function nextCard() {
       if (flashcards.length === 0) return;
@@ -297,11 +297,6 @@ categories: [Education]
       if (flashcards.length === 0) return;
       renderQuiz();
     }
-
-    flashcardEl.addEventListener("click", () => {
-      showingTerm = !showingTerm;
-      displayCard();
-    });
 
     document.getElementById("nextBtn").addEventListener("click", nextCard);
     document.getElementById("prevBtn").addEventListener("click", prevCard);
