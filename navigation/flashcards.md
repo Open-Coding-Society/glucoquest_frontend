@@ -123,7 +123,7 @@ categories: [Education]
       font-size: 18px;
     }
 </style>
-<html>
+
   <h1 style="text-align:center">Diabetes Flashcards</h1>
   <div class="divider"></div>
   <div id="flashcardContainer">
@@ -142,142 +142,145 @@ categories: [Education]
   </div>
   <div id="quizSection"></div>
 
-  <script type="module">
-    import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
+<script type="module">
+document.addEventListener("DOMContentLoaded", async () => {
+  // Import config
+  const { pythonURI, fetchOptions } = await import('{{ site.baseurl }}/assets/js/api/config.js');
 
-    let currentCard = 0;
-    let showingTerm = true;
-    let flashcards = [];
+  let currentCard = 0;
+  let showingTerm = true;
+  let flashcards = [];
 
-    const flashcardEl = document.getElementById("flashcard");
-    const flashcardFront = document.getElementById("flashcardFront");
-    const flashcardBack = document.getElementById("flashcardBack");
-    const quizSection = document.getElementById("quizSection");
-    const flashcardContainer = document.getElementById("flashcardContainer");
+  const flashcardEl = document.getElementById("flashcard");
+  const flashcardFront = document.getElementById("flashcardFront");
+  const flashcardBack = document.getElementById("flashcardBack");
+  const quizSection = document.getElementById("quizSection");
+  const flashcardContainer = document.getElementById("flashcardContainer");
+  const cardCounter = document.getElementById("cardCounter");
 
-    async function fetchFlashcards() {
-      try {
-        const response = await fetch(`${pythonURI}/api/flashcards`);
-        flashcards = await response.json();
-        displayCard();
-      } catch (error) {
-        flashcardEl.innerText = "Failed to load flashcards. Please try again later.";
-        console.error("Error fetching flashcards:", error);
-      }
+  async function fetchFlashcards() {
+    try {
+      const response = await fetch(`${pythonURI}/api/flashcards`);
+      flashcards = await response.json();
+      displayCard();
+    } catch (error) {
+      flashcardEl.innerText = "Failed to load flashcards. Please try again later.";
+      console.error("Error fetching flashcards:", error);
     }
+  }
 
-    const cardCounter = document.getElementById("cardCounter");
+  flashcardEl.addEventListener("click", () => {
+    flashcardEl.classList.toggle("flipped");
+    showingTerm = !showingTerm;
+  });
 
-    // Flip card on click (toggle flipped class)
-    flashcardEl.addEventListener("click", () => {
-      flashcardEl.classList.toggle("flipped");
-      showingTerm = !showingTerm;
+  function displayCard() {
+    if (flashcards.length === 0) return;
+    const card = flashcards[currentCard];
+    flashcardFront.innerText = card.term;
+    flashcardBack.innerText = card.definition;
+    flashcardEl.classList.remove("flipped");
+    showingTerm = true;
+    cardCounter.innerText = `Card ${currentCard + 1} of ${flashcards.length}`;
+  }
+
+  function nextCard() {
+    if (flashcards.length === 0) return;
+    currentCard = (currentCard + 1) % flashcards.length;
+    showingTerm = true;
+    displayCard();
+  }
+
+  function prevCard() {
+    if (flashcards.length === 0) return;
+    currentCard = (currentCard - 1 + flashcards.length) % flashcards.length;
+    showingTerm = true;
+    displayCard();
+  }
+
+  function getRandomSample(arr, n) {
+    const copy = arr.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy.slice(0, n);
+  }
+
+  let quizCards = [];
+
+  function renderQuiz() {
+    flashcardContainer.style.display = "none";
+    quizCards = getRandomSample(flashcards, Math.min(10, flashcards.length));
+    let quizHtml = `
+      <form id="quizForm" class="feature-card">
+        <h2>Quiz: Type the correct term for each definition</h2>
+        <div style="display:flex; flex-direction:column; gap:15px;">
+    `;
+    quizCards.forEach((card, idx) => {
+      quizHtml += `
+        <div>
+          <label><b>${idx + 1}.</b> ${card.definition}</label><br>
+          <input type="text" name="answer${idx}" style="width:100%;padding:5px;margin-top:5px;" autocomplete="off"/>
+        </div>
+      `;
+    });
+    quizHtml += `
+        </div>
+        <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+          <button type="button" id="cancelQuizBtn">Cancel</button>
+          <button type="submit" id="submitQuizBtn">Submit Quiz</button>
+        </div>
+        <div id="quizWarning" style="color:orange; margin-top:10px;"></div>
+      </form>
+    `;
+    quizSection.innerHTML = quizHtml;
+
+    document.getElementById("cancelQuizBtn").onclick = () => {
+      quizSection.innerHTML = "";
+      flashcardContainer.style.display = "";
+    };
+    document.getElementById("quizForm").onsubmit = handleQuizSubmit;
+  }
+
+  async function handleQuizSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    let emptyCount = 0;
+    const answersPayload = quizCards.map((card, idx) => {
+      const val = form[`answer${idx}`].value.trim();
+      if (!val) emptyCount++;
+      return {
+        user_answer: val,
+        correct_term: card.term
+      };
     });
 
-    function displayCard() {
-      if (flashcards.length === 0) return;
-      const card = flashcards[currentCard];
-      flashcardFront.innerText = card.term;
-      flashcardBack.innerText = card.definition;
-      // Always show front when changing card
-      flashcardEl.classList.remove("flipped");
-      showingTerm = true;
-      cardCounter.innerText = `Card ${currentCard + 1} of ${flashcards.length}`;
+    if (emptyCount > 0) {
+      document.getElementById("quizWarning").innerText =
+        "Are you sure you want to submit? You haven't answered all the questions.";
+      if (!form.dataset.warned) {
+        form.dataset.warned = "true";
+        return;
+      }
     }
 
-    function nextCard() {
-      if (flashcards.length === 0) return;
-      currentCard = (currentCard + 1) % flashcards.length;
-      showingTerm = true;
-      displayCard();
-    }
-
-    function prevCard() {
-      if (flashcards.length === 0) return;
-      currentCard = (currentCard - 1 + flashcards.length) % flashcards.length;
-      showingTerm = true;
-      displayCard();
-    }
-
-    // Utility to get N random elements from an array
-    function getRandomSample(arr, n) {
-      const copy = arr.slice();
-      for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      } 
-      return copy.slice(0, n);
-    }
-
-    let quizCards = []; // Store the random 10 cards for the current quiz
-
-    function renderQuiz() {
-      // Hide flashcards
-      flashcardContainer.style.display = "none";
-      // Pick 10 random cards for this quiz
-      quizCards = getRandomSample(flashcards, Math.min(10, flashcards.length));
-      let quizHtml = `
-        <form id="quizForm" class="feature-card">
-          <h2>Quiz: Type the correct term for each definition</h2>
-          <div style="display:flex; flex-direction:column; gap:15px;">
-      `;
-      quizCards.forEach((card, idx) => {
-        quizHtml += `
-          <div>
-            <label><b>${idx + 1}.</b> ${card.definition}</label><br>
-            <input type="text" name="answer${idx}" style="width:100%;padding:5px;margin-top:5px;" autocomplete="off"/>
-          </div>
-        `;
+    try {
+      const res = await fetch(`${pythonURI}/api/flashcards/grade`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: answersPayload })
       });
-      quizHtml += `
-          </div>
-          <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
-            <button type="button" id="cancelQuizBtn">Cancel</button>
-            <button type="submit" id="submitQuizBtn">Submit Quiz</button>
-          </div>
-          <div id="quizWarning" style="color:orange; margin-top:10px;"></div>
-        </form>
-      `;
-      quizSection.innerHTML = quizHtml;
-
-      document.getElementById("cancelQuizBtn").onclick = () => {
-        quizSection.innerHTML = "";
-        flashcardContainer.style.display = "";
-      };
-      document.getElementById("quizForm").onsubmit = handleQuizSubmit;
-    }
-
-    function handleQuizSubmit(e) {
-      e.preventDefault();
-      const form = e.target;
-      const answers = [];
-      let emptyCount = 0;
-      for (let i = 0; i < quizCards.length; i++) {
-        const val = form[`answer${i}`].value.trim();
-        answers.push(val);
-        if (!val) emptyCount++;
-      }
-      if (emptyCount > 0) {
-        document.getElementById("quizWarning").innerText =
-          "Are you sure you want to submit? You haven't answered all the questions.";
-        // Only submit if user clicks submit again with warning shown
-        if (!form.dataset.warned) {
-          form.dataset.warned = "true";
-          return;
-        }
-      }
-      // Grade quiz
+      const data = await res.json();
       let score = 0;
       let resultsHtml = `<div class="feature-card"><h2>Quiz Results</h2><ul style="text-align:left;">`;
-      quizCards.forEach((card, idx) => {
-        const userAns = answers[idx] || "(no answer)";
-        const correct = userAns.toLowerCase().trim() === card.term.toLowerCase().trim();
-        if (correct) score++;
+      data.results.forEach((result, idx) => {
+        if (result.is_correct) score++;
         resultsHtml += `<li>
-          <b>Q${idx + 1}:</b> ${card.definition}<br>
-          <span style="color:${correct ? 'limegreen' : 'red'}">
-            Your answer: ${userAns}
-            ${correct ? "✓" : `✗ (Correct: ${card.term})`}
+          <b>Q${idx + 1}:</b> ${quizCards[idx].definition}<br>
+          <span style="color:${result.is_correct ? 'limegreen' : 'red'}">
+            Your answer: ${result.user_answer || "(no answer)"}
+            ${result.is_correct ? "✓" : `✗ (Correct: ${result.correct_term})`}
           </span>
         </li>`;
       });
@@ -291,20 +294,23 @@ categories: [Education]
       document.getElementById("retakeQuizBtn").onclick = () => {
         renderQuiz();
       };
-      // Show flashcards again after quiz is submitted
+      flashcardContainer.style.display = "";
+    } catch (err) {
+      quizSection.innerHTML = `<div style="color:red;">Error grading quiz. Please try again.</div>`;
       flashcardContainer.style.display = "";
     }
+  }
 
-    function startQuiz() {
-      if (flashcards.length === 0) return;
-      renderQuiz();
-    }
+  function startQuiz() {
+    if (flashcards.length === 0) return;
+    renderQuiz();
+  }
 
-    document.getElementById("nextBtn").addEventListener("click", nextCard);
-    document.getElementById("prevBtn").addEventListener("click", prevCard);
-    document.getElementById("quizBtn").addEventListener("click", startQuiz);
+  document.getElementById("nextBtn").addEventListener("click", nextCard);
+  document.getElementById("prevBtn").addEventListener("click", prevCard);
+  document.getElementById("quizBtn").addEventListener("click", startQuiz);
 
-    fetchFlashcards();
-  </script>
-</html>
+  fetchFlashcards();
+});
+</script>
 
