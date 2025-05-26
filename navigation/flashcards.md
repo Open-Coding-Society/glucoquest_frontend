@@ -278,11 +278,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (result.is_correct) score++;
         resultsHtml += `<li>
           <b>Q${idx + 1}:</b> ${quizCards[idx].definition}<br>
-          <span style="color:${result.is_correct ? 'limegreen' : 'red'}">
-            Your answer: ${result.user_answer || "(no answer)"}
-            ${result.is_correct ? "✓" : `✗ (Correct: ${result.correct_term})`}
-          </span>
-        </li>`;
+            <span style="color:${result.is_correct ? 'limegreen' : 'red'}">
+              Your answer: ${result.user_answer || "(no answer)"} ${result.is_correct ? "✓" : "✗"}
+            </span><br>
+            <span style="color:#b6ffb6;">Correct answer: ${result.correct_term}</span>
+          </li>`;
       });
       resultsHtml += `</ul>
         <h3 style="text-align:center;">Score: ${score} / ${quizCards.length}</h3>
