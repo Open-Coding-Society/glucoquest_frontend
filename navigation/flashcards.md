@@ -295,6 +295,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderQuiz();
       };
       flashcardContainer.style.display = "";
+
+      // Confetti if score >= 90%
+      if (quizCards.length > 0 && score / quizCards.length >= 0.9) {
+        launchConfetti();
+      }
+
     } catch (err) {
       quizSection.innerHTML = `<div style="color:red;">Error grading quiz. Please try again.</div>`;
       flashcardContainer.style.display = "";
@@ -311,6 +317,80 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("quizBtn").addEventListener("click", startQuiz);
 
   fetchFlashcards();
+
+function launchConfetti() {
+  // Remove existing confetti if any
+  let oldCanvas = document.getElementById("confetti-canvas");
+  if (oldCanvas) oldCanvas.remove();
+
+  const canvas = document.createElement("canvas");
+  canvas.id = "confetti-canvas";
+  canvas.style.position = "fixed";
+  canvas.style.left = 0;
+  canvas.style.top = 0;
+  canvas.style.pointerEvents = "none";
+  canvas.style.width = "100vw";
+  canvas.style.height = "100vh";
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext("2d");
+  const colors = [
+    "#ffd6e0", "#ffe5b4", "#b4f8c8", "#b4d4ff", "#e0bbff",
+    "#fff5ba", "#cafffb", "#f7d6e0", "#f9c6c9", "#e2f0cb"
+  ];
+  const confettiCount = 120;
+  const confetti = [];
+
+  for (let i = 0; i < confettiCount; i++) {
+    confetti.push({
+      x: Math.random() < 0.5 ? -20 : canvas.width + 20, // left or right
+      y: Math.random() * canvas.height * 0.5,
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 18 + 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speed: Math.random() * 2 + 2,
+      angle: Math.random() * Math.PI * 2,
+      rotate: Math.random() * 0.1 - 0.05,
+      side: Math.random() < 0.5 ? 1 : -1
+    });
+  }
+
+  let animationFrame;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confetti.forEach(c => {
+      ctx.save();
+      ctx.translate(c.x + c.w / 2, c.y + c.h / 2);
+      ctx.rotate(c.angle);
+      ctx.fillStyle = c.color;
+      ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+      ctx.restore();
+
+      // Move confetti
+      c.x += c.side * c.speed * (0.5 + Math.random() * 0.5);
+      c.y += c.speed + Math.sin(c.angle) * 1.5;
+      c.angle += c.rotate;
+
+      // If out of bounds, reset to top and random side
+      if (c.y > canvas.height + 30) {
+        c.y = -20;
+        c.x = Math.random() < 0.5 ? -20 : canvas.width + 20;
+        c.side = Math.random() < 0.5 ? 1 : -1;
+      }
+    });
+    animationFrame = requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Remove confetti after 3 seconds
+  setTimeout(() => {
+    cancelAnimationFrame(animationFrame);
+    canvas.remove();
+  }, 3000);
+}
+
 });
 </script>
 
