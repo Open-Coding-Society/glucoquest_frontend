@@ -355,7 +355,6 @@ function initChart(records) {
     }
   });
 }
-
 // ==================== Utility Functions ====================
 function showFeedback(message, type) {
     const feedback = document.getElementById('feedback');
@@ -486,6 +485,85 @@ function generateGlucoseReading() {
             : (7.8 + Math.random() * 5).toFixed(1);
     }
 }
+// ==================== Record Display Functions ====================
+function displayRecords(records) {
+    recordsTable.innerHTML = '';
+    
+    records.forEach(record => {
+        const status = getGlucoseStatus(record.value);
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+            <td>${record.record_id || record.id}</td>
+            <td>${record.value} mmol/L</td>
+            <td>${formatDateTime(record.time)}</td>
+            <td><span class="status-${status.toLowerCase()}">${status}</span></td>
+            <td>${record.notes || '-'}</td>
+            <td class="table-actions">
+                <button class="action-btn edit-btn" data-id="${record.record_id || record.id}">Edit</button>
+                <button class="action-btn delete-btn" data-id="${record.record_id || record.id}">Delete</button>
+            </td>
+        `;
+        
+        recordsTable.appendChild(row);
+    });
+    
+    // Add event listeners to edit and delete buttons
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', handleEdit);
+    });
+    
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', handleDelete);
+    });
+    
+    // Update the chart with new records
+    initChart(records);
+}
+
+function resetForm() {
+    form.reset();
+    currentEditId = null;
+    recordIdInput.value = '';
+    saveBtn.textContent = 'Save Record';
+    document.getElementById("manual-time").value = new Date().toISOString().slice(0, 16);
+}
+
+async function handleEdit(e) {
+    const id = e.target.getAttribute('data-id');
+    try {
+        const records = await fetchGlucoseRecords();
+        const record = records.find(r => (r.record_id || r.id) == id);
+        
+        if (record) {
+            currentEditId = id;
+            recordIdInput.value = id;
+            glucoseInput.value = record.value;
+            timeInput.value = new Date(record.time).toISOString().slice(0, 16);
+            notesInput.value = record.notes || '';
+            saveBtn.textContent = 'Update Record';
+            showFeedback('Record loaded for editing', 'success');
+        }
+    } catch (error) {
+        console.error("Error editing record:", error);
+        showFeedback("Failed to load record for editing", "error");
+    }
+}
+
+async function handleDelete(e) {
+    const id = e.target.getAttribute('data-id');
+    if (confirm('Are you sure you want to delete this record?')) {
+        try {
+            await deleteGlucoseRecord(id);
+            showFeedback('Record deleted successfully', 'success');
+            const records = await fetchGlucoseRecords();
+            displayRecords(records);
+        } catch (error) {
+            console.error("Error deleting record:", error);
+            showFeedback("Failed to delete record", "error");
+        }
+    }
+}
 
 // ==================== CRUD Operations ====================
 let currentEditId = null;
@@ -496,23 +574,30 @@ const saveBtn = document.getElementById('save-btn');
 const clearBtn = document.getElementById('clear-btn');
 const recordsTable = document.getElementById('records-table').querySelector('tbody');
 
-window.fetchGlucoseRecords = async function() {
+
+// Add clear button functionality
+clearBtn.addEventListener('click', resetForm);
+
+// ==================== Glucose API Functions ====================
+async function fetchGlucoseRecords() {
     try {
         const response = await fetch(`${pythonURI}/api/glucose`, {
             ...fetchOptions,
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+            method: 'GET'
         });
+
         if (!response.ok) {
-            throw new Error('Failed to fetch records: ' + response.statusText);
+            const errorMessage = await response.text();
+            throw new Error(`Failed to fetch records: ${response.statusText} - ${errorMessage}`);
         }
-        const records = await response.json();
-        displayRecords(records);
+
+        return await response.json();
     } catch (error) {
-        console.error('Error fetching records:', error);
-        showFeedback('Error fetching records.', 'error');
+        console.error("Error fetching glucose records:", error);
+        showFeedback("Error fetching records. Please try again.", "error");
+        return [];
     }
-};
+}
 
 async function createGlucoseRecord(recordData) {
     try {
@@ -522,12 +607,15 @@ async function createGlucoseRecord(recordData) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(recordData)
         });
+
         if (!response.ok) {
-            throw new Error('Failed to create record: ' + response.statusText);
+            const errorMessage = await response.text();
+            throw new Error(`Failed to create record: ${response.statusText} - ${errorMessage}`);
         }
+
         return await response.json();
     } catch (error) {
-        console.error('Error creating record:', error);
+        console.error("Error creating glucose record:", error);
         throw error;
     }
 }
@@ -538,14 +626,17 @@ async function updateGlucoseRecord(id, recordData) {
             ...fetchOptions,
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, ...recordData })
+            body: JSON.stringify({ record_id: id, ...recordData })
         });
+
         if (!response.ok) {
-            throw new Error('Failed to update record: ' + response.statusText);
+            const errorMessage = await response.text();
+            throw new Error(`Failed to update record: ${response.statusText} - ${errorMessage}`);
         }
+
         return await response.json();
     } catch (error) {
-        console.error('Error updating record:', error);
+        console.error("Error updating glucose record:", error);
         throw error;
     }
 }
@@ -556,120 +647,72 @@ async function deleteGlucoseRecord(id) {
             ...fetchOptions,
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
+            body: JSON.stringify({ record_id: id })
         });
+
         if (!response.ok) {
-            throw new Error('Failed to delete record: ' + response.statusText);
+            const errorMessage = await response.text();
+            throw new Error(`Failed to delete record: ${response.statusText} - ${errorMessage}`);
         }
+
         return await response.json();
     } catch (error) {
-        console.error('Error deleting record:', error);
+        console.error("Error deleting glucose record:", error);
         throw error;
     }
 }
 
-// ==================== Record Display ====================
-function displayRecords(records) {
-    recordsTable.innerHTML = '';
-    const sortedRecords = [...records].sort((a, b) => new Date(b.time) - new Date(a.time));
-    sortedRecords.forEach(record => {
-        const row = recordsTable.insertRow();
-        row.innerHTML = `
-            <td>${record.id.slice(-4)}</td>
-            <td>${record.value} mmol/L</td>
-            <td>${formatDateTime(record.time)}</td>
-            <td><span class="status-${getGlucoseStatus(record.value).toLowerCase()}">${getGlucoseStatus(record.value)}</span></td>
-            <td>${record.notes || '-'}</td>
-            <td class="table-actions">
-                <button class="action-btn edit-btn" data-id="${record.id}">Edit</button>
-                <button class="action-btn delete-btn" data-id="${record.id}">Delete</button>
-            </td>
-        `;
-    });
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => editRecordHandler(btn.dataset.id));
-    });
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', () => deleteRecordHandler(btn.dataset.id));
-    });
-    // 渲染折线图
-    initChart(records);
-}
+// ==================== Form Submission ====================
+document.getElementById("glucose-form").addEventListener("submit", async function(event) {
+    event.preventDefault();
 
+    const recordData = {
+        value: parseFloat(document.getElementById("manual-glucose").value),
+        time: document.getElementById("manual-time").value,
+        notes: document.getElementById("manual-notes").value
+    };
 
-// ==================== Event Handlers ====================
-async function editRecordHandler(id) {
+    console.log("Glucose Record Data:", recordData); // Debug log
+
     try {
-        const response = await fetch(`${pythonURI}/api/glucose`, {
-            ...fetchOptions,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch record');
-        }
-        const record = await response.json();
-        currentEditId = record.id;
-        recordIdInput.value = record.id;
-        glucoseInput.value = record.value;
-        timeInput.value = record.time.slice(0, 16);
-        notesInput.value = record.notes || '';
-        saveBtn.textContent = 'Update Record';
-        form.scrollIntoView({ behavior: 'smooth' });
-    } catch (error) {
-        console.error('Error fetching record:', error);
-        showFeedback('Failed to load record for editing.', 'error');
-    }
-}
-
-async function deleteRecordHandler(id) {
-    if (confirm('Are you sure you want to delete this record?')) {
-        try {
-            await deleteGlucoseRecord(id);
-            await fetchGlucoseRecords();
-            showFeedback('Record deleted successfully!', 'success');
-        } catch (error) {
-            console.error('Error deleting record:', error);
-            showFeedback('Failed to delete record.', 'error');
-        }
-    }
-}
-
-// Form submission handler
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    try {
-        const recordData = {
-            value: parseFloat(glucoseInput.value),
-            time: timeInput.value,
-            notes: notesInput.value
-        };
+        let result;
         if (currentEditId) {
-            await updateGlucoseRecord(currentEditId, recordData);
-            showFeedback('Record updated successfully!', 'success');
+            result = await updateGlucoseRecord(currentEditId, recordData);
+            showFeedback("Record updated successfully!", "success");
         } else {
-            await createGlucoseRecord(recordData);
-            showFeedback('Record created successfully!', 'success');
+            result = await createGlucoseRecord(recordData);
+            showFeedback("Record created successfully!", "success");
         }
-        await fetchGlucoseRecords();
+
+        console.log("API Response:", result); // Debug log
+
+        // Refresh the records display
+        const records = await fetchGlucoseRecords();
+        displayRecords(records);
+        
+        // Reset the form
         resetForm();
     } catch (error) {
-        console.error('Error saving record:', error);
-        showFeedback('Failed to save record. Please try again.', 'error');
+        console.error("Error saving record:", error);
+        showFeedback(error.message || "Failed to save record. Please try again.", "error");
     }
 });
 
-// Clear form handler
-function resetForm() {
-    currentEditId = null;
-    form.reset();
-    saveBtn.textContent = 'Save Record';
-    timeInput.value = new Date().toISOString().slice(0, 16);
+// ==================== Initialization ====================
+async function initializeGlucoseApp() {
+    try {
+        // Set default time
+        document.getElementById("manual-time").value = new Date().toISOString().slice(0, 16);
+        
+        // Load initial data
+        const records = await fetchGlucoseRecords();
+        displayRecords(records);
+    } catch (error) {
+        console.error("Initialization error:", error);
+        showFeedback("Failed to initialize application. Please refresh.", "error");
+    }
 }
-clearBtn.addEventListener('click', resetForm);
 
-// 初始化
-fetchGlucoseRecords();
-timeInput.value = new Date().toISOString().slice(0, 16);
+// Start the application when DOM is loaded
+document.addEventListener("DOMContentLoaded", initializeGlucoseApp);
 </script>
