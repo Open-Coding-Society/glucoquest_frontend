@@ -239,10 +239,28 @@ comment: true
 
 <div class="container">
   <h1>Glucose Test Simulator</h1>
+  <div class="simulator-tabs">
+  <div class="simulator-tab active" data-tab="about">About</div>
+  <div class="simulator-tab" data-tab="game-section">Glucose Test Simulator</div>
+</div>
+<div class="simulator-content active" id="about">
+  <div class="about-bar">
+    <h2>Track & Visualize Your Glucose with the Glucose Test Simulator</h2>
+    <p><strong>Interactive Learning Meets Smart Data Tracking!</strong></p>
+    <p>Understanding how your blood glucose levels change throughout the day is essential—but recording them manually or interpreting raw data can be tedious. Our <strong>Glucose Test Simulator</strong> turns this task into an intuitive and engaging experience!</p>
+    <h3>Why Use This Simulator?</h3>
+    <ul>
+      <li><strong>Track with Ease</strong>: Log blood glucose readings at different times of the day in a few simple clicks.</li>
+      <li><strong>Instant Visual Feedback</strong>: Watch your readings come to life as a dynamic <strong>interactive line chart</strong> that clearly shows your glucose trends over time.</li>
+      <li><strong>Learn by Exploring</strong>: See how lifestyle choices (like meals or activity) may impact your glucose levels in a <strong>safe virtual environment</strong>.</li>
+      <li><strong>Perfect for Education</strong>: Whether you're a student, patient, or healthcare provider, this tool offers an engaging way to learn and teach blood glucose management.</li>
+    </ul>
+  </div>
+</div>
+
   <div class="game-section">
     <div class="game-panel">
-      <h2>Glucose Monitoring Game</h2>
-      <p>Practice proper needle insertion technique</p>
+      <h2>Glucose Test Simulator</h2>
       <div class="arm-simulator" id="arm-simulator">
         <div class="vein-target"></div>
         <div class="needle" id="needle"></div>

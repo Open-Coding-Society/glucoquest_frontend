@@ -126,3 +126,11 @@ show_reading_time: false
                 An interactive simulation game where players experience a full day living with diabetes by making lifestyle choices.
             </p>
         </a>
+        <!-- Game 9 -->
+        <a href="{{site.baseurl}}/test4/" class="game-box">
+            <img src="{{site.baseurl}}/images/ui-images/glucose_record.jpg" alt="Glucose Hero Placeholder">
+            <h2>Glucose Test Simulator</h2>
+            <p>
+                Understanding how your blood glucose levels change throughout the day is essential—but recording them manually or interpreting raw data can be tedious。
+            </p>
+        </a>
