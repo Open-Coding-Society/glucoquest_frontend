@@ -388,7 +388,7 @@ function launchConfetti() {
   setTimeout(() => {
     cancelAnimationFrame(animationFrame);
     canvas.remove();
-  }, 3000);
+  }, 4000);
 }
 
 });
