@@ -353,6 +353,20 @@ comment: true
   </div>
 </div>
 
+<script>
+document.querySelectorAll('.simulator-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.simulator-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const tabId = tab.dataset.tab;
+    document.querySelectorAll('.simulator-content').forEach(content => {
+      content.classList.remove('active');
+    });
+    document.getElementById(tabId).classList.add('active');
+  });
+});
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module">
 import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
