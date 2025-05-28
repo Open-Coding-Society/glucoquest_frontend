@@ -270,7 +270,6 @@ comment: true
   .about-bar ul { margin-left: 1.5em; }
 </style>
 
-</style>
 
 <div class="container">
   <h1>Glucose Test Simulator</h1>
