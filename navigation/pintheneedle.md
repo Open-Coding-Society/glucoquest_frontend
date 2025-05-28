@@ -273,9 +273,26 @@ comment: true
   .about-bar ul { margin-left: 1.5em; }
 </style>
 
+<div class="simulator-tabs">
+    <div class="simulator-tab active" data-tab="about">About</div>
+    <div class="simulator-tab" data-tab="dexcom-sensor">Dexcom Sensor Application</div>
+  </div>
+  <div class="simulator-content active" id="about">
+  <div class="about-bar">
+    <h2>Engaging Introduction to the Dexcom Sensor Simulator Game</h2>
+    <p><strong>Learning Made Interactive – No Manual Required!</strong></p>
+    <p>Mastering new medical devices like the <strong>Dexcom Continuous Glucose Monitoring (CGM) System</strong> can feel overwhelming—especially when faced with lengthy manuals or complex instructions. That’s why we’ve created this <strong>interactive simulator game</strong>—a hands-on, stress-free way to learn how to use the Dexcom sensor correctly and confidently!</p>
+    <h3>Why This Simulator?</h3>
+    <ul>
+      <li><strong>Learn by Doing</strong>: Forget passive reading—practice applying the sensor step-by-step in a <strong>risk-free virtual environment</strong>.</li>
+      <li><strong>Memorable & Fun</strong>: Games enhance retention! By simulating real-world scenarios, you’ll internalize the process more effectively than with text alone.</li>
+      <li><strong>Build Confidence</strong>: Repeat the steps until they feel natural, ensuring you’re prepared for real-life application.</li>
+      <li><strong>For Everyone</strong>: Whether you’re a patient, caregiver, or healthcare professional, this tool simplifies the learning curve.</li>
+    </ul>
+  </div>
+</div>
+
 <div class="container">
-  <h1>Dexcom Sensor Application Simulator</h1>
-  Dex
   <div class="simulator-content" id="dexcom-sensor">
   <div class="step-indicator">
     <div class="step active" id="step1">Prepare</div>
