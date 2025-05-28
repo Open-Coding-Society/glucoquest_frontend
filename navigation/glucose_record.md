@@ -235,6 +235,41 @@ comment: true
     margin-bottom: 10px;
     color: #3b82f6;
   }
+    .simulator-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #3a3a3a;
+}
+  .simulator-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: #2c2c2c;
+    border: 1px solid #3a3a3a;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    margin-right: 5px;
+    color: #e2e8f0;
+  }
+  .simulator-tab.active {
+    background: #3a3a3a;
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+  .simulator-content { display: none; }
+  .simulator-content.active { display: block; }
+  .about-bar {
+    background: #2c2c2c;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    color: #e2e8f0;
+  }
+  .about-bar h2 { color: #3b82f6; margin-bottom: 15px; }
+  .about-bar p { margin-bottom: 10px; line-height: 1.6; }
+  .about-bar ul { margin-left: 1.5em; }
+</style>
+
 </style>
 
 <div class="container">
