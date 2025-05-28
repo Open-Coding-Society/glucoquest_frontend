@@ -91,11 +91,14 @@ canvas {
       src: "{{site.baseurl}}/images/grandprix/road.jpg",
     },
     obstacles: {
-      pothole: {
-        src: "{{site.baseurl}}/images/grandprix/pothole.png",
+      blood: {
+        src: "{{site.baseurl}}/images/grandprix/blood.png",
       },
-      cone: {
-        src: "{{site.baseurl}}/images/grandprix/cone.png",
+      sugar: {
+        src: "{{site.baseurl}}/images/grandprix/sugar.png",
+      },
+      pancreas: {
+        src: "{{site.baseurl}}/images/grandprix/pancreas.png",
       }
     },
     cars: {
