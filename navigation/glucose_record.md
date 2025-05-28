@@ -330,7 +330,7 @@ comment: true
         </div>
       </form>
     <div class="chart-container">
-        <h3 class="chart-title">Last 3 Days Glucose Trend</h3>
+        <h3 class="chart-title">Glucose Trend</h3>
         <canvas id="glucose-chart"></canvas>
       </div>
       <h3>Your Records</h3>
