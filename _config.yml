@@ -1,8 +1,8 @@
 title: Dexcom
 owner_name: Vibha, Maryam, Aditi, Collin, Anyi, Shriya
 github_username: nighthawkcoders
-github_repo: "dexcom_frontend" 
-baseurl: "/dexcom_frontend"
+github_repo: "glucoquest_frontend" 
+baseurl: "/glucoquest_frontend"
 future: true
 remote_theme: jekyll/minima
 minima:
