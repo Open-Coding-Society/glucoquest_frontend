@@ -6,8 +6,12 @@ categories: [Game]
 ---
 <style>
 #canvasContainer {
-    align-items: center;
+  position: relative;
+  width: 360px;
+  height: 639px;
+  margin: 0 auto;
 }
+
     
 canvas {
     display: block;
@@ -55,17 +59,37 @@ canvas {
 .popup-content button:hover {
   background-color: #0056b3;
 }
+#pauseButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+#pauseButton img {
+  width: 32px;
+  height: 32px;
+}
 
 </style>
-
 <button id="startButton">Start Game</button>
-<button id="pauseButton">Pause</button>
+<div id="help">
+  Dodge obstacles and answer diabetes trivia questions while you ride your way to the finish line!
+</div><br>
+
 
 <div id="canvasContainer">
-    <div id="help">
-        Dodge obstacles and answer diabetes trivia questions while you ride your way to the finish line!
-    </div><br>
-  <canvas id="gameCanvas" width="360" height="639"></canvas>
+  <button id="pauseButton" aria-label="Pause/Play">
+  <svg id="pauseIcon" width="32" height="32" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <rect x="6" y="4" width="4" height="16" />
+    <rect x="14" y="4" width="4" height="16" />
+  </svg>
+</button>
+<canvas id="gameCanvas" width="360" height="639"></canvas>
 </div>
 
 <div id="triviaModal" class="popup-overlay" style="display: none;">
@@ -167,6 +191,9 @@ canvas {
   let showingTrivia = false;
   let triviaTimeout;
 
+  const pauseIcon = document.getElementById("pauseIcon");
+
+
 function scheduleNextTrivia() {
   triviaTimeout = setTimeout(() => {
     if (!isPaused && !isGameOver) {
@@ -230,23 +257,31 @@ function scheduleNextTrivia() {
   } else {
     resetGameState();
     isPaused = false;
-    pauseButton.textContent = "Pause";
     drawStaticScene();
-    triviaIndex = 1; // reset questions
+    triviaIndex = 1;
     requestAnimationFrame(gameLoop);
   }
 });
 
 
-  pauseButton.addEventListener("click", () => {
-    if (isRunning) {
-      isPaused = !isPaused;
-      pauseButton.textContent = isPaused ? "Resume" : "Pause";
-      if (!isPaused) {
-        requestAnimationFrame(gameLoop);
-      }
+pauseButton.addEventListener("click", () => {
+  if (isRunning) {
+    isPaused = !isPaused;
+
+    const pauseIcon = document.getElementById("pauseIcon");
+
+    pauseIcon.innerHTML = isPaused
+      ? `<polygon points="6,4 20,12 6,20" />` // Play triangle
+      : `<rect x="6" y="4" width="4" height="16" />
+         <rect x="14" y="4" width="4" height="16" />`; // Pause bars
+
+    if (!isPaused) {
+      requestAnimationFrame(gameLoop);
     }
-  });
+  }
+});
+
+
 
   async function initGame() {
     try {
@@ -405,10 +440,24 @@ document.getElementById("close-popup").addEventListener("click", () => {
 
     ctx.drawImage(carImg, carX, carY, carWidth, carHeight);
 
-        // Draw lives
-    ctx.fillStyle = "white";
+    // Draw lives with black background box
     ctx.font = "20px Arial";
-    ctx.fillText(`Lives: ${lives}`, 10, 30);
+    const livesText = `Lives: ${lives}`;
+    const textX = 10;
+    const textY = 30;
+    const padding = 6;
+
+    const textWidth = ctx.measureText(livesText).width;
+    const textHeight = 20; // Approx height for 20px font
+
+    // Draw black background box behind the text
+    ctx.fillStyle = "black";
+    ctx.fillRect(textX - padding, textY - textHeight + 4, textWidth + padding * 2, textHeight + 4);
+
+    // Draw white text on top
+    ctx.fillStyle = "white";
+    ctx.fillText(livesText, textX, textY);
+
 
     // Game over
     if (isGameOver) {
