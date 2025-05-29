@@ -307,6 +307,7 @@ pauseButton.addEventListener("click", () => {
   }
 
 async function showTrivia() {
+  if (isGameOver || isPaused || showingTrivia) return;
   try {
     showingTrivia = true;
     isPaused = true;
@@ -338,7 +339,9 @@ async function showTrivia() {
 }
 
 function handleTriviaAnswer(selectedId, correctId) {
-  const resultText = selectedId === correctId
+  const isCorrect = selectedId === correctId;
+
+  const resultText = isCorrect
     ? "Correct! Keep going!"
     : "Wrong! You lost a life.";
 
@@ -346,9 +349,13 @@ function handleTriviaAnswer(selectedId, correctId) {
   document.getElementById("triviaOptions").innerHTML = "";
   document.getElementById("close-popup").style.display = "inline-block";
 
-  if (selectedId !== correctId) {
+  if (!isCorrect) {
     lives--;
-    if (lives <= 0) isGameOver = true;
+
+    if (lives <= 0) {
+      isGameOver = true;
+      draw();
+    }
   }
 }
 
@@ -413,6 +420,8 @@ document.getElementById("close-popup").addEventListener("click", () => {
     lives--;
     wobbleFrames = 30;
 
+  if (isGameOver) return;
+
     if (lives <= 0) {
       isGameOver = true;
     }
@@ -470,11 +479,14 @@ document.getElementById("close-popup").addEventListener("click", () => {
   }
 
   function gameLoop() {
-  if (!isRunning || isPaused || isGameOver) return;
+  if (!isRunning || isPaused) return;
   update();
   draw();
-  requestAnimationFrame(gameLoop);
+  if (!isGameOver) {
+    requestAnimationFrame(gameLoop);
+  }
 }
+
 
   initGame();
 </script>
