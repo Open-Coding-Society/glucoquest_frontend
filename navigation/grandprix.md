@@ -75,6 +75,23 @@ canvas {
   height: 32px;
 }
 
+#nameInputContainer {
+  display: none; 
+  position: absolute; 
+  top: 60%; 
+  left: 50%; 
+  transform: translate(-50%, 0); 
+  text-align: center;
+}
+#playerName {
+  padding: 8px; 
+  font-size: 16px;
+}
+#submitScore {
+  padding: 8px 12px; 
+  font-size: 16px;
+  margin-top: 10px;
+}
 </style>
 <button id="startButton">Start Game</button>
 <div id="help">
@@ -90,6 +107,12 @@ canvas {
   </svg>
 </button>
 <canvas id="gameCanvas" width="360" height="639"></canvas>
+
+<div id="nameInputContainer">
+  <input id="playerName" type="text" placeholder="Your Name" maxlength="64"/>
+  <button id="submitScore">Submit</button>
+</div>
+
 </div>
 
 <div id="triviaModal" class="popup-overlay" style="display: none;">
@@ -183,6 +206,7 @@ canvas {
   let lives = 3;
   let isGameOver = false;
   let points = 0;
+  let gameOverPopupShown = false;
 
   let collisionCooldown = 5; // Prevent multiple hits from one obstacle
   let wobbleFrames = 0;
@@ -216,6 +240,8 @@ function scheduleNextTrivia() {
     isGameOver = false;
     points = 0;
     wobbleFrames = 0;
+    gameOverPopupShown = false;
+    document.getElementById("nameInputContainer").style.display = "none";
   }
 
 
@@ -488,17 +514,48 @@ document.getElementById("close-popup").addEventListener("click", () => {
     ctx.fillStyle = "white";
     ctx.fillText(scoreText, textX, scoreY);
 
-
-
     // Game over
     if (isGameOver) {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "red";
-      ctx.font = "40px Arial";
-      ctx.fillText("GAME OVER", canvas.width / 2 - 100, canvas.height / 2);
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "red";
+    ctx.font = "40px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+
+    if (!gameOverPopupShown) {
+      document.getElementById("nameInputContainer").style.display = "block";
+      gameOverPopupShown = true;
     }
   }
+}
+
+document.getElementById("submitScore").addEventListener("click", async () => {
+  const name = document.getElementById("playerName").value.trim() || "Anonymous";
+  const score = points;
+  const date = new Date().toISOString().split("T")[0];
+
+  try {
+    const res = await fetch(`${pythonURI}/api/racing`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, score, date }),
+    });
+
+    if (res.ok) {
+      alert("Score submitted!");
+    } else {
+      alert("Failed to submit score.");
+    }
+  } catch (err) {
+    console.error("Submit error:", err);
+    alert("Error submitting score.");
+  }
+
+  // Hide input after submission
+  document.getElementById("nameInputContainer").style.display = "none";
+});
+
 
   function gameLoop() {
   if (!isRunning || isPaused) return;
