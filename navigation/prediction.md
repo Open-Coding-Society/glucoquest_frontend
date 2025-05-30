@@ -7,7 +7,7 @@ comments: true
 
 <div class="container mx-auto px-4 py-8">
     <header class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Diabetes Risk Prediction</h1>
+        <h1>Diabetes Risk Prediction</h1>
         <p class="text-gray-600">Assess your risk of diabetes based on health factors</p>
     </header>
     <div class="flex flex-col md:flex-row gap-6">
