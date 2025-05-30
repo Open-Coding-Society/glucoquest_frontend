@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Food log
+title: Food Log
 permalink: /foodlog1/
 comment: true
 ---
@@ -14,7 +14,7 @@ comment: true
   <div class="checklist-section">
     <form id="foodForm" class="checklist-form">
       <label for="meal" class="checklist-label">Meal:</label>
-      <input type="text" id="meal" name="meal" required class="checklist-input">
+      <input type="text" id="meal" name="meal" required class="checklist-input" placeholder="What did you eat?">
       <button class="submit-btn checklist-btn">Add Meal</button>
     </form>
   </div>
@@ -24,7 +24,7 @@ comment: true
   </div>
 
   <div class="checklist-container">
-    <p id="count" class="checklist-count"></p>
+    <p id="count" class="checklist-count">Total Meals: 0</p>
     <div class="checklist-items" id="food-items"></div>
   </div>
 </div>
@@ -38,6 +38,7 @@ comment: true
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 100vh;
   }
 
   .checklist-title {
@@ -48,15 +49,13 @@ comment: true
     font-family: 'Inter', sans-serif;
     text-shadow: 0 0 8px #00ffc8, 0 0 16px #00ffc8;
     width: 100%;
-    display: flex;
-    justify-content: center;
   }
 
   .foodlog-wrapper {
-    width: 150%;
-    max-width: 1000px;
+    width: 100%;
+    max-width: 800px;
     background: linear-gradient(145deg, #0c0c0c, #1c1c1c);
-    box-shadow: 0 0 30px #00ffc8;
+    box-shadow: 0 0 30px rgba(0, 255, 200, 0.3);
     border-radius: 20px;
     padding: 2rem;
     margin: 0 auto;
@@ -75,18 +74,19 @@ comment: true
   .checklist-label {
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
+    color: #00ffc8;
   }
 
   .checklist-input {
-    padding: 0.7rem;
+    padding: 0.7rem 1rem;
     border: none;
     border-radius: 10px;
     width: 100%;
     max-width: 400px;
     background-color: #1a1a1a;
-    color: #00ffcc;
+    color: #ffffff;
     font-size: 1rem;
-    box-shadow: 0 0 10px #00ffc8 inset;
+    border: 1px solid #00ffc8;
     margin-bottom: 1rem;
     text-align: center;
   }
@@ -100,13 +100,15 @@ comment: true
     color: #000;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: all 0.2s ease;
+    width: 100%;
     max-width: 200px;
   }
 
   .submit-btn:hover {
     background-color: #00d6a3;
     transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 200, 0.5);
   }
 
   .checklist-count {
@@ -114,6 +116,7 @@ comment: true
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
     color: #00ffc8;
+    font-family: 'Inter', sans-serif;
   }
 
   .checklist-item {
@@ -126,7 +129,7 @@ comment: true
     align-items: center;
     box-shadow: 0 0 12px rgba(0, 255, 200, 0.15);
     font-size: 1.1rem;
-    font-family: 'Inter', sans-serif;
+    border-left: 4px solid #00ffc8;
   }
 
   .checklist-item span {
@@ -138,6 +141,7 @@ comment: true
   .meal-name {
     font-weight: 600;
     color: #ffffff;
+    font-family: 'Inter', sans-serif;
   }
 
   .impact-pill {
@@ -149,6 +153,7 @@ comment: true
     width: fit-content;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-top: 0.3rem;
   }
 
   .impact-low {
@@ -167,15 +172,22 @@ comment: true
   }
 
   .delete-btn {
-    background-color: #ff4d4d;
-    border: none;
-    color: white;
+    background-color: transparent;
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
   }
 
-  /* Chart Styles */
+  .delete-btn:hover {
+    background-color: #ff4d4d;
+    color: white;
+    transform: scale(1.05);
+  }
+
   .chart-container {
     width: 100%;
     height: 400px;
@@ -201,15 +213,17 @@ comment: true
     pointer-events: none;
   }
 
-  @media (max-width: 500px) {
-    .checklist-input, .submit-btn {
-      width: 100%;
+  @media (max-width: 768px) {
+    body {
+      padding: 1rem;
     }
-
-    .checklist-item {
-      flex-direction: column;
-      gap: 0.5rem;
-      text-align: center;
+    
+    .foodlog-wrapper {
+      padding: 1.5rem;
+    }
+    
+    .checklist-title {
+      font-size: 2rem;
     }
     
     .chart-container {
@@ -217,379 +231,280 @@ comment: true
       padding: 1rem;
     }
     
-    .foodlog-wrapper {
+    .checklist-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
+    .delete-btn {
       width: 100%;
-      padding: 1rem;
+      margin-top: 0.5rem;
     }
   }
 </style>
 
-<!-- Chart.js and date-fns for date handling -->
+<!-- Chart.js for the graph -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/date-fns@2.28.0/dist/date-fns.min.js"></script>
 
-<script type="module">
-  // Mock API configuration (replace with your actual config)
-  const pythonURI = 'https://your-api-endpoint.com';
-  const fetchOptions = {
-    mode: 'cors',
-    credentials: 'include'
-  };
-
-  let impactChart = null;
-  let mockData = [
+<script>
+  // Food log data - will be replaced with your API data
+  let foodLogs = [
     {
       id: 1,
-      meal: "Toast",
-      impact: "Medium",
-      timestamp: "2025-05-30T20:53:36.000Z"
+      meal: "Salad",
+      impact: "Low",
+      timestamp: new Date(Date.now() - 2 * 86400000).toISOString() // 2 days ago
     },
     {
       id: 2,
-      meal: "Ice cream",
-      impact: "High",
-      timestamp: "2025-05-30T20:53:41.000Z"
+      meal: "Chicken Sandwich",
+      impact: "Medium",
+      timestamp: new Date(Date.now() - 1 * 86400000).toISOString() // yesterday
     },
     {
       id: 3,
-      meal: "Salad",
-      impact: "Low",
-      timestamp: "2025-05-30T20:53:57.000Z"
+      meal: "Ice Cream",
+      impact: "High",
+      timestamp: new Date().toISOString() // today
     }
   ];
 
-  document.getElementById("foodForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
-    const meal = document.getElementById("meal").value.trim();
-    const formattedMeal = meal.charAt(0).toUpperCase() + meal.slice(1);
-    const token = localStorage.getItem("jwt");
-    if (!formattedMeal) return;
+  let impactChart = null;
 
-    const impact = determineImpact(formattedMeal);
-    const newMeal = {
+  // Initialize the application
+  document.addEventListener("DOMContentLoaded", function() {
+    initializeChart();
+    renderFoodLogs();
+    
+    // Form submission handler
+    document.getElementById("foodForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const mealInput = document.getElementById("meal");
+      const mealName = mealInput.value.trim();
+      
+      if (mealName) {
+        addFoodLog(mealName);
+        mealInput.value = "";
+        mealInput.focus();
+      }
+    });
+  });
+
+  function addFoodLog(mealName) {
+    const newFoodLog = {
       id: Date.now(),
-      meal: formattedMeal,
-      impact,
+      meal: mealName.charAt(0).toUpperCase() + mealName.slice(1),
+      impact: determineImpact(mealName),
       timestamp: new Date().toISOString()
     };
-
-    // For demo purposes, we'll add to mockData
-    mockData.push(newMeal);
     
-    // In a real app, you would make an API call here:
-    /*
-    try {
-      await fetch(`${pythonURI}/api/foodlog`, {
-        ...fetchOptions,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify({ meal: formattedMeal, impact })
-      });
-    } catch (error) {
-      console.error("Error logging meal:", error);
-    }
-    */
-
-    document.getElementById("foodForm").reset();
-    fetchFoodLogs();
-  });
+    foodLogs.push(newFoodLog);
+    renderFoodLogs();
+  }
 
   function determineImpact(meal) {
     const lowered = meal.toLowerCase();
-    if (["ice cream", "pizza", "soda", "cake", "burger", "fries", "candy"].some(w => lowered.includes(w))) return "High";
-    if (["banana", "toast", "pasta", "rice", "cheese", "bread", "eggs"].some(w => lowered.includes(w))) return "Medium";
-    if (["salad", "chicken", "broccoli", "grilled", "fish", "vegetables"].some(w => lowered.includes(w))) return "Low";
+    
+    // High impact foods
+    const highImpactFoods = ["ice cream", "pizza", "soda", "cake", "burger", "fries", "candy", "chocolate", "donut"];
+    if (highImpactFoods.some(food => lowered.includes(food))) return "High";
+    
+    // Medium impact foods
+    const mediumImpactFoods = ["toast", "pasta", "rice", "cheese", "bread", "eggs", "potato", "yogurt", "granola"];
+    if (mediumImpactFoods.some(food => lowered.includes(food))) return "Medium";
+    
+    // Low impact foods
+    const lowImpactFoods = ["salad", "chicken", "broccoli", "grilled", "fish", "vegetables", "fruit", "soup", "quinoa"];
+    if (lowImpactFoods.some(food => lowered.includes(food))) return "Low";
+    
+    // Default to medium if not recognized
     return "Medium";
   }
 
-  async function fetchFoodLogs() {
-    // For demo purposes, we'll use mockData
-    const logs = mockData;
+  function renderFoodLogs() {
+    // Update meal count
+    document.getElementById("count").textContent = `Total Meals: ${foodLogs.length}`;
     
-    // In a real app, you would fetch from your API:
-    /*
-    const token = localStorage.getItem("jwt");
-    try {
-      const response = await fetch(`${pythonURI}/api/foodlog`, {
-        ...fetchOptions,
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        }
-      });
-      const logs = await response.json();
-    } catch (error) {
-      console.error("Fetch error:", error);
-      return;
-    }
-    */
-
-    document.getElementById("count").innerHTML = `<h4>Total Meals: ${logs.length}</h4>`;
-
+    // Clear current items
     const container = document.getElementById("food-items");
     container.innerHTML = "";
-
-    logs.forEach(log => {
+    
+    // Sort by newest first
+    const sortedLogs = [...foodLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    // Add each food log to the list
+    sortedLogs.forEach(log => {
       const impactClass = `impact-${log.impact.toLowerCase()}`;
-      const icon = log.impact === "High" ? "🔴" : log.impact === "Medium" ? "🟡" : "🟢";
-      const div = document.createElement("div");
-      div.className = "checklist-item";
-      div.innerHTML = `
+      const formattedDate = new Date(log.timestamp).toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "checklist-item";
+      itemDiv.innerHTML = `
         <span>
           <span class="meal-name">${log.meal}</span>
-          <span class="impact-pill ${impactClass}">${icon} IMPACT: ${log.impact}</span>
-          <small>${new Date(log.timestamp).toLocaleString()}</small>
+          <span class="impact-pill ${impactClass}">${log.impact} IMPACT</span>
+          <small>${formattedDate}</small>
         </span>
         <button class="delete-btn" data-id="${log.id}">Delete</button>
       `;
-      container.appendChild(div);
+      container.appendChild(itemDiv);
     });
-
+    
+    // Add event listeners to delete buttons
     document.querySelectorAll(".delete-btn").forEach(btn => {
-      btn.onclick = () => deleteFoodLog(btn.getAttribute("data-id"));
+      btn.addEventListener("click", function() {
+        const idToDelete = parseInt(this.getAttribute("data-id"));
+        foodLogs = foodLogs.filter(log => log.id !== idToDelete);
+        renderFoodLogs();
+      });
     });
-
-    updateChart(logs);
+    
+    // Update the chart
+    updateChartData();
   }
 
-  function updateChart(logs) {
-    // If no logs, show empty state
-    if (!logs || logs.length === 0) {
-      if (impactChart) {
-        impactChart.data.labels = [];
-        impactChart.data.datasets.forEach(dataset => {
-          dataset.data = [];
-        });
-        impactChart.update();
-      }
-      return;
-    }
-
-    // Group logs by date
-    const dailyData = logs.reduce((acc, log) => {
-      try {
-        const date = dateFns.format(new Date(log.timestamp), 'yyyy-MM-dd');
-        if (!acc[date]) {
-          acc[date] = { low: 0, medium: 0, high: 0, date: date };
-        }
-        
-        if (log.impact === "Low") acc[date].low++;
-        else if (log.impact === "Medium") acc[date].medium++;
-        else if (log.impact === "High") acc[date].high++;
-      } catch (e) {
-        console.error("Error processing log:", log, e);
-      }
-      return acc;
-    }, {});
-
-    // Sort dates chronologically
-    const sortedDates = Object.values(dailyData).sort((a, b) => 
-      new Date(a.date) - new Date(b.date));
-
-    // Prepare chart data
-    const dates = sortedDates.map(item => dateFns.format(new Date(item.date), 'MMM dd'));
-    const lowData = sortedDates.map(item => item.low);
-    const mediumData = sortedDates.map(item => item.medium);
-    const highData = sortedDates.map(item => item.high);
-
-    // Get chart context
+  function initializeChart() {
     const ctx = document.getElementById('impactChart').getContext('2d');
     
-    // Update or create chart
-    if (impactChart) {
-      impactChart.data.labels = dates;
-      impactChart.data.datasets[0].data = lowData;
-      impactChart.data.datasets[1].data = mediumData;
-      impactChart.data.datasets[2].data = highData;
-      impactChart.update();
-    } else {
-      impactChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: dates,
-          datasets: [
-            {
-              label: 'Low Impact',
-              data: lowData,
-              borderColor: '#00ffc8',
-              backgroundColor: 'rgba(0, 255, 200, 0.1)',
-              borderWidth: 3,
-              tension: 0.4,
-              fill: true,
-              pointBackgroundColor: '#00ffc8',
-              pointBorderColor: '#000',
-              pointRadius: 5,
-              pointHoverRadius: 7,
-              pointStyle: 'circle'
-            },
-            {
-              label: 'Medium Impact',
-              data: mediumData,
-              borderColor: '#0095ff',
-              backgroundColor: 'rgba(0, 149, 255, 0.1)',
-              borderWidth: 3,
-              tension: 0.4,
-              fill: true,
-              pointBackgroundColor: '#0095ff',
-              pointBorderColor: '#000',
-              pointRadius: 5,
-              pointHoverRadius: 7,
-              pointStyle: 'rect'
-            },
-            {
-              label: 'High Impact',
-              data: highData,
-              borderColor: '#ff00aa',
-              backgroundColor: 'rgba(255, 0, 170, 0.1)',
-              borderWidth: 3,
-              tension: 0.4,
-              fill: true,
-              pointBackgroundColor: '#ff00aa',
-              pointBorderColor: '#000',
-              pointRadius: 5,
-              pointHoverRadius: 7,
-              pointStyle: 'triangle'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'top',
-              labels: {
-                color: '#ffffff',
-                font: {
-                  size: 14,
-                  family: 'Inter'
-                },
-                padding: 20,
-                usePointStyle: true,
-                boxWidth: 10
-              }
-            },
-            title: {
-              display: true,
-              text: 'Daily Food Impact Trend',
-              color: '#00ffc8',
+    impactChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Low Impact',
+            data: [],
+            backgroundColor: 'rgba(0, 255, 136, 0.7)',
+            borderColor: 'rgba(0, 255, 136, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Medium Impact',
+            data: [],
+            backgroundColor: 'rgba(255, 204, 0, 0.7)',
+            borderColor: 'rgba(255, 204, 0, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'High Impact',
+            data: [],
+            backgroundColor: 'rgba(255, 77, 77, 0.7)',
+            borderColor: 'rgba(255, 77, 77, 1)',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#ffffff',
               font: {
-                size: 18,
-                family: 'Inter',
-                weight: 'bold'
-              },
-              padding: {
-                top: 10,
-                bottom: 20
-              }
-            },
-            tooltip: {
-              backgroundColor: '#1a1a1a',
-              titleColor: '#00ffc8',
-              bodyColor: '#ffffff',
-              borderColor: '#00ffc8',
-              borderWidth: 1,
-              padding: 12,
-              usePointStyle: true,
-              callbacks: {
-                label: function(context) {
-                  return `${context.dataset.label}: ${context.raw} meals`;
-                }
+                size: 14,
+                family: 'Inter'
               }
             }
           },
-          scales: {
-            x: {
-              grid: {
-                color: 'rgba(255, 255, 255, 0.1)',
-                drawBorder: false
-              },
-              ticks: {
-                color: '#ffffff',
-                font: {
-                  family: 'Roboto'
-                }
-              }
+          title: {
+            display: true,
+            text: 'Daily Food Impact',
+            color: '#00ffc8',
+            font: {
+              size: 18,
+              family: 'Inter',
+              weight: 'bold'
             },
-            y: {
-              beginAtZero: true,
-              grid: {
-                color: 'rgba(255, 255, 255, 0.1)',
-                drawBorder: false
-              },
-              ticks: {
-                color: '#ffffff',
-                font: {
-                  family: 'Roboto'
-                },
-                stepSize: 1,
-                callback: function(value) {
-                  return value % 1 === 0 ? value : null;
-                }
-              }
+            padding: {
+              bottom: 20
             }
           },
-          interaction: {
-            intersect: false,
-            mode: 'index'
-          },
-          elements: {
-            line: {
-              cubicInterpolationMode: 'monotone'
+          tooltip: {
+            backgroundColor: '#1a1a1a',
+            titleColor: '#00ffc8',
+            bodyColor: '#ffffff',
+            borderColor: '#00ffc8',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${context.raw} meals`;
+              }
             }
           }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)',
+              drawBorder: false
+            },
+            ticks: {
+              color: '#ffffff'
+            }
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)',
+              drawBorder: false
+            },
+            ticks: {
+              color: '#ffffff',
+              stepSize: 1,
+              precision: 0
+            }
+          }
+        },
+        animation: {
+          duration: 1000,
+          easing: 'easeOutQuart'
         }
-      });
-    }
-  }
-
-  async function deleteFoodLog(id) {
-    // For demo purposes, we'll filter mockData
-    mockData = mockData.filter(item => item.id !== parseInt(id));
-    
-    // In a real app, you would make an API call:
-    /*
-    const token = localStorage.getItem("jwt");
-    await fetch(`${pythonURI}/api/foodlog`, {
-      ...fetchOptions,
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({ id })
+      }
     });
-    */
-
-    fetchFoodLogs();
+    
+    updateChartData();
   }
 
-  // Initialize the app
-  document.addEventListener("DOMContentLoaded", () => {
-    fetchFoodLogs();
+  function updateChartData() {
+    // Group by date
+    const dailyData = {};
     
-    // Add some sample data if empty (for demo)
-    if (mockData.length === 0) {
-      const sampleFoods = [
-        { name: "Salad", impact: "Low" },
-        { name: "Toast", impact: "Medium" },
-        { name: "Ice Cream", impact: "High" }
-      ];
+    foodLogs.forEach(log => {
+      const date = new Date(log.timestamp).toLocaleDateString();
       
-      sampleFoods.forEach((food, i) => {
-        mockData.push({
-          id: i + 1,
-          meal: food.name,
-          impact: food.impact,
-          timestamp: new Date(Date.now() - (i * 86400000)).toISOString() // Spread over 3 days
-        });
-      });
+      if (!dailyData[date]) {
+        dailyData[date] = { low: 0, medium: 0, high: 0 };
+      }
       
-      fetchFoodLogs();
-    }
-  });
+      if (log.impact === "Low") dailyData[date].low++;
+      else if (log.impact === "Medium") dailyData[date].medium++;
+      else if (log.impact === "High") dailyData[date].high++;
+    });
+    
+    // Sort dates chronologically
+    const sortedDates = Object.keys(dailyData).sort((a, b) => new Date(a) - new Date(b));
+    
+    // Prepare data for chart
+    const lowData = sortedDates.map(date => dailyData[date].low);
+    const mediumData = sortedDates.map(date => dailyData[date].medium);
+    const highData = sortedDates.map(date => dailyData[date].high);
+    
+    // Update chart
+    impactChart.data.labels = sortedDates;
+    impactChart.data.datasets[0].data = lowData;
+    impactChart.data.datasets[1].data = mediumData;
+    impactChart.data.datasets[2].data = highData;
+    impactChart.update();
+  }
 </script>
