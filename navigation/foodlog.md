@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Food Log
-permalink: /foodlog1/
+permalink: /foodlog/
 comment: true
 ---
 
