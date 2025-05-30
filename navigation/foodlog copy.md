@@ -229,9 +229,34 @@ comment: true
 <script src="https://cdn.jsdelivr.net/npm/date-fns@2.28.0/dist/date-fns.min.js"></script>
 
 <script type="module">
-  import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
+  // Mock API configuration (replace with your actual config)
+  const pythonURI = 'https://your-api-endpoint.com';
+  const fetchOptions = {
+    mode: 'cors',
+    credentials: 'include'
+  };
 
   let impactChart = null;
+  let mockData = [
+    {
+      id: 1,
+      meal: "Toast",
+      impact: "Medium",
+      timestamp: "2025-05-30T20:53:36.000Z"
+    },
+    {
+      id: 2,
+      meal: "Ice cream",
+      impact: "High",
+      timestamp: "2025-05-30T20:53:41.000Z"
+    },
+    {
+      id: 3,
+      meal: "Salad",
+      impact: "Low",
+      timestamp: "2025-05-30T20:53:57.000Z"
+    }
+  ];
 
   document.getElementById("foodForm").addEventListener("submit", async function (event) {
     event.preventDefault();
@@ -241,8 +266,18 @@ comment: true
     if (!formattedMeal) return;
 
     const impact = determineImpact(formattedMeal);
-    const postData = { meal: formattedMeal, impact };
+    const newMeal = {
+      id: Date.now(),
+      meal: formattedMeal,
+      impact,
+      timestamp: new Date().toISOString()
+    };
 
+    // For demo purposes, we'll add to mockData
+    mockData.push(newMeal);
+    
+    // In a real app, you would make an API call here:
+    /*
     try {
       await fetch(`${pythonURI}/api/foodlog`, {
         ...fetchOptions,
@@ -251,14 +286,15 @@ comment: true
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         },
-        body: JSON.stringify(postData)
+        body: JSON.stringify({ meal: formattedMeal, impact })
       });
-
-      document.getElementById("foodForm").reset();
-      fetchFoodLogs();
     } catch (error) {
       console.error("Error logging meal:", error);
     }
+    */
+
+    document.getElementById("foodForm").reset();
+    fetchFoodLogs();
   });
 
   function determineImpact(meal) {
@@ -270,8 +306,12 @@ comment: true
   }
 
   async function fetchFoodLogs() {
+    // For demo purposes, we'll use mockData
+    const logs = mockData;
+    
+    // In a real app, you would fetch from your API:
+    /*
     const token = localStorage.getItem("jwt");
-
     try {
       const response = await fetch(`${pythonURI}/api/foodlog`, {
         ...fetchOptions,
@@ -281,67 +321,85 @@ comment: true
           'Authorization': 'Bearer ' + token
         }
       });
-
       const logs = await response.json();
-      document.getElementById("count").innerHTML = `<h4>Total Meals: ${logs.length}</h4>`;
-
-      const container = document.getElementById("food-items");
-      container.innerHTML = "";
-
-      logs.forEach(log => {
-        const impactClass = `impact-${log.impact.toLowerCase()}`;
-        const icon = log.impact === "High" ? "🔴" : log.impact === "Medium" ? "🟡" : "🟢";
-        const div = document.createElement("div");
-        div.className = "checklist-item";
-        div.innerHTML = `
-          <span>
-            <span class="meal-name">${log.meal}</span>
-            <span class="impact-pill ${impactClass}">${icon} IMPACT: ${log.impact}</span>
-            <small>${new Date(log.timestamp).toLocaleString()}</small>
-          </span>
-          <button class="delete-btn" data-id="${log.id}">Delete</button>
-        `;
-        container.appendChild(div);
-      });
-
-      document.querySelectorAll(".delete-btn").forEach(btn => {
-        btn.onclick = () => deleteFoodLog(btn.getAttribute("data-id"));
-      });
-
-      updateChart(logs);
     } catch (error) {
       console.error("Fetch error:", error);
+      return;
     }
+    */
+
+    document.getElementById("count").innerHTML = `<h4>Total Meals: ${logs.length}</h4>`;
+
+    const container = document.getElementById("food-items");
+    container.innerHTML = "";
+
+    logs.forEach(log => {
+      const impactClass = `impact-${log.impact.toLowerCase()}`;
+      const icon = log.impact === "High" ? "🔴" : log.impact === "Medium" ? "🟡" : "🟢";
+      const div = document.createElement("div");
+      div.className = "checklist-item";
+      div.innerHTML = `
+        <span>
+          <span class="meal-name">${log.meal}</span>
+          <span class="impact-pill ${impactClass}">${icon} IMPACT: ${log.impact}</span>
+          <small>${new Date(log.timestamp).toLocaleString()}</small>
+        </span>
+        <button class="delete-btn" data-id="${log.id}">Delete</button>
+      `;
+      container.appendChild(div);
+    });
+
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.onclick = () => deleteFoodLog(btn.getAttribute("data-id"));
+    });
+
+    updateChart(logs);
   }
 
   function updateChart(logs) {
-    // Group logs by date and calculate daily impact scores
-    const dailyData = {};
-    
-    logs.forEach(log => {
-      const date = dateFns.format(new Date(log.timestamp), 'yyyy-MM-dd');
-      if (!dailyData[date]) {
-        dailyData[date] = { low: 0, medium: 0, high: 0, date: date };
+    // If no logs, show empty state
+    if (!logs || logs.length === 0) {
+      if (impactChart) {
+        impactChart.data.labels = [];
+        impactChart.data.datasets.forEach(dataset => {
+          dataset.data = [];
+        });
+        impactChart.update();
       }
-      
-      if (log.impact === "Low") dailyData[date].low++;
-      else if (log.impact === "Medium") dailyData[date].medium++;
-      else dailyData[date].high++;
-    });
-    
+      return;
+    }
+
+    // Group logs by date
+    const dailyData = logs.reduce((acc, log) => {
+      try {
+        const date = dateFns.format(new Date(log.timestamp), 'yyyy-MM-dd');
+        if (!acc[date]) {
+          acc[date] = { low: 0, medium: 0, high: 0, date: date };
+        }
+        
+        if (log.impact === "Low") acc[date].low++;
+        else if (log.impact === "Medium") acc[date].medium++;
+        else if (log.impact === "High") acc[date].high++;
+      } catch (e) {
+        console.error("Error processing log:", log, e);
+      }
+      return acc;
+    }, {});
+
     // Sort dates chronologically
     const sortedDates = Object.values(dailyData).sort((a, b) => 
       new Date(a.date) - new Date(b.date));
-    
-    // Prepare data for Chart.js
+
+    // Prepare chart data
     const dates = sortedDates.map(item => dateFns.format(new Date(item.date), 'MMM dd'));
     const lowData = sortedDates.map(item => item.low);
     const mediumData = sortedDates.map(item => item.medium);
     const highData = sortedDates.map(item => item.high);
-    
-    // Create or update chart
+
+    // Get chart context
     const ctx = document.getElementById('impactChart').getContext('2d');
     
+    // Update or create chart
     if (impactChart) {
       impactChart.data.labels = dates;
       impactChart.data.datasets[0].data = lowData;
@@ -490,6 +548,11 @@ comment: true
   }
 
   async function deleteFoodLog(id) {
+    // For demo purposes, we'll filter mockData
+    mockData = mockData.filter(item => item.id !== parseInt(id));
+    
+    // In a real app, you would make an API call:
+    /*
     const token = localStorage.getItem("jwt");
     await fetch(`${pythonURI}/api/foodlog`, {
       ...fetchOptions,
@@ -500,10 +563,33 @@ comment: true
       },
       body: JSON.stringify({ id })
     });
+    */
 
     fetchFoodLogs();
   }
 
-  document.addEventListener("DOMContentLoaded", fetchFoodLogs);
+  // Initialize the app
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchFoodLogs();
+    
+    // Add some sample data if empty (for demo)
+    if (mockData.length === 0) {
+      const sampleFoods = [
+        { name: "Salad", impact: "Low" },
+        { name: "Toast", impact: "Medium" },
+        { name: "Ice Cream", impact: "High" }
+      ];
+      
+      sampleFoods.forEach((food, i) => {
+        mockData.push({
+          id: i + 1,
+          meal: food.name,
+          impact: food.impact,
+          timestamp: new Date(Date.now() - (i * 86400000)).toISOString() // Spread over 3 days
+        });
+      });
+      
+      fetchFoodLogs();
+    }
+  });
 </script>
-
