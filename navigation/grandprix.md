@@ -18,6 +18,11 @@ canvas {
     margin: 0 auto;
 }
 
+#startButtonContainer {
+  z-index: 7;
+  display: inline block;
+}
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -59,6 +64,14 @@ canvas {
 .popup-content button:hover {
   background-color: #0056b3;
 }
+.center-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
 #pauseButton {
   position: absolute;
   top: 10px;
@@ -92,14 +105,25 @@ canvas {
   font-size: 16px;
   margin-top: 10px;
 }
+
+#leaderboardContainer {
+  text-align:center; 
+  margin-top: 2rem;
+}
+#leaderboard {
+  margin: 0 auto; 
+  border-collapse: collapse;
+}
 </style>
-<button id="startButton">Start Game</button>
 <div id="help">
   Dodge obstacles and answer diabetes trivia questions while you ride your way to the finish line!
 </div><br>
 
 
 <div id="canvasContainer">
+  <div id="startButtonContainer" class="center-overlay">
+    <button id="startButton">Start Game</button>
+  </div>
   <button id="pauseButton" aria-label="Pause/Play">
   <svg id="pauseIcon" width="32" height="32" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
     <rect x="6" y="4" width="4" height="16" />
@@ -107,6 +131,24 @@ canvas {
   </svg>
 </button>
 <canvas id="gameCanvas" width="360" height="639"></canvas>
+
+<div id="leaderboardContainer">
+  <h2>Leaderboard</h2>
+  <table id="leaderboard">
+    <thead>
+      <tr>
+        <th style="padding: 0.5rem; border-bottom: 1px solid #ccc;">Rank</th>
+        <th style="padding: 0.5rem; border-bottom: 1px solid #ccc;">Name</th>
+        <th style="padding: 0.5rem; border-bottom: 1px solid #ccc;">Score</th>
+        <th style="padding: 0.5rem; border-bottom: 1px solid #ccc;">Date</th>
+      </tr>
+    </thead>
+    <tbody id="leaderboardBody">
+      <!-- Entries here -->
+    </tbody>
+  </table>
+</div>
+
 
 <div id="nameInputContainer">
   <input id="playerName" type="text" placeholder="Your Name" maxlength="64"/>
@@ -277,6 +319,7 @@ function scheduleNextTrivia() {
   }
 
   startButton.addEventListener("click", () => {
+  document.getElementById("startButtonContainer").style.display = "none";
   if (!isRunning) {
     isRunning = true;
     isPaused = false;
@@ -404,8 +447,6 @@ document.getElementById("close-popup").addEventListener("click", () => {
   }
 });
 
-
-
   function drawStaticScene() {
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(carImg, carX, carY, carWidth, carHeight);
@@ -521,7 +562,7 @@ document.getElementById("close-popup").addEventListener("click", () => {
     ctx.fillStyle = "red";
     ctx.font = "40px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 30);
 
     if (!gameOverPopupShown) {
       document.getElementById("nameInputContainer").style.display = "block";
@@ -544,6 +585,7 @@ document.getElementById("submitScore").addEventListener("click", async () => {
 
     if (res.ok) {
       alert("Score submitted!");
+      loadLeaderboard();
     } else {
       alert("Failed to submit score.");
     }
@@ -554,8 +596,11 @@ document.getElementById("submitScore").addEventListener("click", async () => {
 
   // Hide input after submission
   document.getElementById("nameInputContainer").style.display = "none";
+  
+  // Show centered start button container
+  document.getElementById("startButtonContainer").style.display = "block";
+  startButton.textContent = "Restart Game";
 });
-
 
   function gameLoop() {
   if (!isRunning || isPaused) return;
@@ -566,6 +611,37 @@ document.getElementById("submitScore").addEventListener("click", async () => {
   }
 }
 
+async function loadLeaderboard() {
+  try {
+    const res = await fetch(`${pythonURI}/api/racing`);
+    const data = await res.json();
+
+    // Sort the data from highest to lowest score before the loop
+    data.sort((a, b) => b.score - a.score);
+
+    const leaderboardBody = document.getElementById("leaderboardBody");
+    leaderboardBody.innerHTML = "";
+
+    data.forEach((entry, index) => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td style="padding: 0.5rem;">${index + 1}</td>
+        <td style="padding: 0.5rem;">${entry.name}</td>
+        <td style="padding: 0.5rem;">${entry.score}</td>
+        <td style="padding: 0.5rem;">${entry.date}</td>
+      `;
+
+      leaderboardBody.appendChild(row);
+    });
+  } catch (err) {
+    console.error("Failed to load leaderboard:", err);
+  }
+}
+
+
+// Load leaderboard on page load
+window.addEventListener("DOMContentLoaded", loadLeaderboard);
 
   initGame();
 </script>
