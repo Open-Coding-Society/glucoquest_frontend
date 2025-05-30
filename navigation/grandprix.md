@@ -182,6 +182,8 @@ canvas {
 
   let lives = 3;
   let isGameOver = false;
+  let points = 0;
+
   let collisionCooldown = 5; // Prevent multiple hits from one obstacle
   let wobbleFrames = 0;
   let wobbleDirection = 1;
@@ -212,6 +214,7 @@ function scheduleNextTrivia() {
     keys = { a: false, d: false };
     lives = 3;
     isGameOver = false;
+    points = 0;
     wobbleFrames = 0;
   }
 
@@ -298,6 +301,12 @@ pauseButton.addEventListener("click", () => {
           showTrivia();
         }
       }, 10000);
+
+      setInterval(() => {
+        if (isRunning && !isPaused && !isGameOver && !showingTrivia) {
+          points += 5;
+        }
+      }, 1000);
 
       resetGameState();
       drawStaticScene();
@@ -466,6 +475,19 @@ document.getElementById("close-popup").addEventListener("click", () => {
     // Draw white text on top
     ctx.fillStyle = "white";
     ctx.fillText(livesText, textX, textY);
+
+    // Draw score below lives
+    const scoreText = `Score: ${points}`;
+    const scoreY = textY + 30;
+
+    const scoreWidth = ctx.measureText(scoreText).width;
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(textX - padding, scoreY - textHeight + 4, scoreWidth + padding * 2, textHeight + 4);
+
+    ctx.fillStyle = "white";
+    ctx.fillText(scoreText, textX, scoreY);
+
 
 
     // Game over
