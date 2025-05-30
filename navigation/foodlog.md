@@ -52,7 +52,7 @@ comment: true
   }
 
   .foodlog-wrapper {
-    width: 100%;
+    width: 150%;
     max-width: 800px;
     background: linear-gradient(145deg, #0c0c0c, #1c1c1c);
     box-shadow: 0 0 30px rgba(0, 255, 200, 0.3);
