@@ -4,7 +4,7 @@ if (location.hostname === "localhost") {
 } else if (location.hostname === "127.0.0.1") {
         pythonURI = "http://127.0.0.1:8520";
 } else {
-        pythonURI =  "https://glucoquest.stu.opencodingsociety.com";
+        pythonURI =  "https://glucoquest.opencodingsociety.com";
 }
 
 // Log the value of pythonURI to the console
