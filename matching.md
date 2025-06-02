@@ -717,7 +717,7 @@
   // Add this function to check if all slots are filled
   function checkAllSlotsFilled() {
     const slots = document.querySelectorAll('.slot');
-    return Array.from(slots).every(slot => slot.children.length > 0);
+    return Array.from(slots).every(slot => slot.classList.contains('correct'));
   }
 
   function resetSlots() {
