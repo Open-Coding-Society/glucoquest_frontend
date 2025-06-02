@@ -621,16 +621,28 @@
     e.target.classList.remove('highlight');
     const deviceType = e.dataTransfer.getData('text/plain');
     const card = document.querySelector(`.card[data-device="${deviceType}"]`);
-    // Only allow drop if slot is empty
+    // Only allow drop if slot is empty and not already correct
     if (e.target.dataset.correct === deviceType && e.target.children.length === 0) {
       e.target.classList.add('correct');
-      // Move the card DOM node into the slot
-      card.style.margin = "0 auto";
-      card.style.display = "flex";
+      // Instead of moving the card, just mark it as matched
+      card.style.opacity = "0.5";
+      card.style.background = "#f0f0f0";
       card.setAttribute('draggable', 'false');
-      e.target.appendChild(card);
-      // Optionally, disable pointer events on the card
       card.style.pointerEvents = "none";
+      card.classList.remove('pulse');
+      card.classList.add('matched'); // for possible future styling
+      // Optionally, add a checkmark or icon to the card
+      if (!card.querySelector('.matched-icon')) {
+        const icon = document.createElement('span');
+        icon.className = 'matched-icon';
+        icon.textContent = '✔️';
+        icon.style.marginLeft = '10px';
+        icon.style.fontSize = '1.2rem';
+        icon.style.color = '#27ae60';
+        card.querySelector('div').appendChild(icon);
+      }
+      // Mark the slot as filled (for logic)
+      e.target.setAttribute('data-filled', 'true');
       // After each drop, check if all slots are filled
       if (checkAllSlotsFilled()) {
         document.getElementById('continueButtonContainer').style.display = 'block';
