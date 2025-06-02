@@ -130,6 +130,12 @@
       transform: translateY(-5px);
       box-shadow: 0 12px 24px rgba(0,0,0,0.12);
     }
+    .card.matched {
+      opacity: 0.5;
+      background: #f0f0f0;
+      cursor: default;
+      box-shadow: none;
+    }
     /* Slot Styling */
     .slot {
       background: white;
