@@ -630,14 +630,14 @@
     // Only allow drop if slot is empty and not already correct
     if (e.target.dataset.correct === deviceType && e.target.children.length === 0) {
       e.target.classList.add('correct');
-      // Instead of moving the card, just mark it as matched
+      // Mark the card as matched in the right column
       card.style.opacity = "0.5";
       card.style.background = "#f0f0f0";
       card.setAttribute('draggable', 'false');
       card.style.pointerEvents = "none";
       card.classList.remove('pulse');
-      card.classList.add('matched'); // for possible future styling
-      // Optionally, add a checkmark or icon to the card
+      card.classList.add('matched');
+      // Add a checkmark if not already present
       if (!card.querySelector('.matched-icon')) {
         const icon = document.createElement('span');
         icon.className = 'matched-icon';
@@ -647,6 +647,31 @@
         icon.style.color = '#27ae60';
         card.querySelector('div').appendChild(icon);
       }
+      // Show a visual in the slot (left)
+      // Clone the card's inner content for the slot, but as a summary (not draggable)
+      const summary = card.cloneNode(true);
+      summary.classList.add('slot-summary');
+      summary.classList.remove('pulse', 'dragging');
+      summary.style.opacity = "1";
+      summary.style.background = "transparent";
+      summary.style.boxShadow = "none";
+      summary.style.cursor = "default";
+      summary.setAttribute('draggable', 'false');
+      // Remove any checkmark from the summary (optional)
+      const matchedIcon = summary.querySelector('.matched-icon');
+      if (matchedIcon) matchedIcon.remove();
+      // Remove pointer events
+      summary.style.pointerEvents = "none";
+      // Remove margin
+      summary.style.margin = "0";
+      // Remove any extra classes
+      summary.classList.remove('matched');
+      // Remove any id attribute if present
+      summary.removeAttribute('id');
+      // Remove all children from slot and add summary
+      e.target.innerHTML = '';
+      e.target.appendChild(summary);
+
       // Mark the slot as filled (for logic)
       e.target.setAttribute('data-filled', 'true');
       // After each drop, check if all slots are filled
