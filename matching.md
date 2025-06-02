@@ -255,6 +255,16 @@
     #helpModal strong {
       color: #1a2633 !important;
     }
+    .slot-summary {
+  background: transparent !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+}
   </style>
 </head>
 <body>
