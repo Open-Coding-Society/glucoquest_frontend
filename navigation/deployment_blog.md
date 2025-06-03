@@ -22,28 +22,25 @@ permalink: /aws/
 ---
 ## Features Working with Frontend to Backend
 
-### **Event Calendar**
-- **Backend:** Handles CRUD operations for events via `/api/events`.
-- **Frontend:** Displays upcoming events, allows users to create and delete events.
-- **Database:** Stores event details such as name, date, location, and attendees.
+### Racing Car Game with Leaderboard
+- **Backend:** Manages game sessions, scores, and leaderboard data via `/api/scores`.
+- **Frontend:** Runs the racing game, submits scores, and displays the top 10 players on the leaderboard.
+- **Database:** Stores player profiles, game scores, and ranking info.
 
-### **Notification System**
-- **Backend:** Generates and stores notifications, providing endpoints at `/api/notifications`.
-- **Frontend:** Fetches unread notifications and displays alerts to users.
+### Perfect Plate Game with Leaderboard
+- **Backend:** Handles game logic, user attempts, and leaderboard updates at `/api/scores`.
+- **Frontend:** Lets users build their “perfect plate,” submits results, and shows the top 10 players.
+- **Database:** Saves user game results and leaderboard standings.
 
-### **Search Bar**
-- **Backend:** Implements search functionality at `/api/search`, querying event names and descriptions.
-- **Frontend:** Filters and displays search results dynamically.
-- **Database:** Stores/adds tags to items user interacts with to create a future profile of interests and liked items.
+### Food Log with Glycemic Index Calculation
+- **Backend:** Accepts food entries, calculates glycemic index impact at `/api/food_log`.
+- **Frontend:** Allows users to log foods eaten, displays glycemic index info and daily summaries.
+- **Database:** Stores user food logs, glycemic index values, and nutritional info.
 
-### **Profile Creator**
-- **Backend:** Manages user accounts and profile data via `/api/profile_page`.
-- **Frontend:** Allows users to set up and edit their profiles.
-- **Authentication:** Uses **JWT** for secure logins.
-
-### **Survey Feature**
-- **Backend:** Stores and processes survey responses at `/api/survey`.
-- **Frontend:** Presents surveys and submits user feedback.
+### Pin the Dexcom Game
+- **Backend:** Tracks user placements of the Dexcom CGM and stores glucose data throughout the day at `/api/pin_dexcom`.
+- **Frontend:** Provides an interactive “Pin the Dexcom” game for CGM placement practice and displays glucose trends over time.
+- **Database:** Saves user pin attempts and glucose readings for progress tracking.
 
 ---
 ## **Deployment Process on AWS**
