@@ -43,18 +43,15 @@ comment: true
     font-size: 16px;
     transition: all 0.3s;
   }
-  
   .step.active::before {
     background: #3b82f6;
     color: white;
     transform: scale(1.1);
   }
-  
   .step.completed::before {
     background: #10b981;
     color: white;
   }
-
   /* Enhanced Arm Area */
   .dexcom-arm-area {
     position: relative;
@@ -70,13 +67,11 @@ comment: true
     justify-content: center;
     align-items: center;
   }
-
   .arm-image {
     max-height: 100%;
     max-width: 100%;
     object-fit: contain;
   }
-
   .target-zone {
     position: absolute;
     width: 100px;
@@ -89,7 +84,6 @@ comment: true
     pointer-events: none;
     box-shadow: 0 0 20px rgba(58, 134, 255, 0.5);
   }
-
 /* Enhanced Equipment Panel */
 .equipment-panel {
   background: #2c2c2c;
@@ -100,47 +94,39 @@ comment: true
   max-width: 400px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-
 .equipment-items {
   display: flex;
   justify-content: space-around;
   gap: 10px;
 }
-
 .equipment-icon {
   width: 70px;
   height: 70px;
   cursor: grab;
   transition: transform 0.2s;
 }
-
 .equipment-icon:hover {
   transform: scale(1.1);
 }
-
 .equipment-icon.dragging {
   opacity: 0.6;
   transform: scale(0.9);
 }
-
   .equipment-item:hover {
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
   }
-
   .equipment-icon {
     width: 60px;
     height: 60px;
     margin-bottom: 10px;
     object-fit: contain;
   }
-
   .equipment-label {
     font-size: 14px;
     text-align: center;
     color: #e2e8f0;
   }
-
   /* Enhanced Stickers */
   .sticker {
     position: absolute;
@@ -150,46 +136,38 @@ comment: true
     z-index: 10;
     transition: transform 0.3s;
   }
-
   .alcohol-wipe-sticker {
     width: 80px;
     height: 80px;
   }
-
   .cotton-tip-sticker {
     width: 70px;
     height: 70px;
   }
-
   .dexcom-sensor-sticker {
     width: 100px;
     height: 100px;
   }
-
   @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
   }
-
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-5px); }
     40%, 80% { transform: translateX(5px); }
   }
-
   /* Status indicators */
   .status-normal { color: #10b981; }
   .status-high { color: #f59e0b; }
   .status-low { color: #ef4444; }
-  
   .glucose-value {
     font-size: 2.5rem;
     font-weight: bold;
     color: #3b82f6;
     margin: 10px 0;
   }
-  
   .records-table {
     width: 100%;
     border-collapse: collapse;
@@ -201,7 +179,6 @@ comment: true
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     color: #ffffff;
   }
-  
   .records-table th {
     background: #3a3a3a;
     padding: 12px 15px;
@@ -209,12 +186,10 @@ comment: true
     border-bottom: 1px solid #4a5568;
     font-weight: 600;
   }
-  
   .records-table td {
     padding: 12px 15px;
     border-bottom: 1px solid #4a5568;
   }
-
   /* Feedback Styles */
   .feedback {
     position: fixed;
@@ -229,11 +204,9 @@ comment: true
     font-size: 16px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
-  
   .feedback-success {
     background-color: #10b981;
   }
-  
   .feedback-error {
     background-color: #ef4444;
     animation: shake 0.5s;
