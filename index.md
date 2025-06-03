@@ -57,21 +57,21 @@ show_reading_time: false
     🎯 Game Features
 </h2>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-8 mt-10">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 px-8 mt-10 max-w-7xl mx-auto">
     <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300">
-        <h3 class="text-2xl font-bold text-green-300">🕹️ Interactive Challenges</h3>
+        <h3 class="text-2xl font-bold text-green-300">🕹️<br> Interactive Challenges</h3>
         <p class="text-lg text-gray-300 mt-2">
             Test your glucose management knowledge with engaging tasks and scenarios.
         </p>
     </div>
     <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300">
-        <h3 class="text-2xl font-bold text-green-300">📊 Personalized Feedback</h3>
+        <h3 class="text-2xl font-bold text-green-300">📊<br><span class="whitespace-nowrap">Personalized<br> Feedback</span></h3>
         <p class="text-lg text-gray-300 mt-2">
             Get real-time insights on your performance and improve your learning.
         </p>
     </div>
     <div class="bg-green-800 rounded-3xl shadow-lg p-6 hover:scale-105 transform transition-all duration-300">
-        <h3 class="text-2xl font-bold text-green-300">📈 Progress Tracking</h3>
+        <h3 class="text-2xl font-bold text-green-300">📈<br> Progress Tracking</h3>
         <p class="text-lg text-gray-300 mt-2">
             See how much you’ve learned with custom analytics and feedback.
         </p>
