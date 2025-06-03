@@ -186,8 +186,8 @@ canvas {
       sugar: {
         src: "{{site.baseurl}}/images/grandprix/sugar.png",
       },
-      pancreas: {
-        src: "{{site.baseurl}}/images/grandprix/pancreas.png",
+      cupcake: {
+        src: "{{site.baseurl}}/images/grandprix/cupcake.png",
       }
     },
     cars: {
