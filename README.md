@@ -1,42 +1,75 @@
 # GlucoQuest
 
-**GlucoQuest** is an interactive web application designed to educate users about diabetes and blood glucose management through games, quizzes, and engaging visual content. Developed by students in collaboration with Dexcom and PilotCity, this platform merges health awareness with gamified learning.
+**GlucoQuest** is an interactive web application designed to educate users about diabetes and blood glucose management through engaging games, quizzes, and visual tools. Developed by students in collaboration with **Dexcom** and **PilotCity**, this project blends health awareness with gamified learning experiences.
 
-Our project supports students in software engineering and computer science education by providing hands-on experience with frontend development, backend APIs, GitHub Pages, and collaborative development workflows.
+It also serves as a real-world learning platform for students exploring **frontend development**, **backend APIs**, **GitHub workflows**, and **technical documentation**.
 
 ---
 
-##  Project Goals
+## Project Goals
 
-- Increase public awareness about diabetes and blood sugar regulation.
-- Use gamification to engage users in learning key concepts.
-- Provide Dexcom with a prototype that could boost engagement by 30% on their social media platforms.
-- Support team learning and student blogging using GitHub Pages.
+- Raise awareness about diabetes and blood glucose regulation.
+- Use **gamification** to make learning fun and memorable.
+- Provide Dexcom with a prototype to boost user engagement by 30% on social media.
+- Support student learning and reflection through GitHub Pages and technical blogging.
 
 ---
 
 ## Features
 
 ### Educational Games
-- **Glucose Grand Priz**: Race on the glucose themed race track (maryam finish this)
-- **Pin the Dexcom**: Onboarding tool to educate users about the placement of Dexcom CGM technology
-- **Perfect Plate**: Catch healthy foods on your plate while avoiding unhealthy ones to catch all the nutrional food groups 
 
-### Learning Tools
-- Interactive drag and drop diagram
-- Flashcards
-- Quizzes with instant feedback with AI
+- **Glucose Grand Prix**  
+  Race on a glucose-themed track. Answer questions correctly to speed up and win!
 
-###  Technical Stack
-- **Frontend**: JavaScript, HTML, Tailwind CSS, deployed via GitHub Pages.
-- **Backend**: Flask API (Python), Node.js (alternative), hosted locally or on cloud.
-- **Data**: Educational content and simulations curated by students and mentors.
-- **CI/CD**: GitHub Actions for automated deployment and blog regeneration.
+- **Pin the Dexcom**  
+  A placement game that teaches users where to apply the Dexcom CGM device.
+
+- **Perfect Plate**  
+  Catch healthy foods on your plate while avoiding unhealthy ones to complete a balanced meal.
 
 ---
 
-##  Student Blogging & Contributions
+### Learning Tools
 
-Each contributor maintains a jupyter notebook to reflect on progress, showcase game components, and document learning.
+- **Drag-and-Drop Diagrams**  
+  Interactive models to visualize key concepts.
 
-All blogs are tagged and searchable, and follow a markdown/Jupyter notebook structure to support documentation of both code and concepts.
+- **Flashcards**  
+  Review terms and facts quickly using digital cards.
+
+- **Quizzes with AI Feedback**  
+  Test your knowledge and get instant responses powered by AI.
+
+---
+
+##  Technical Stack
+
+- **Frontend**: JavaScript, HTML, Tailwind CSS — deployed with GitHub Pages  
+- **Backend**: Python (Flask API) or Node.js — hosted locally or on the cloud  
+- **Data**: Educational content curated by students and mentors  
+- **CI/CD**: GitHub Actions for automated deployment and site regeneration
+
+---
+
+## Student Blogging & Contributions
+
+Contributors maintain **Jupyter Notebooks** and **Markdown blogs** to:
+
+- Reflect on development progress
+- Explain technical choices
+- Document game mechanics and user feedback
+
+All posts are tagged, searchable, and follow Nighthawk Pages blogging structure for clear, consistent presentation.
+
+---
+
+##  How to Run Locally
+
+```bash
+# Clone the frontend
+git clone https://github.com/your-org/glucoquest_frontend.git
+cd glucoquest_frontend
+
+# Start local preview (GitHub Pages dev mode)
+make
