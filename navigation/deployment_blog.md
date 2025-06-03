@@ -3,6 +3,8 @@ layout: post
 title: AWS Deployment Blog
 search_exclude: true
 permalink: /aws/
+categories: [Machine Learning]
+
 ---
 
 ## Project Structure
