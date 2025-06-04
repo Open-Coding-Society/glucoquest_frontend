@@ -79,7 +79,6 @@ show_reading_time: false
 </div>
 
 <div class="w-24 h-1 bg-green-400 mx-auto mt-10 rounded-full"></div>
-
 <div class="text-center mt-10">
     <h2 class="text-4xl font-bold">
         Getting Started
@@ -87,9 +86,14 @@ show_reading_time: false
     <p class="text-lg text-gray-300 mt-4">
         Create an account and take our diagnostic quiz to get suggestions on what your next monitoring steps should be.
     </p>
-    <button class="quiz-button" href="{{ site.baseurl }}/prediction"><a href="{{ site.baseurl }}/prediction">
-    Take the Quiz!
-    </a></button>
+    <div class="flex justify-center gap-4 mt-6">
+        <a href="{{ site.baseurl }}/prediction" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+            Take the Quiz!
+        </a>
+        <a href="{{ site.baseurl }}/feedback" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+            Submit Feedback
+        </a>
+    </div>
 </div>
 
 <div class="w-24 h-1 bg-green-400 mx-auto mt-10 rounded-full"></div>
