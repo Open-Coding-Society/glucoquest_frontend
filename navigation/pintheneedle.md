@@ -68,9 +68,12 @@ comment: true
     align-items: center;
   }
   .arm-image {
-    max-height: 100%;
-    max-width: 100%;
+    width: 320px;      /* Set this to your original arm image's width */
+    height: 240px;     /* Set this to your original arm image's height */
     object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    transition: filter 0.2s, transform 0.2s;
   }
   .target-zone {
     position: absolute;
@@ -296,7 +299,7 @@ comment: true
 
   <!-- Enhanced Arm Area -->
   <div class="dexcom-arm-area" id="dexcom-arm-area">
-    <img src="{{site.baseurl}}/images/needlepin/arm.png" class="arm-image" alt="Arm">
+    <img class="arm-image" src="{{site.baseurl}}/images/needlepin/arm.png" alt="Arm" />
     <div class="target-zone"></div>
   </div>
 
