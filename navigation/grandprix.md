@@ -5,16 +5,36 @@ show_reading_time: false
 categories: [Game]
 ---
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap');
+
+:root {
+  --dexcom-green: #5fb617;
+  --dexcom-dark: #1a2c3b;
+  --dexcom-light: #e8f5e9;
+  --dexcom-accent: #3498db;
+  --dexcom-alert: #e74c3c;
+}
+
+body {
+  font-family: 'Oxygen Mono', monospace;
+  background-color: var(--dexcom-dark);
+  color: white;
+}
+
 #canvasContainer {
   position: relative;
   width: 360px;
   height: 639px;
   margin: 0 auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 canvas {
   display: block;
   margin: 0 auto;
+  background-color: var(--dexcom-dark);
 }
 
 #startButtonContainer {
@@ -28,7 +48,7 @@ canvas {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.75);
+  background-color: rgba(0,0,0,0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,28 +56,39 @@ canvas {
 }
 
 .popup-content {
-  background: #58A618;
+  background: var(--dexcom-dark);
   padding: 2rem;
   border-radius: 10px;
   text-align: center;
   max-width: 400px;
   width: 90%;
+  border-top: 4px solid var(--dexcom-green);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .popup-content p {
-  color: black;
+  color: white;
   font-size: 1.2rem;
   font-weight: bold;
 }
 
 .popup-content button {
   margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
-  background-color: #007bff;
-  color: white;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--dexcom-green);
+  color: var(--dexcom-dark);
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.popup-content button:hover {
+  background-color: var(--dexcom-accent);
+  transform: translateY(-2px);
 }
 
 .center-overlay {
@@ -70,13 +101,20 @@ canvas {
 
 #pauseButton {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 15px;
+  right: 15px;
   z-index: 5;
-  background: transparent;
+  background: rgba(0,0,0,0.5);
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+#pauseButton:hover {
+  background: var(--dexcom-green);
+  transform: scale(1.1);
 }
 
 #nameInputContainer {
@@ -86,23 +124,50 @@ canvas {
   left: 50%;
   transform: translate(-50%, 0);
   text-align: center;
+  background: var(--dexcom-dark);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-top: 4px solid var(--dexcom-green);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-#leaderboardModal {
-  display: none;
+#playerName {
+  padding: 10px;
+  font-size: 16px;
+  width: 200px;
+  margin-bottom: 1rem;
+  border: 2px solid var(--dexcom-green);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+#submitScore {
+  padding: 10px 20px;
+  background-color: var(--dexcom-green);
+  color: var(--dexcom-dark);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+#submitScore:hover {
+  background-color: var(--dexcom-accent);
 }
 
 .leaderboard-modal-content {
-  background: #e8f5e9; /* Light green background */
+  background: var(--dexcom-dark);
   padding: 2rem;
-  border-radius: 15px;
+  border-radius: 10px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   animation: modalFadeIn 0.3s;
-  margin: 0 auto; /* This helps with centering */
+  margin: 0 auto;
+  border-top: 4px solid var(--dexcom-green);
 }
-
 
 @keyframes modalFadeIn {
   from { opacity: 0; transform: translateY(-20px); }
@@ -110,75 +175,130 @@ canvas {
 }
 
 .leaderboard-title {
-  color: #000 !important; /* Force black color */
+  color: var(--dexcom-green) !important;
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
   text-align: center;
-  width: 100%; /* Ensure full width for proper centering */
+  width: 100%;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .leaderboard-table {
   width: 100%;
-  border-collapse: collapse;
-  margin: 1rem auto; /* Center the table */
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1rem auto;
 }
 
-.leaderboard-table th,
+.leaderboard-table th {
+  background: var(--dexcom-green);
+  color: var(--dexcom-dark);
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: bold;
+}
+
 .leaderboard-table td {
   padding: 0.75rem;
   text-align: center;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: white;
 }
 
 .leaderboard-table tr:nth-child(even) {
-  background-color: #f8f9fa;
+  background-color: rgba(255,255,255,0.05);
 }
 
 .leaderboard-table tr:first-child td {
   font-weight: bold;
-  color: #58A618;
+  color: var(--dexcom-green);
 }
 
 .medal-gold {
-  color: gold;
+  color: #f1c40f;
   font-weight: bold;
 }
 
 .medal-silver {
-  color: silver;
+  color: #bdc3c7;
   font-weight: bold;
 }
 
 .medal-bronze {
-  color: #cd7f32; /* bronze color */
+  color: #e67e22;
   font-weight: bold;
 }
 
 .close-leaderboard {
   margin-top: 1.5rem;
-  padding: 0.5rem 1.5rem;
-  background-color: #2c3e50;
-  color: white;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--dexcom-green);
+  color: var(--dexcom-dark);
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
 }
 
 .close-leaderboard:hover {
-  background-color: #1a252f;
+  background-color: var(--dexcom-accent);
+}
+
+#postGameContainer {
+  display: none;
+  text-align: center;
+  margin-top: 2rem;
+  background: var(--dexcom-dark);
+  padding: 2rem;
+  border-radius: 10px;
+  border-top: 4px solid var(--dexcom-green);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#finalScoreDisplay {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--dexcom-green);
+  font-weight: bold;
+}
+
+#playAgain {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--dexcom-green);
+  color: var(--dexcom-dark);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+#playAgain:hover {
+  background-color: var(--dexcom-accent);
 }
 </style>
 
-<div id="help">
-  Dodge obstacles and answer diabetes trivia questions while you ride your way to the finish line!
+<div id="help" class="text-center mb-8">
+  <p class="text-gray-300">Dodge obstacles and answer diabetes trivia questions while you ride your way to the finish line!</p>
 </div>
 
 <div id="canvasContainer">
   <div id="startButtonContainer" class="center-overlay">
-    <button id="startButton">Start Game</button>
+    <button id="startButton" class="bg-green-500 hover:bg-green-400 text-dexcom-dark font-bold py-3 px-6 rounded-lg transition duration-200">
+      Start Game
+    </button>
   </div>
-  <button id="pauseButton">
+  <button id="pauseButton" aria-label="Pause/Play">
     <svg id="pauseIcon" width="32" height="32" viewBox="0 0 24 24" fill="white">
       <rect x="6" y="4" width="4" height="16" />
       <rect x="14" y="4" width="4" height="16" />
@@ -188,7 +308,7 @@ canvas {
 
   <div id="nameInputContainer">
     <input id="playerName" type="text" placeholder="Your Name" maxlength="64"/>
-    <button id="submitScore">Submit</button>
+    <button id="submitScore">Submit Score</button>
   </div>
 </div>
 
@@ -217,6 +337,7 @@ canvas {
     </div>
   </div>
 </div>
+
 <!-- Trivia Modal -->
 <div id="triviaModal" class="popup-overlay" style="display: none;">
   <div class="popup-content">
@@ -281,6 +402,14 @@ canvas {
   // Initialize game
   async function initGame() {
     try {
+      // Show loading state
+      ctx.fillStyle = "var(--dexcom-dark)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "var(--dexcom-green)";
+      ctx.font = "24px 'Oxygen Mono'";
+      ctx.textAlign = "center";
+      ctx.fillText("LOADING...", canvas.width/2, canvas.height/2);
+      
       bgImg = await loadImage(assets.background.src);
       carImg = await loadImage(assets.cars.default.src);
       
@@ -378,9 +507,16 @@ canvas {
   }
 
   function update() {
-    // Handle car movement
-    if (keys.a) carX -= 5;
-    if (keys.d) carX += 5;
+    // Handle car movement with smooth acceleration
+    const carAcceleration = 2; // Increased from 0.5
+    let carVelocity = 0;
+    const maxSpeed = 15; // Increased from 8
+    
+    if (keys.a) carVelocity = Math.max(-maxSpeed, carVelocity - carAcceleration);
+    else if (keys.d) carVelocity = Math.min(maxSpeed, carVelocity + carAcceleration);
+    else carVelocity *= 0.7; // Reduced friction (from 0.9) for quicker stopping
+    
+    carX += carVelocity;
     carX = Math.max(0, Math.min(canvas.width - carWidth, carX));
     
     // Update background
@@ -403,14 +539,13 @@ canvas {
     }
     
     // Check collisions
-  // In your update() function, change the collision check to:
-  for (const o of obstacles) {
-    if (!o.hasCollided && checkCollision(carX, carY, carWidth, carHeight, o)) {
-      o.hasCollided = true;
-      lives--;
-      if (lives <= 0) isGameOver = true;
+    for (const o of obstacles) {
+      if (!o.hasCollided && checkCollision(carX, carY, carWidth, carHeight, o)) {
+        o.hasCollided = true;
+        lives--;
+        if (lives <= 0) isGameOver = true;
+      }
     }
-}
   }
 
   function draw() {
@@ -418,45 +553,58 @@ canvas {
     ctx.drawImage(bgImg, 0, backgroundY - canvas.height, canvas.width, canvas.height);
     ctx.drawImage(bgImg, 0, backgroundY, canvas.width, canvas.height);
     
-    // Draw obstacles
-    obstacles.forEach(o => o.draw(ctx));
+    // Add road markings
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([20, 20]);
+    ctx.beginPath();
+    ctx.moveTo(canvas.width/3, backgroundY % 40);
+    ctx.lineTo(canvas.width/3, canvas.height);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(canvas.width*2/3, backgroundY % 40);
+    ctx.lineTo(canvas.width*2/3, canvas.height);
+    ctx.stroke();
+    ctx.setLineDash([]);
     
-    // Draw car
+    // Draw obstacles with shadow
+    obstacles.forEach(o => {
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 5;
+      ctx.shadowOffsetY = 3;
+      o.draw(ctx);
+      ctx.shadowColor = 'transparent';
+    });
+    
+    // Draw car with shadow
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowBlur = 5;
+    ctx.shadowOffsetY = 3;
     ctx.drawImage(carImg, carX, carY, carWidth, carHeight);
+    ctx.shadowColor = 'transparent';
     
     // Draw UI
-    drawTextWithBackground(`Lives: ${lives}`, 10, 30);
-    drawTextWithBackground(`Score: ${points}`, 10, 60);
+    ctx.font = "600 18px 'Oxygen Mono'";
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.fillText(`SCORE: ${points}`, canvas.width - 120, 40);
+    ctx.fillText(`LIVES: ${lives}`, 20, 40);
     
     // Game over screen
     if (isGameOver && !gameOverPopupShown) {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "red";
-      ctx.font = "40px Arial";
+      
+      ctx.fillStyle = "var(--dexcom-green)";
+      ctx.font = "700 36px 'Oxygen Mono'";
       ctx.textAlign = "center";
-      ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 30);
+      ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 40);
+      
+      ctx.font = "600 24px 'Oxygen Mono'";
+      ctx.fillText(`FINAL SCORE: ${points}`, canvas.width / 2, canvas.height / 2 + 20);
       
       nameInputContainer.style.display = "block";
       gameOverPopupShown = true;
     }
-  }
-
-  function drawTextWithBackground(text, x, y) {
-    ctx.font = "20px Arial";
-    const padding = 6;
-    const metrics = ctx.measureText(text);
-    
-    ctx.fillStyle = "black";
-    ctx.fillRect(
-      x - padding,
-      y - 20 + 4,
-      metrics.width + padding * 2,
-      24
-    );
-    
-    ctx.fillStyle = "white";
-    ctx.fillText(text, x, y);
   }
 
   async function submitScore() {
@@ -475,7 +623,7 @@ canvas {
 
       if (res.ok) {
         nameInputContainer.style.display = "none";
-        finalScoreDisplay.textContent = `Your Score: ${points}`;
+        finalScoreDisplay.textContent = `YOUR SCORE: ${points}`;
         postGameContainer.style.display = "block";
         await showLeaderboardModal();
       }
@@ -518,54 +666,55 @@ canvas {
     startButton.textContent = "Start Game";
   }
 
-class Obstacle {
-  constructor(x, y, image) {
-    this.x = x;
-    this.y = y;
-    this.image = image;
-    this.width = 40;
-    this.height = 40;
-    this.hasCollided = false;
-    // Define hitbox that's smaller than the visual representation
-    this.hitboxWidth = this.width * 0.6;  // 60% of visual width
-    this.hitboxHeight = this.height * 0.6; // 60% of visual height
-    this.hitboxOffsetX = (this.width - this.hitboxWidth) / 2;
-    this.hitboxOffsetY = (this.height - this.hitboxHeight) / 2;
+  class Obstacle {
+    constructor(x, y, image) {
+      this.x = x;
+      this.y = y;
+      this.image = image;
+      this.width = 40;
+      this.height = 40;
+      this.hasCollided = false;
+      // Define hitbox that's smaller than the visual representation
+      this.hitboxWidth = this.width * 0.6;
+      this.hitboxHeight = this.height * 0.6;
+      this.hitboxOffsetX = (this.width - this.hitboxWidth) / 2;
+      this.hitboxOffsetY = (this.height - this.hitboxHeight) / 2;
+    }
+
+    update() {
+      this.y += backgroundSpeed;
+    }
+
+    draw(ctx) {
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      
+      // Uncomment this to visualize hitboxes (for debugging)
+      /*
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        this.x + this.hitboxOffsetX, 
+        this.y + this.hitboxOffsetY, 
+        this.hitboxWidth, 
+        this.hitboxHeight
+      );
+      */
+    }
   }
 
-  update() {
-    this.y += backgroundSpeed;
-  }
-
-  draw(ctx) {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  function checkCollision(carX, carY, carW, carH, obstacle) {
+    // Car hitbox (smaller than visual)
+    const carHitboxWidth = carW * 0.7;
+    const carHitboxHeight = carH * 0.7;
+    const carHitboxOffsetX = (carW - carHitboxWidth) / 2;
+    const carHitboxOffsetY = (carH - carHitboxHeight) / 2;
     
-    // Uncomment this to visualize hitboxes (for debugging)
-    /*
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(
-      this.x + this.hitboxOffsetX, 
-      this.y + this.hitboxOffsetY, 
-      this.hitboxWidth, 
-      this.hitboxHeight
-    );
-    */
+    return carX + carHitboxOffsetX < obstacle.x + obstacle.hitboxOffsetX + obstacle.hitboxWidth && 
+           carX + carHitboxOffsetX + carHitboxWidth > obstacle.x + obstacle.hitboxOffsetX && 
+           carY + carHitboxOffsetY < obstacle.y + obstacle.hitboxOffsetY + obstacle.hitboxHeight && 
+           carY + carHitboxOffsetY + carHitboxHeight > obstacle.y + obstacle.hitboxOffsetY;
   }
-}
 
-function checkCollision(carX, carY, carW, carH, obstacle) {
-  // Car hitbox (smaller than visual)
-  const carHitboxWidth = carW * 0.7;
-  const carHitboxHeight = carH * 0.7;
-  const carHitboxOffsetX = (carW - carHitboxWidth) / 2;
-  const carHitboxOffsetY = (carH - carHitboxHeight) / 2;
-  
-  return carX + carHitboxOffsetX < obstacle.x + obstacle.hitboxOffsetX + obstacle.hitboxWidth && 
-         carX + carHitboxOffsetX + carHitboxWidth > obstacle.x + obstacle.hitboxOffsetX && 
-         carY + carHitboxOffsetY < obstacle.y + obstacle.hitboxOffsetY + obstacle.hitboxHeight && 
-         carY + carHitboxOffsetY + carHitboxHeight > obstacle.y + obstacle.hitboxOffsetY;
-}
   function loadImage(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -576,7 +725,8 @@ function checkCollision(carX, carY, carW, carH, obstacle) {
   }
 
   function drawStaticScene() {
-    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "var(--dexcom-dark)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(carImg, carX, carY, carWidth, carHeight);
   }
 
