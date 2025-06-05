@@ -360,6 +360,7 @@ document.querySelectorAll('.simulator-tab').forEach(tab => {
   const dexcomGlucoseStatus = document.getElementById('dexcom-glucose-status');
   const dexcomGlucoseTrend = document.getElementById('dexcom-glucose-trend');
   const dexcomDataTable = document.getElementById('dexcom-data-table').querySelector('tbody');
+  const armImage = document.querySelector('.arm-image');
   
   let currentStep = 1;
   let dexcomGlucoseReadings = [];
@@ -564,9 +565,18 @@ document.querySelectorAll('.simulator-tab').forEach(tab => {
   function updateDexcomStep(step) {
     dexcomSteps[currentStep-1].classList.remove('active');
     dexcomSteps[currentStep-1].classList.add('completed');
-    
+
     currentStep = step;
     dexcomSteps[currentStep-1].classList.add('active');
+
+    // Switch arm image based on step
+    if (currentStep === 2) {
+      armImage.src = "{{site.baseurl}}/images/needlepin/arm2.png";
+    } else if (currentStep === 3) {
+      armImage.src = "{{site.baseurl}}/images/needlepin/arm3.png";
+    } else if (currentStep === 1) {
+      armImage.src = "{{site.baseurl}}/images/needlepin/arm.png";
+    }
   }
 
   function generateGlucoseReading() {
