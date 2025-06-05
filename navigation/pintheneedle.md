@@ -577,7 +577,8 @@ document.querySelectorAll('.simulator-tab').forEach(tab => {
       armImage.src = "{{site.baseurl}}/images/needlepin/arm2.png";
     } else if (currentStep === 3) {
       armImage.src = "{{site.baseurl}}/images/needlepin/arm3.png";
-    } else if (currentStep === 1) {
+    } else {
+      // For step 1, 4, 5, always show the original arm
       armImage.src = "{{site.baseurl}}/images/needlepin/arm.png";
     }
   }
