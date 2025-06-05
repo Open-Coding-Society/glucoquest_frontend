@@ -184,29 +184,30 @@ comments: true
 <body>
     <h1 class="page-title">User Feedback</h1>
     <div class="section-divider"></div>
-    
     <button id="review-button">Share Your Feedback</button>
-    
     <div id="review-popup" class="popup">
         <span class="close-popup">&times;</span>
         <div class="popup-content">
             <h2>Share Your Thoughts With Us</h2>
+            <input 
+                type="text" 
+                id="reviewer-name" 
+                placeholder="Your name (optional)"
+                style="width: 100%; padding: 10px; margin-bottom: 15px; background-color: #0f2317; border: 1px solid #5fb617; border-radius: 8px; color: white; font-family: 'Oxygen Mono';"
+            >
             <textarea id="review-text" placeholder="We'd love to hear your feedback about your experience..."></textarea>
             <button id="submit-review">Submit Feedback</button>
         </div>
     </div>
-    
     <h2 class="text-3xl font-bold text-center mt-16 mb-8">Community Feedback</h2>
     <div id="survey-list"></div>
-    
     <div class="section-divider"></div>
-    
     <script type="module">
         // Your existing JavaScript remains unchanged here
         import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
         async function fetchSurveys() {
             try {
-                const response = await fetch(`${pythonURI}/api/surveys`, {
+                const response = await fetch(`${pythonURI}/api/surveys/public`, {  // Changed to public endpoint
                     ...fetchOptions,
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
@@ -219,7 +220,7 @@ comments: true
                         const surveyBox = document.createElement('div');
                         surveyBox.classList.add('survey-box');
                         surveyBox.setAttribute('data-id', survey.id);
-                        // Create and append the Delete button
+                        // Create and append the Delete button (if needed)
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = "X";
                         deleteButton.classList.add('delete-button');
@@ -228,7 +229,7 @@ comments: true
                         reviewTitle.textContent = "REVIEW";
                         const reviewContent = document.createElement('div');
                         reviewContent.classList.add('review-content');
-                        reviewContent.textContent = survey.message;
+                        reviewContent.textContent = survey.content;  // Changed to use formatted content
                         surveyBox.appendChild(deleteButton);
                         surveyBox.appendChild(reviewTitle);
                         surveyBox.appendChild(reviewContent);
@@ -247,11 +248,13 @@ comments: true
                 const response = await fetch(`${pythonURI}/api/survey?id=${surveyId}`, {
                     ...fetchOptions,
                     method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 
+                        'Content-Type': 'application/json',
+                    }
                 });
                 if (response.ok) {
                     alert("Survey deleted successfully!");
-                    fetchSurveys(); // Refresh the list after deletion
+                    fetchSurveys();
                 } else {
                     const errorData = await response.json();
                     alert(`Failed to delete survey: ${errorData.message}`);
@@ -295,6 +298,7 @@ comments: true
         });
         document.getElementById("submit-review").addEventListener("click", async function () {
             let reviewText = document.getElementById("review-text").value;
+            let reviewerName = document.getElementById("reviewer-name").value || "Anonymous";
             if (reviewText.trim() === "") {
                 alert("Please enter a review before submitting.");
                 return;
@@ -304,12 +308,16 @@ comments: true
                     ...fetchOptions,
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: reviewText })
+                    body: JSON.stringify({ 
+                        message: reviewText,
+                        name: reviewerName 
+                    })
                 });
                 if (response.ok) {
                     alert("Thank you for your review!");
                     document.getElementById("review-popup").style.display = "none";
                     document.getElementById("review-text").value = "";
+                    document.getElementById("reviewer-name").value = "";
                     fetchSurveys();
                 } else {
                     alert("Failed to submit review.");
